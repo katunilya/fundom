@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from abc import ABC
 from dataclasses import dataclass
-from functools import reduce
+from functools import reduce, wraps
 from typing import Any, Awaitable, Callable, Generator, Generic, Iterable, TypeVar
 
 T = TypeVar("T")
@@ -80,6 +80,18 @@ class Future(MonadContainer[Awaitable[T]]):
 
     def finish(self) -> Awaitable[T]:
         return self.value
+
+
+def returns_future(func: Callable[..., T]):
+    @wraps(func)
+    def wrapper(*args, **kwargs) -> Future[T]:
+        match func(*args, **kwargs):
+            case Future() as future:
+                return future
+            case awaitable:
+                return Future(awaitable)
+
+    return wrapper
 
 
 @dataclass(slots=True, frozen=True)
