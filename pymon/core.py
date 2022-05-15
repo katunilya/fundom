@@ -81,6 +81,12 @@ class Future(MonadContainer[Awaitable[T]]):
     def finish(self) -> Awaitable[T]:
         return self.value
 
+    def __rshift__(self, func: Callable[[T], Awaitable[V]]) -> Future[V]:
+        return self.then_async(func)
+
+    def __lshift__(self, func: Callable[[T], V]) -> Future[V]:
+        return self.then(func)
+
 
 def returns_future(func: Callable[..., T]):
     @wraps(func)
@@ -101,6 +107,12 @@ class Pipe(MonadContainer[T]):
 
     def then_async(self, func: Callable[[T], Awaitable[V]]) -> Future[V]:
         return Future(func(self.value))
+
+    def __lshift__(self, func: Callable[[T], V]) -> Pipe[V]:
+        return self.then(func)
+
+    def __rshift__(self, func: Callable[[T], Awaitable[V]]) -> Future[V]:
+        return self.then_async(func)
 
     def finish(self) -> T:
         return self.value
