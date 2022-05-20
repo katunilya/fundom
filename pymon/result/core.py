@@ -1,5 +1,5 @@
 from functools import wraps
-from typing import Callable, ParamSpec, TypeVar
+from typing import Awaitable, Callable, ParamSpec, TypeVar
 
 from pymon.core import hof1
 
@@ -67,6 +67,22 @@ def safe(func: Callable[P, V]) -> Callable[P, V | TError]:
     def _wrapper(*args: P.args, **kwargs: P.kwargs) -> V | TError:
         try:
             return func(*args, **kwargs)
+        except Exception() as err:
+            return err
+
+    return _wrapper
+
+
+def safe_async(func: Callable[P, Awaitable[V]]) -> Callable[P, Awaitable[V | TError]]:
+    """Decorator for async function that might raise an exception.
+
+    Excepts exception and returns that instead.
+    """
+
+    @wraps(func)
+    async def _wrapper(*args: P.args, **kwargs: P.kwargs) -> V | TError:
+        try:
+            return await func(*args, **kwargs)
         except Exception() as err:
             return err
 
