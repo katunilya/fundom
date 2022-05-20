@@ -118,14 +118,10 @@ def returns_async(x: T) -> Callable[[Any], Future[T]]:
 
 
 # curring utils
-# TODO improve annotations for HOFs
 
 A1 = TypeVar("A1")
 A2 = TypeVar("A2")
 A3 = TypeVar("A3")
-A4 = TypeVar("A4")
-A5 = TypeVar("A5")
-A6 = TypeVar("A6")
 AResult = TypeVar("AResult")
 
 
@@ -165,28 +161,59 @@ def hof3(func: Callable[Concatenate[A1, A2, A3, P], AResult]):
     return _wrapper
 
 
-def hof_5(func: Callable[[A, B, C, D, E], F]):
-    def _wrapper(a: A, b: B, c: C, d: D) -> Callable[[E], F]:
-        return lambda e: func(a, b, c, d, e)
+@hof2
+def creducel(folder: Callable[[A1, A2], A1], initial: A1, lst: Iterable[A2]) -> A1:
+    """Curried `reduce` left function.
 
-    return _wrapper
+    Args:
+        folder (Callable[[A1, A2], A1]): aggregator.
+        initial (A1): initial aggregation value.
+        lst (Iterable[A2]): data to reduce.
 
-
-@hof_3
-def creducel(folder: Callable[[A, B], A], initial: A, lst: Iterable[B]):
+    Returns:
+        A1: reduction result.
+    """
     return reduce(folder, lst, initial)
 
 
-@hof_3
-def creducer(folder: Callable[[A, B], B], initial: B, lst: Iterable[A]):
+@hof2
+def creducer(folder: Callable[[A1, A2], A2], initial: A2, lst: Iterable[A1]) -> A2:
+    """Curried `reduce` right function.
+
+    Args:
+        folder (Callable[[A1, A2], A2]): aggregator.
+        initial (A2): initial aggregation value.
+        lst (Iterable[A1]): data to reduce.
+
+    Returns:
+        A2: reduction result.
+    """
     return reduce(lambda x, y: folder(y, x), lst[::-1], initial)
 
 
-@hof_2
-def cmap(mapper: Callable[[A], B], lst: Iterable[A]) -> Iterable[B]:
+@hof1
+def cmap(mapper: Callable[[A1], A2], lst: Iterable[A1]) -> Iterable[A2]:
+    """Curreid `map` function.
+
+    Args:
+        mapper (Callable[[A1], A2]): mapper for element of iterable.
+        lst (Iterable[A1]): to map.
+
+    Returns:
+        Iterable[A2]: map result.
+    """
     return map(mapper, lst)
 
 
-@hof_2
-def cfilter(predicate: Callable[[A], bool], lst: Iterable[A]) -> Iterable[A]:
+@hof1
+def cfilter(predicate: Callable[[A1], bool], lst: Iterable[A1]) -> Iterable[A1]:
+    """Curried `filter` function.
+
+    Args:
+        predicate (Callable[[A1], bool]): to filter with.
+        lst (Iterable[A1]): to filter.
+
+    Returns:
+        Iterable[A1]: filtered iterable.
+    """
     return filter(predicate, lst)
