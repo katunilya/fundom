@@ -17,3 +17,17 @@ def if_some(func: Callable[[T], V | None]) -> Callable[[T | None], V | None]:
                 return func(some)
 
     return _wrapper
+
+
+def if_none(func: Callable[[None], V]) -> Callable[[T | None], V | None]:
+    """Decorator that executes some function only on `None` input."""
+
+    @wraps(func)
+    def _wrapper(t: T | None) -> V | None:
+        match t:
+            case None:
+                return func(None)
+            case some:
+                return some
+
+    return _wrapper
