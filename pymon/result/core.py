@@ -1,110 +1,89 @@
-from dataclasses import dataclass
 from functools import wraps
-from typing import Awaitable, Callable, TypeVar
+from typing import Awaitable, Callable, ParamSpec, TypeVar
 
-from pymon.core import Future, MonadContainer, this_async
+from pymon.core import hof1
 
-TOk = TypeVar("TOk")
-TFail = TypeVar("TFail")
-
-
-@dataclass(frozen=True, slots=True)
-class Ok(MonadContainer[TOk]):
-    ...
+V = TypeVar("V")
+T = TypeVar("T")
+TError = TypeVar("TError", bound=Exception)
 
 
-@dataclass(frozen=True, slots=True)
-class Fail(MonadContainer[TFail]):
-    ...
+def if_ok(func: Callable[[T], V]) -> Callable[[T | TError], V]:
+    """Decorateor that protects function from being executed on `Exception` value."""
+
+    @wraps(func)
+    def _wrapper(t: T | TError) -> V:
+        match t:
+            case Exception():
+                return t
+            case ok:
+                return func(ok)
+
+    return _wrapper
 
 
-Result = Ok[TOk] | Fail[TFail]
-Safe = Ok[TOk] | Fail[Exception]
+def if_error(func: Callable[[TError], V]) -> Callable[[T | TError], T | V]:
+    """Decorator that executes some function only on `Exception` input."""
+
+    @wraps(func)
+    def _wrapper(t: T | TError) -> T | V:
+        match t:
+            case Exception():
+                return func(t)
+            case _:
+                return t
+
+    return _wrapper
 
 
-def safe_unit(value: TOk | Exception) -> Safe[TOk]:
+@hof1
+def if_error_returns(replacement: V, value: T | TError) -> V | T:
+    """Replace `value` with `replacement` if one is `Exception`.
+
+    Args:
+        replacement (V): to replace with.
+        value (T | TError): to replace.
+
+    Returns:
+        V | T: error-safe result.
+    """
     match value:
         case Exception():
-            return Fail(Exception)
+            return replacement
         case _:
-            return Ok(value)
+            return value
 
 
-# bindings
-VOk = TypeVar("VOk")
-VFail = TypeVar("VFail")
+P = ParamSpec("P")
 
 
-def if_ok(func: Callable[[TOk], Result[VOk, VFail]]):
+def safe(func: Callable[P, V]) -> Callable[P, V | TError]:
+    """Decorator for sync function that might raise an exception.
+
+    Excepts exception and returns that instead.
+    """
+
     @wraps(func)
-    def _wrapper(arg: Result[TOk, TFail]):
-        match arg:
-            case Ok(value):
-                return func(value)
-            case Fail() as fail:
-                return fail
-
-    return _wrapper
-
-
-def if_ok_async(func: Callable[[TOk], Awaitable[Result[VOk, VFail]]]):
-    @wraps(func)
-    def _wrapper(arg: Result[TOk, TFail]):
-        match arg:
-            case Ok(value):
-                return Future(func(value))
-            case Fail() as fail:
-                return Future(this_async(fail))
-
-    return _wrapper
-
-
-def if_fail(func: Callable[[TOk], Result[VOk, VFail]]):
-    @wraps(func)
-    def _wrapper(arg: Result[TOk, TFail]):
-        match arg:
-            case Ok(value):
-                return func(value)
-            case Fail() as fail:
-                return fail
-
-    return _wrapper
-
-
-def if_fail_async(func: Callable[[TOk], Awaitable[Result[VOk, VFail]]]):
-    @wraps(func)
-    def _wrapper(arg: Result[TOk, TFail]):
-        match arg:
-            case Ok(value):
-                return Future(func(value))
-            case Fail() as fail:
-                return Future(this_async(fail))
-
-    return _wrapper
-
-
-def safe(func: Callable[[TOk], VOk]) -> Callable[[TOk], Safe[VOk]]:
-    @wraps(func)
-    def _wrapper(arg: TOk) -> Safe[VOk]:
+    def _wrapper(*args: P.args, **kwargs: P.kwargs) -> V | TError:
         try:
-            return Ok(func(arg))
-        except Exception as err:
-            return Fail(err)
+            return func(*args, **kwargs)
+        except Exception() as err:
+            return err
 
     return _wrapper
 
 
-def async_safe(
-    func: Callable[[TOk], Awaitable[VOk]]
-) -> Callable[[TOk], Future[Safe[VOk]]]:
-    async def __executor(arg: TOk) -> Safe[VOk]:
-        try:
-            return Ok(await func(arg))
-        except Exception as err:
-            return Fail(err)
+def safe_async(func: Callable[P, Awaitable[V]]) -> Callable[P, Awaitable[V | TError]]:
+    """Decorator for async function that might raise an exception.
+
+    Excepts exception and returns that instead.
+    """
 
     @wraps(func)
-    def _wrapper(arg: TOk) -> Future[Safe[VOk]]:
-        return Future(__executor(arg))
+    async def _wrapper(*args: P.args, **kwargs: P.kwargs) -> V | TError:
+        try:
+            return await func(*args, **kwargs)
+        except Exception() as err:
+            return err
 
     return _wrapper
