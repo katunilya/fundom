@@ -1,5 +1,5 @@
 from functools import wraps
-from typing import Callable, TypeVar
+from typing import Callable, ParamSpec, TypeVar
 
 from pymon.core import hof1
 
@@ -52,3 +52,22 @@ def if_error_returns(replacement: V, value: T | TError) -> V | T:
             return replacement
         case _:
             return value
+
+
+P = ParamSpec("P")
+
+
+def safe(func: Callable[P, V]) -> Callable[P, V | TError]:
+    """Decorator for sync function that might raise an exception.
+
+    Excepts exception and returns that instead.
+    """
+
+    @wraps(func)
+    def _wrapper(*args: P.args, **kwargs: P.kwargs) -> V | TError:
+        try:
+            return func(*args, **kwargs)
+        except Exception() as err:
+            return err
+
+    return _wrapper
