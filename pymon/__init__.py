@@ -6,25 +6,10 @@ from .core import (
     creducel,
     creducer,
     hof1,
-    hof_3,
-    hof_4,
-    hof_5,
+    hof2,
+    hof3,
     returns,
     returns_async,
     this,
     this_async,
-)
-from .maybe import Nothing, Some, if_nothing, if_nothing_async, if_some, if_some_async
-from .result import (
-    Fail,
-    Ok,
-    Result,
-    Safe,
-    async_safe,
-    if_fail,
-    if_fail_async,
-    if_ok,
-    if_ok_async,
-    safe,
-    safe_unit,
 )
