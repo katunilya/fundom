@@ -3,7 +3,16 @@ from __future__ import annotations
 from abc import ABC
 from dataclasses import dataclass
 from functools import reduce, wraps
-from typing import Any, Awaitable, Callable, Generator, Generic, Iterable, TypeVar
+from typing import (
+    Any,
+    Awaitable,
+    Callable,
+    Generator,
+    Generic,
+    Iterable,
+    ParamSpec,
+    TypeVar,
+)
 
 T = TypeVar("T")
 V = TypeVar("V")
@@ -116,6 +125,19 @@ class Pipe(MonadContainer[T]):
 
     def finish(self) -> T:
         return self.value
+
+
+P = ParamSpec("P")
+
+
+def pipeline(func: Callable[P, Pipe[T]]) -> Callable[P, T]:
+    """Decorator for functions that return `Pipe` object for seamless unwrapping."""
+
+    @wraps(func)
+    def _wrapper(*args: P.args, **kwargs: P.kwargs) -> T:
+        return func(*args, **kwargs).value
+
+    return _wrapper
 
 
 # identity utils
