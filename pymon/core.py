@@ -1,6 +1,5 @@
 from __future__ import annotations
 
-from abc import ABC
 from dataclasses import dataclass
 from functools import reduce, wraps
 from typing import (
@@ -20,15 +19,21 @@ U = TypeVar("U")
 P = ParamSpec("P")
 
 
-@dataclass(frozen=True, slots=True)
-class MonadContainer(Generic[T], ABC):
-    """General abstraction for monadic container."""
-
-    value: T
-
-
 @dataclass(slots=True, frozen=True)
-class Future(MonadContainer[Awaitable[T]]):
+class Future(Generic[T]):
+    """Abstraction over awaitable value to run in pipeline.
+
+    Example::
+            result = await (
+                Future(get_user_async)
+                << if_role_is("moderator")
+                << set_role("admin")
+                >> update_user_async
+            )
+    """
+
+    value: Awaitable[T]
+
     def __await__(self) -> Generator[None, None, T]:
         return self.value.__await__()
 
@@ -36,16 +41,29 @@ class Future(MonadContainer[Awaitable[T]]):
         return func(await self.value)
 
     def then(self, func: Callable[[T], V]) -> Future[V]:
+        """Execute sync `func` next on awaited internal value.
+
+        Args:
+            func (Callable[[T], V]): to execute.
+
+        Returns:
+            Future[V]: awaitable result of execution.
+        """
         return Future(self.__then(func))
 
     async def __then_async(self, func: Callable[[T], Awaitable[V]]) -> V:
         return await func(await self.value)
 
     def then_async(self, func: Callable[[T], Awaitable[V]]) -> Future[V]:
-        return Future(self.__then_async(func))
+        """Execute async `func` next on awaited internal value.
 
-    def finish(self) -> Awaitable[T]:
-        return self.value
+        Args:
+            func (Callable[[T], Awaitable[V]]): to execute.
+
+        Returns:
+            Future[V]: awaitable result of execution.
+        """
+        return Future(self.__then_async(func))
 
     def __rshift__(self, func: Callable[[T], Awaitable[V]]) -> Future[V]:
         return self.then_async(func)
@@ -69,11 +87,42 @@ def returns_future(func: Callable[P, T]):
 
 
 @dataclass(slots=True, frozen=True)
-class Pipe(MonadContainer[T]):
+class Pipe(Generic[T]):
+    """Abstraction over some value to run in pipeline.
+
+    Example::
+            result: int = (
+                Pipe(12)
+                << (lambda x: x + 1)
+                << (lambda x: x**2)
+                << (lambda x: x // 3)
+            ).finish()
+    """
+
+    value: T
+
     def then(self, func: Callable[[T], V]) -> Pipe[V]:
+        """Execute sync `func` next on internal value.
+
+        Args:
+            func (Callable[[T], V]): to execute.
+
+        Returns:
+            Pipe[V]: execution result.
+        """
         return Pipe(func(self.value))
 
     def then_async(self, func: Callable[[T], Awaitable[V]]) -> Future[V]:
+        """Execute async `func` next on internal value.
+
+        Returns `Future` for further pipeline.
+
+        Args:
+            func (Callable[[T], Awaitable[V]]): to execute.
+
+        Returns:
+            Future[V]: execution result.
+        """
         return Future(func(self.value))
 
     def __lshift__(self, func: Callable[[T], V]) -> Pipe[V]:
@@ -83,6 +132,11 @@ class Pipe(MonadContainer[T]):
         return self.then_async(func)
 
     def finish(self) -> T:
+        """Finish `Pipe` by unpacking internal value.
+
+        Returns:
+            T: internal value
+        """
         return self.value
 
 
@@ -100,10 +154,12 @@ def pipeline(func: Callable[P, Pipe[T]]) -> Callable[P, T]:
 
 
 def this(x: T) -> T:
+    """Syncronous identity function."""
     return x
 
 
 async def this_async(x: T) -> T:
+    """Asynchronous identity function."""
     return x
 
 
