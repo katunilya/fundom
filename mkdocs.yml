@@ -1,0 +1,8 @@
+site_name: "Pymon"
+repo_url: "https://github.com/katunilya/pymon/"
+site_dir: "site"
+docs_dir: "docs"
+
+theme:
+  name: readthedocs
+  include_sidebar: true
