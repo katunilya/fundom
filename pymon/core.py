@@ -4,7 +4,6 @@ from abc import ABC
 from dataclasses import dataclass
 from functools import reduce, wraps
 from typing import (
-    Any,
     Awaitable,
     Callable,
     Concatenate,
@@ -106,12 +105,19 @@ async def this_async(x: T) -> T:
     return x
 
 
-def returns(x: T) -> Callable[[Any], T]:
-    return lambda _: x
+def returns(x: T) -> Callable[P, T]:
+    """Return `T` on any input."""
+
+    def _returns(*_: P.args, **__: P.kwargs) -> T:
+        return x
+
+    return _returns
 
 
-def returns_async(x: T) -> Callable[[Any], Future[T]]:
-    async def _returns_async(_) -> T:
+def returns_async(x: T) -> Callable[P, Future[T]]:
+    """Return awaitable `T` on any input."""
+
+    async def _returns_async(*_: P.args, **__: P.kwargs) -> T:
         return x
 
     return _returns_async
