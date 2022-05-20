@@ -18,3 +18,17 @@ def if_ok(func: Callable[[T], V]) -> Callable[[T | TError], V]:
                 return func(ok)
 
     return _wrapper
+
+
+def if_error(func: Callable[[TError], V]) -> Callable[[T | TError], T | V]:
+    """Decorator that executes some function only on `Exception` input."""
+
+    @wraps(func)
+    def _wrapper(t: T | TError) -> T | V:
+        match t:
+            case Exception():
+                return func(t)
+            case _:
+                return t
+
+    return _wrapper
