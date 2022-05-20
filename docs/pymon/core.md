@@ -2,7 +2,7 @@
 
 > Auto-generated documentation for [pymon.core](https://github.com/katunilya/pymon/blob/main/pymon/core.py) module.
 
-- [Pymon](../README.md#pymon-index) / [Modules](../MODULES.md#pymon-modules) / [Pymon](index.md#pymon) / Core
+- [Pymon](../README.md#-pymon) / [Modules](../MODULES.md#pymon-modules) / [Pymon](index.md#pymon) / Core
     - [Future](#future)
         - [Future().then](#futurethen)
         - [Future().then_async](#futurethen_async)

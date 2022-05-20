@@ -1,19 +1,17 @@
-# Pymon Index
+# ▶️ pymon
 
 > Auto-generated documentation index.
 
-<h1 align="center">🔃pymon</h2>
+`pymon` is a set of simple common monads for writing safe, maintainable and
+pipeline-based code in Python3.10+.
 
 Full Pymon project documentation can be found in [Modules](MODULES.md#pymon-modules)
 
-- [Pymon Index](#pymon-index)
+- [▶️ pymon](#-pymon)
     - [Monads API](#monads-api)
         - [`Pipe` and `Future`](#pipe-and-future)
         - [`Composition` and `AsyncComposition`](#composition-and-asynccomposition)
   - [Pymon Modules](MODULES.md#pymon-modules)
-
-`pymon` is a set of simple common monads for writing safe, maintainable and
-pipeline-based code in Python3.10+.
 
 ## Monads API
 
