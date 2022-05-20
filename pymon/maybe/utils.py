@@ -1,12 +1,12 @@
 from typing import Callable, TypeVar
 
-from pymon.core import hof_2
+from pymon.core import hof1
 
 TKey = TypeVar("TKey")
 TValue = TypeVar("TValue")
 
 
-@hof_2
+@hof1
 def maybe_get(key: TKey, dct: dict[TKey, TValue]) -> TValue | None:
     """Maybe get some value from dictionary.
 
@@ -23,7 +23,7 @@ def maybe_get(key: TKey, dct: dict[TKey, TValue]) -> TValue | None:
 T = TypeVar("T")
 
 
-@hof_2
+@hof1
 def some_when(predicate: Callable[[T], bool], data: T) -> T | None:
     """Passes value next only when predicate is True, otherwise returns `None`.
 

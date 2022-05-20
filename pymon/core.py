@@ -7,6 +7,7 @@ from typing import (
     Any,
     Awaitable,
     Callable,
+    Concatenate,
     Generator,
     Generic,
     Iterable,
@@ -119,17 +120,23 @@ def returns_async(x: T) -> Callable[[Any], Future[T]]:
 # curring utils
 # TODO improve annotations for HOFs
 
-A = TypeVar("A")
-B = TypeVar("B")
-C = TypeVar("C")
-D = TypeVar("D")
-E = TypeVar("E")
-F = TypeVar("F")
+A1 = TypeVar("A1")
+A2 = TypeVar("A2")
+A3 = TypeVar("A3")
+A4 = TypeVar("A4")
+A5 = TypeVar("A5")
+A6 = TypeVar("A6")
+AResult = TypeVar("AResult")
 
 
-def hof_2(func: Callable[[A, B], C]):
-    def _wrapper(a: A) -> Callable[[B], C]:
-        return lambda b: func(a, b)
+def hof1(func: Callable[Concatenate[A1, P], AResult]):
+    """Separate first argument from other."""
+
+    def _wrapper(arg_1: A1) -> Callable[P, AResult]:
+        def _func(*args: P.args, **kwargs: P.kwargs) -> AResult:
+            return func(arg_1, *args, **kwargs)
+
+        return _func
 
     return _wrapper
 

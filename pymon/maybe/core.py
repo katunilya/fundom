@@ -1,7 +1,7 @@
 from functools import wraps
 from typing import Callable, TypeVar
 
-from pymon.core import hof_2
+from pymon.core import hof1
 
 T = TypeVar("T")
 V = TypeVar("V")
@@ -35,7 +35,7 @@ def if_none(func: Callable[[None], V]) -> Callable[[T | None], V | None]:
     return _wrapper
 
 
-@hof_2
+@hof1
 def if_none_returns(replacement: V, value: T | None) -> V | T:
     """Replace `value` with `replacement` if one is `None`.
 
