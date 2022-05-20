@@ -141,9 +141,14 @@ def hof1(func: Callable[Concatenate[A1, P], AResult]):
     return _wrapper
 
 
-def hof_3(func: Callable[[A, B, C], D]):
-    def _wrapper(a: A, b: B) -> Callable[[C], D]:
-        return lambda c: func(a, b, c)
+def hof2(func: Callable[Concatenate[A1, A2, P], AResult]):
+    """Separate first 2 arguments from other."""
+
+    def _wrapper(arg_1: A1, arg_2: A2) -> Callable[P, AResult]:
+        def _func(*args: P.args, **kwargs: P.kwargs) -> AResult:
+            return func(arg_1, arg_2, *args, **kwargs)
+
+        return _func
 
     return _wrapper
 
