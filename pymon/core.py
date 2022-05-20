@@ -17,6 +17,7 @@ from typing import (
 T = TypeVar("T")
 V = TypeVar("V")
 U = TypeVar("U")
+P = ParamSpec("P")
 
 
 @dataclass(frozen=True, slots=True)
@@ -51,9 +52,11 @@ class Future(MonadContainer[Awaitable[T]]):
         return self.then(func)
 
 
-def returns_future(func: Callable[..., T]):
+def returns_future(func: Callable[P, T]):
+    """Wraps  returned value of async function to `Future`."""
+
     @wraps(func)
-    def wrapper(*args, **kwargs) -> Future[T]:
+    def wrapper(*args: P.args, **kwargs: P.kwargs) -> Future[T]:
         match func(*args, **kwargs):
             case Future() as future:
                 return future
@@ -79,9 +82,6 @@ class Pipe(MonadContainer[T]):
 
     def finish(self) -> T:
         return self.value
-
-
-P = ParamSpec("P")
 
 
 def pipeline(func: Callable[P, Pipe[T]]) -> Callable[P, T]:
