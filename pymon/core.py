@@ -23,6 +23,7 @@ P = ParamSpec("P")
 @dataclass(frozen=True, slots=True)
 class MonadContainer(Generic[T], ABC):
     """General abstraction for monadic container."""
+
     value: T
 
 
