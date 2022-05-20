@@ -5,7 +5,7 @@ from .core import (
     cmap,
     creducel,
     creducer,
-    hof_2,
+    hof1,
     hof_3,
     hof_4,
     hof_5,
