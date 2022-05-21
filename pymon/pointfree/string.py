@@ -132,3 +132,18 @@ def removeprefix(prefix: str, arg: str) -> str:
         Otherwise, return a copy of the original string:
     """
     return arg.removeprefix(prefix)
+
+
+@hof1
+def removesuffix(suffix: str, arg: str) -> str:
+    """Point-free version of `str.removesuffix`.
+
+    Args:
+        suffix (str): to remove.
+        arg (str): to remove from.
+
+    Returns:
+        str: If the string ends with the suffix string and that suffix is not empty,
+        return string[:-len(suffix)]. Otherwise, return a copy of the original string:
+    """
+    return arg.removesuffix(suffix)
