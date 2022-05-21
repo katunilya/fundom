@@ -190,3 +190,17 @@ def startswith(sub: str, arg: str) -> bool:
         bool: if `arg` starts with `sub`.
     """
     return arg.startswith(sub)
+
+
+@hof1
+def strip(chars: str, arg: str) -> str:
+    """Point-free version of `str.strip`.
+
+    Args:
+        chars (str): to strip.
+        arg (str): to strip from.
+
+    Returns:
+        str: result.
+    """
+    return arg.strip(chars)
