@@ -1,6 +1,7 @@
 from typing import Callable, SupportsIndex
 
-from pymon.core import hof3
+from pymon.core import hof1, hof2, hof3
+from pymon.result import safe
 
 
 def center(width: SupportsIndex, fillchar: str = " ") -> Callable[[str], str]:
@@ -29,3 +30,18 @@ def count(pattern: str, start: SupportsIndex, end: SupportsIndex, arg: str) -> i
         int: number of occurances of `pattern` in `arg`.
     """
     return arg.count(pattern, start, end)
+
+
+@hof1
+@safe
+def encode(encoding: str, arg: str) -> bytes:
+    """Point-free version of `str.encode`.
+
+    Args:
+        encoding (str): to encode with.
+        arg (str): to encode.
+
+    Returns:
+        bytes | Exception: result
+    """
+    return arg.encode(encoding)
