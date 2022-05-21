@@ -43,3 +43,17 @@ def decode(encoding: str, arg: bytes) -> str:
         str | Exception: result.
     """
     return arg.decode(encoding)
+
+
+@hof1
+def endswith(sub: bytes, arg: bytes) -> bool:
+    """Point-free version of `bytes.endswith`.
+
+    Args:
+        sub (bytes): substring to check.
+        arg (bytes): to check in.
+
+    Returns:
+        bool: if `arg` endswith `sub`.
+    """
+    return arg.endswith(sub)
