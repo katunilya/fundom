@@ -117,3 +117,18 @@ def join(iterable: Iterable[str], arg: str) -> str:
         str: joined string.
     """
     return arg.join(iterable)
+
+
+@hof1
+def removeprefix(prefix: str, arg: str) -> str:
+    """Point-free version of `str.removeprefix`.
+
+    Args:
+        prefix (str): to remove.
+        arg (str): to remove from.
+
+    Returns:
+        str: if the string starts with the prefix string, return string[len(prefix):].
+        Otherwise, return a copy of the original string:
+    """
+    return arg.removeprefix(prefix)
