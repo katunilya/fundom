@@ -74,3 +74,18 @@ def find(sub: bytes, arg: bytes) -> int | None:
             return None
         case some:
             return some
+
+
+@hof1
+@safe
+def index(sub: bytes, arg: bytes) -> int:
+    """Point-free version of `bytes.index`.
+
+    Args:
+        sub (bytes): to search.
+        arg (bytes): to search in.
+
+    Returns:
+        int: lowest index in arg where `sub` is found. Raises error if nothing found.
+    """
+    return arg.index(sub)
