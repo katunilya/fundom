@@ -2,7 +2,7 @@
 
 > Auto-generated documentation for [pymon.result.utils](https://github.com/katunilya/pymon/blob/main/pymon/result/utils.py) module.
 
-- [Pymon](../../README.md#pymon-index) / [Modules](../../MODULES.md#pymon-modules) / [Pymon](../index.md#pymon) / [Result](index.md#result) / Utils
+- [Pymon](../../README.md#-pymon) / [Modules](../../MODULES.md#pymon-modules) / [Pymon](../index.md#pymon) / [Result](index.md#result) / Utils
     - [bytes_to_str](#bytes_to_str)
     - [str_to_bytes](#str_to_bytes)
 

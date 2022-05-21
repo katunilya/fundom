@@ -2,7 +2,7 @@
 
 > Auto-generated documentation for [pymon.result.core](https://github.com/katunilya/pymon/blob/main/pymon/result/core.py) module.
 
-- [Pymon](../../README.md#pymon-index) / [Modules](../../MODULES.md#pymon-modules) / [Pymon](../index.md#pymon) / [Result](index.md#result) / Core
+- [Pymon](../../README.md#-pymon) / [Modules](../../MODULES.md#pymon-modules) / [Pymon](../index.md#pymon) / [Result](index.md#result) / Core
     - [if_error](#if_error)
     - [if_error_returns](#if_error_returns)
     - [if_ok](#if_ok)

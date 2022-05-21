@@ -2,7 +2,7 @@
 
 > Auto-generated documentation for [pymon.maybe.core](https://github.com/katunilya/pymon/blob/main/pymon/maybe/core.py) module.
 
-- [Pymon](../../README.md#pymon-index) / [Modules](../../MODULES.md#pymon-modules) / [Pymon](../index.md#pymon) / [Maybe](index.md#maybe) / Core
+- [Pymon](../../README.md#-pymon) / [Modules](../../MODULES.md#pymon-modules) / [Pymon](../index.md#pymon) / [Maybe](index.md#maybe) / Core
     - [if_none](#if_none)
     - [if_none_returns](#if_none_returns)
     - [if_some](#if_some)

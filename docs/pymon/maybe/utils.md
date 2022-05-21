@@ -2,7 +2,7 @@
 
 > Auto-generated documentation for [pymon.maybe.utils](https://github.com/katunilya/pymon/blob/main/pymon/maybe/utils.py) module.
 
-- [Pymon](../../README.md#pymon-index) / [Modules](../../MODULES.md#pymon-modules) / [Pymon](../index.md#pymon) / [Maybe](index.md#maybe) / Utils
+- [Pymon](../../README.md#-pymon) / [Modules](../../MODULES.md#pymon-modules) / [Pymon](../index.md#pymon) / [Maybe](index.md#maybe) / Utils
     - [maybe_get](#maybe_get)
     - [some_when](#some_when)
 

@@ -2,9 +2,9 @@
 
 > Auto-generated documentation modules index.
 
-Full list of [Pymon](README.md#pymon-index) project modules.
+Full list of [Pymon](README.md#-pymon) project modules.
 
-- [Pymon Index](README.md#pymon-index)
+- [▶️ pymon](README.md#-pymon)
 - [Pymon](pymon/index.md#pymon)
     - [Core](pymon/core.md#core)
     - [Maybe](pymon/maybe/index.md#maybe)
