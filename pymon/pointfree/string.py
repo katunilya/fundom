@@ -1,6 +1,7 @@
 from typing import SupportsIndex
 
-from pymon.core import hof2, hof3
+from pymon.core import hof1, hof2, hof3
+from pymon.result import safe
 
 
 @hof2
