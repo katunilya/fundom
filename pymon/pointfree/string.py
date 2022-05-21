@@ -1,5 +1,7 @@
 from typing import Callable, SupportsIndex
 
+from pymon.core import hof1, hof2, hof3
+from pymon.result import safe
 
 def center(width: SupportsIndex, fillchar: str = " ") -> Callable[[str], str]:
     """Point-free version of `str.center`.
@@ -18,4 +20,19 @@ def count(
     Return the number of non-overlapping occurrences of substring sub in string
     S[start:end]. Optional arguments start and end are interpreted as in slice notation.
     """
-    return lambda data: data.count(pattern, start, end)
+    return arg.count(pattern, start, end)
+
+
+@hof1
+@safe
+def encode(encoding: str, arg: str) -> bytes:
+    """Point-free version of `str.encode`.
+
+    Args:
+        encoding (str): to encode with.
+        arg (str): to encode.
+
+    Returns:
+        bytes | Exception: result
+    """
+    return arg.encode(encoding)
