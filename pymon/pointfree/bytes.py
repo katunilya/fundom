@@ -146,3 +146,17 @@ def split(sep: bytes, arg: bytes) -> list[bytes]:
         list[bytes]: result of split.
     """
     return arg.split(sep)
+
+
+@hof1
+def startswith(sub: bytes, arg: bytes) -> bool:
+    """Point-free version of `bytes.startswith`.
+
+    Args:
+        sub (bytes): substring to check.
+        arg (bytes): to check in.
+
+    Returns:
+        bool: if `arg` starts with `sub`.
+    """
+    return arg.startswith(sub)
