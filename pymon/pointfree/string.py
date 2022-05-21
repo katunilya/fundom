@@ -176,3 +176,17 @@ def split(sep: str, arg: str) -> list[str]:
         list[str]: result of split.
     """
     return arg.split(sep)
+
+
+@hof1
+def startswith(sub: str, arg: str) -> bool:
+    """Point-free version of `str.startswith`.
+
+    Args:
+        sub (str): substring to check.
+        arg (str): to check in.
+
+    Returns:
+        bool: if `arg` starts with `sub`.
+    """
+    return arg.startswith(sub)
