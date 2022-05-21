@@ -1,6 +1,7 @@
 from typing import SupportsIndex
 
-from pymon.core import hof2, hof3
+from pymon.core import hof1, hof2, hof3
+from pymon.result.core import safe
 
 
 @hof2
@@ -27,3 +28,18 @@ def count(sub: bytes, arg: bytes) -> int:
         int: number of occurances of `pattern` in `arg`.
     """
     return arg.count(sub)
+
+
+@hof1
+@safe
+def decode(encoding: str, arg: bytes) -> str:
+    """Point-free version of `bytes.decode`.
+
+    Args:
+        encoding (str): to decode with.
+        arg (bytes): to decode.
+
+    Returns:
+        str | Exception: result.
+    """
+    return arg.decode(encoding)
