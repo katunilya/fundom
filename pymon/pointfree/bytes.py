@@ -117,3 +117,18 @@ def removesuffix(suffix: bytes, arg: bytes) -> bytes:
         bytes: without suffix if it is possuble.
     """
     return arg.removesuffix(suffix)
+
+
+@hof2
+def replace(old: bytes, new: bytes, arg: bytes) -> bytes:
+    """Point-free version of `bytes.replace`.
+
+    Args:
+        old (bytes): to replace.
+        new (bytes): to replace with.
+        arg (bytes): to replace in.
+
+    Returns:
+        bytes: result.
+    """
+    return arg.replace(old, new)
