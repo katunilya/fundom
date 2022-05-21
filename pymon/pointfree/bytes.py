@@ -160,3 +160,17 @@ def startswith(sub: bytes, arg: bytes) -> bool:
         bool: if `arg` starts with `sub`.
     """
     return arg.startswith(sub)
+
+
+@hof1
+def strip(chars: bytes, arg: bytes) -> bytes:
+    """Point-free version of `bytes.strip`.
+
+    Args:
+        chars (bytes): to strip.
+        arg (bytes): to strip from.
+
+    Returns:
+        bytes: result.
+    """
+    return arg.strip(chars)
