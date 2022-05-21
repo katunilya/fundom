@@ -132,3 +132,17 @@ def replace(old: bytes, new: bytes, arg: bytes) -> bytes:
         bytes: result.
     """
     return arg.replace(old, new)
+
+
+@hof1
+def split(sep: bytes, arg: bytes) -> list[bytes]:
+    """Point-free version of `bytes.split`.
+
+    Args:
+        sep (bytes): to split with.
+        arg (bytes): to split.
+
+    Returns:
+        list[bytes]: result of split.
+    """
+    return arg.split(sep)
