@@ -57,3 +57,35 @@ def endswith(sub: str, arg: str) -> bool:
         bool: if `arg` endswith `sub`.
     """
     return arg.endswith(sub)
+
+
+def find(sub: str, arg: str) -> int | None:
+    """Point-free maybe version of `str.find`.
+
+    Args:
+        sub (str): to serach.
+        arg (str): to search int.
+
+    Returns:
+        int | None: lowest index in arg where sub is found. `None` if nothing found.
+    """
+    match arg.find(sub):
+        case -1:
+            return None
+        case some:
+            return some
+
+
+@hof1
+@safe
+def index(sub: str, arg: str) -> int:
+    """Point-free version of `str.index`.
+
+    Args:
+        sub (str): to search.
+        arg (str): to search in.
+
+    Returns:
+        int: lowest index in arg where `sub` is found. Raises error if nothing found.
+    """
+    return arg.index(sub)
