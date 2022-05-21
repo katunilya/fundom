@@ -147,3 +147,18 @@ def removesuffix(suffix: str, arg: str) -> str:
         return string[:-len(suffix)]. Otherwise, return a copy of the original string:
     """
     return arg.removesuffix(suffix)
+
+
+@hof2
+def replace(old: str, new: str, arg: str) -> str:
+    """Point-free version of `str.replace`.
+
+    Args:
+        old (str): to replace.
+        new (str): to replace with.
+        arg (str): to replace in.
+
+    Returns:
+        str: result.
+    """
+    return arg.replace(old, new)
