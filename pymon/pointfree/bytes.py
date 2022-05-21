@@ -57,3 +57,20 @@ def endswith(sub: bytes, arg: bytes) -> bool:
         bool: if `arg` endswith `sub`.
     """
     return arg.endswith(sub)
+
+
+def find(sub: bytes, arg: bytes) -> int | None:
+    """Point-free maybe version of `bytes.find`.
+
+    Args:
+        sub (bytes): to serach.
+        arg (bytes): to search int.
+
+    Returns:
+        int | None: lowest index in arg where sub is found. `None` if nothing found.
+    """
+    match arg.find(sub):
+        case -1:
+            return None
+        case some:
+            return some
