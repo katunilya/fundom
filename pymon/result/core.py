@@ -57,14 +57,14 @@ def if_error_returns(replacement: V, value: T | TError) -> V | T:
 P = ParamSpec("P")
 
 
-def safe(func: Callable[P, V]) -> Callable[P, V | TError]:
+def safe(func: Callable[P, V]) -> Callable[P, V | Exception]:
     """Decorator for sync function that might raise an exception.
 
     Excepts exception and returns that instead.
     """
 
     @wraps(func)
-    def _wrapper(*args: P.args, **kwargs: P.kwargs) -> V | TError:
+    def _wrapper(*args: P.args, **kwargs: P.kwargs) -> V | Exception:
         try:
             return func(*args, **kwargs)
         except Exception() as err:
@@ -73,14 +73,16 @@ def safe(func: Callable[P, V]) -> Callable[P, V | TError]:
     return _wrapper
 
 
-def safe_async(func: Callable[P, Awaitable[V]]) -> Callable[P, Awaitable[V | TError]]:
+def safe_async(
+    func: Callable[P, Awaitable[V]]
+) -> Callable[P, Awaitable[V | Exception]]:
     """Decorator for async function that might raise an exception.
 
     Excepts exception and returns that instead.
     """
 
     @wraps(func)
-    async def _wrapper(*args: P.args, **kwargs: P.kwargs) -> V | TError:
+    async def _wrapper(*args: P.args, **kwargs: P.kwargs) -> V | Exception:
         try:
             return await func(*args, **kwargs)
         except Exception() as err:
