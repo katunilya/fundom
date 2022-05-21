@@ -103,3 +103,17 @@ def join_by(concatenator: str, arg: Iterable[str]) -> str:
         str: joined string.
     """
     return concatenator.join(arg)
+
+
+@hof1
+def join(iterable: Iterable[str], arg: str) -> str:
+    """Point-free version of `str.join`.
+
+    Args:
+        iterable (Iterable[str]): to join.
+        arg (str): to join with.
+
+    Returns:
+        str: joined string.
+    """
+    return arg.join(iterable)
