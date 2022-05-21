@@ -1,5 +1,7 @@
 from typing import Callable, SupportsIndex
 
+from pymon.core import hof3
+
 
 def center(width: SupportsIndex, fillchar: str = " ") -> Callable[[str], str]:
     """Point-free version of `str.center`.
@@ -10,12 +12,20 @@ def center(width: SupportsIndex, fillchar: str = " ") -> Callable[[str], str]:
     return lambda data: data.center(width, fillchar)
 
 
-def count(
-    pattern: str, start: SupportsIndex | None = ..., end: SupportsIndex | None = ...
-) -> Callable[[str], int]:
+@hof3
+def count(pattern: str, start: SupportsIndex, end: SupportsIndex, arg: str) -> int:
     """Point-free version of `str.count`.
 
     Return the number of non-overlapping occurrences of substring sub in string
     S[start:end]. Optional arguments start and end are interpreted as in slice notation.
+
+    Args:
+        pattern (str): what to count.
+        start (SupportsIndex): where to start (as slice).
+        end (SupportsIndex): where to end (as slice).
+        arg (str): to count in.
+
+    Returns:
+        int: number of occurances of `pattern` in `arg`.
     """
-    return lambda data: data.count(pattern, start, end)
+    return arg.count(pattern, start, end)
