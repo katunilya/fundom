@@ -103,3 +103,17 @@ def removeprefix(prefix: bytes, arg: bytes) -> bytes:
         bytes: without prefix if it is possible.
     """
     return arg.removeprefix(prefix)
+
+
+@hof1
+def removesuffix(suffix: bytes, arg: bytes) -> bytes:
+    """Point-free version of `bytes.removesuffix`.
+
+    Args:
+        suffix (bytes): to remove.
+        arg (bytes): to remove from.
+
+    Returns:
+        bytes: without suffix if it is possuble.
+    """
+    return arg.removesuffix(suffix)
