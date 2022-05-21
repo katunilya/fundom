@@ -1,15 +1,21 @@
-from typing import Callable, SupportsIndex
+from typing import SupportsIndex
 
-from pymon.core import hof3
+from pymon.core import hof2, hof3
 
 
-def center(width: SupportsIndex, fillchar: str = " ") -> Callable[[str], str]:
+@hof2
+def center(length: SupportsIndex, fillchar: str, arg: str) -> str:
     """Point-free version of `str.center`.
 
     Return a centered string of length width. Padding is done using the specified fill
     character (default is a space).
+
+    Args:
+        length (SupportsIndex): of result string.
+        fillchar (str): to fill `str`  around.
+        arg (str): to centralize.
     """
-    return lambda data: data.center(width, fillchar)
+    return arg.center(length, fillchar)
 
 
 @hof3
