@@ -89,3 +89,17 @@ def index(sub: bytes, arg: bytes) -> int:
         int: lowest index in arg where `sub` is found. Raises error if nothing found.
     """
     return arg.index(sub)
+
+
+@hof1
+def removeprefix(prefix: bytes, arg: bytes) -> bytes:
+    """Point-free version of `bytes.removeprefix`.
+
+    Args:
+        prefix (bytes): to remove.
+        arg (bytes): to remove from.
+
+    Returns:
+        bytes: without prefix if it is possible.
+    """
+    return arg.removeprefix(prefix)
