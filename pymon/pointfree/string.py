@@ -1,4 +1,4 @@
-from typing import SupportsIndex
+from typing import Iterable, SupportsIndex
 
 from pymon.core import hof1, hof2, hof3
 from pymon.result import safe
@@ -89,3 +89,17 @@ def index(sub: str, arg: str) -> int:
         int: lowest index in arg where `sub` is found. Raises error if nothing found.
     """
     return arg.index(sub)
+
+
+@hof1
+def join_by(concatenator: str, arg: Iterable[str]) -> str:
+    """Join incoming `Iterable[str]` by some `concatenatror`.
+
+    Args:
+        concatenator (str): to join with.
+        arg (Iterable[str]): to be joined.
+
+    Returns:
+        str: joined string.
+    """
+    return concatenator.join(arg)
