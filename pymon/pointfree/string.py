@@ -162,3 +162,17 @@ def replace(old: str, new: str, arg: str) -> str:
         str: result.
     """
     return arg.replace(old, new)
+
+
+@hof1
+def split(sep: str, arg: str) -> list[str]:
+    """Point-free version of `str.split`.
+
+    Args:
+        sep (str): to split with.
+        arg (str): to split.
+
+    Returns:
+        list[str]: result of split.
+    """
+    return arg.split(sep)
