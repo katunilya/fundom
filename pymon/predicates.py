@@ -33,3 +33,8 @@ TSized = TypeVar("TSized", bound=Sized)
 def is_empty(obj: TSized) -> bool:
     """If `obj` is empty."""
     return len(obj) == 0
+
+
+def is_not_empty(obj: TSized) -> bool:
+    """If `obj` is not empty."""
+    return len(obj) != 0
