@@ -1,9 +1,8 @@
 # ▶️ pymon
 
-`pymon` is a set of simple common monads for writing safe, maintainable and
-pipeline-based code in Python3.10+.
+`pymon` is an API for writing functional pipelines with Python3.10+.
 
-## Monads API
+## Basics
 
 ### `Pipe` and `Future`
 
@@ -38,12 +37,40 @@ result = (
 )
 ```
 
+> Type hints are available. VS Code for example evaluates that the result is
+> `int` for this pipeline.
+
+Also `Pipe` supports `>>` and `<<` operators for executing async and sync
+functions:
+
+```python
+result = (
+  Pipe(3)
+  << (lambda x: x + 1)
+  << (lambda x: x * 2)
+).finish()
+```
+
 `finish` method is needed to return wrapped into `Pipe` container value, as on
 each `then` step value returned by passed function is wrapped into `Pipe`
 container for further chaining.
 
-> Type hints are available. VS Code for example evaluates that the result is
-> `int` for this pipeline.
+If your function returns `Pipe` objecct that to unpack that one can use
+`@pipeline` decorator.
+
+```python
+@pipeline
+def parse_http_query(query: bytes) -> dict:
+  return (
+    Pipe(query)
+    << some_when(is_not_emtpy)
+    << if_some(bytes_decode("UTF-8"))
+    << if_some(str_split("&"))
+    << if_some(cmap(str_split("=")))
+    << if_some(dict)
+    << if_none(returns({}))
+  )
+```
 
 However this limits us to working with synchronous functions only. What if we
 want to work with asynchronous functions (and event in synchronous context)? For
@@ -59,9 +86,22 @@ result = await (
   .then_async(this_async)  # returns Future
   .then(lambda x: x + 1)
   .then(lambda x: x * 2)
-  .finish()  # completely optional as Future is awaitable by itself
 )
 ```
+
+Like `Pipe` supports `>>` and `<<` operators for executing functions.
+
+```python
+result = await (
+  Pipe(3)
+  >> this_async  # returns Future
+  << (lambda x: x + 1)
+  << (lambda x: x * 2)
+)
+```
+
+`Future` does not have `finish` method like `Pipe` as it is awaitable and in
+some sense it has built-in unpacking keyword - `await`.
 
 Basically the way this containers map to each other looks like this. While we
 work with `Pipe` and sync functions we use `then` and remain in `Pipe` context.
@@ -78,12 +118,6 @@ graph LR;
   future --then--> future
   future --then_async--> future
 ```
-
-These are 2 containers that provide this text-like pipelines to Python world.
-They might seem a bit verbous and as a concept I studied if some operators could
-be overloaded to achieve prettier result, however it might make code less
-understandable to other developers as behavior of `>>` or `<<` might be
-completely non-obvious.
 
 #### But why only one argument functions are supported?
 
@@ -111,27 +145,26 @@ I consider it is a matter of personal preference which way to stick to, but I
 prefer the last option. In many cases it is not that difficult and hard to write
 a few more lines of code somewhere outside.
 
-Also as some incomplete curring shortcut several decorators provided - `hof_2`,
-`hof_3`, `hof_4` and `hof_5`. This decorators convert function with X arguments
-into Highter-Order Function with X-1 arguments and returns `Pipe`-ready
-function.
+Also as some incomplete curring shortcut several decorators provided - `hof1`,
+`hof2` and `hof3`. This decorators separate first X (1, 2 or 3 correspondingly)
+arguments of function with other.
 
 ```python
-@hof_2
+@hof1
 def split(separator: str, data: str) -> list[str]:
   return data.split(separator)
 
-@hof_2
+@hof1
 def encode(encoding: str, data: str) -> bytes:
   return data.encode(encoding)
 
 result = (
   Pipe("Hello, world!")
-  .then(split(" "))
-  .then(cmap(encode("UTF-8")))
-  .then(list)
-  .finish()
-)
+  << split(" ")
+  << cmap(encode("UTF-8"))
+  << list
+).finish()
+
 # same as
 result = list(map(lambda s: s.encode("UTF-8"), "Hello, World!".split(" ")))
 ```
@@ -139,7 +172,7 @@ result = list(map(lambda s: s.encode("UTF-8"), "Hello, World!".split(" ")))
 In this way actually any function with multiple arguments can become
 singleargument function without lossing type hints.
 
-#### Why 5 is max number of arguments for function?
+#### Why 3 is max number of arguments for function to put in HOF?
 
 I consider that if you have more than 3 arguments for your function than this
 function is bad and data structures you use are bad. They are complex and make
@@ -150,55 +183,6 @@ it hard to write truly declarative code.
 Valid suggestion, however this makes args projections between chained functions
 much more complex and you can'y easily convert function to HOF.
 
-### `Composition` and `AsyncComposition`
-
-Function Composition is also one important tool in Functional Programming. To
-provide nice, clean and type-safe way to do that `Composition` and
-`AsyncComposition` abstractions are provided. These classes abstract sync and
-async functions and extend them with additional `chain` and `chain_async`
-functions for composing both sync and async functions. They relate to each other
-pretty much like `Pipe` and `Future`:
-
-```mermaid
-graph LR;
-  s(Composition)
-  a(AsyncComposition)
-
-  s --chain--> s
-  s --chain_async--> a
-  a --chain--> a
-  a --chain_async--> a
-```
-
-For easier syntx there are also decorators for functions:
-
-- `composable`
-- `async_composable`
-- `composable_hof_2`
-- `composable_hof_3`
-- `composable_hof_4`
-- `composable_hof_5`
-- `async_composable_hof_2`
-- `async_composable_hof_3`
-- `async_composable_hof_4`
-- `async_composable_hof_5`
-
-Decorators that combine `composable` and `hof` do not make HOF composable, but
-make the returned by `hof` function composable.
-
-```python
-query = b"name=John&age=32"
-
-parse_query = (
-    composable(lambda b: b.decode("UTF-8"))
-    .chain(lambda s: s.split("&"))
-    .chain(cmap(lambda s: s.split("=")))
-    .chain(dict)
-)
-
-print(parse_query(query))  # {'name': 'John', 'age': '32'}
-```
-
 #### Some common HOFs
 
 There are multiple common HOF composable functions:
@@ -207,3 +191,37 @@ There are multiple common HOF composable functions:
 - `creducer` - curried reduce right
 - `cmap` - curried map
 - `cfilter` - curried filter
+
+#### Some common point-free utilities
+
+Point-free means that function is not used with "dot notation" (like method).
+
+- for `str`
+  - `str_center` - point-free `str.center`
+  - `str_count` - point-free `str.count`
+  - `str_encode` - point-free `str.encode`
+  - `str_endswith` - point-free `str.endswith`
+  - `str_find` - point-free `str.find`
+  - `str_index` - point-free `str.index`
+  - `str_removeprefix` - point-free `str.removeprefix`
+  - `str_removesuffix` - point-free `str.removesuffix`
+  - `str_replace` - point-free `str.replace`
+  - `str_split` - point-free `str.split`
+  - `str_startswith` - point-free `str.startswith`
+  - `str_strip` - point-free `str.strip`
+- for `bytes`
+  - `bytes_center` - point-free `bytes.center`
+  - `bytes_count` - point-free `bytes.count`
+  - `bytes_decode` - point-free `bytes.decode`
+  - `bytes_endswith` - point-free `bytes.endswith`
+  - `bytes_find` - point-free `bytes.find`
+  - `bytes_index` - point-free `bytes.index`
+  - `bytes_removeprefix` - point-free `bytes.removeprefix`
+  - `bytes_removesuffix` - point-free `bytes.removesuffix`
+  - `bytes_replace` - point-free `bytes.replace`
+  - `bytes_split` - point-free `bytes.split`
+  - `bytes_startswith` - point-free `bytes.startswith`
+  - `bytes_strip` - point-free `bytes.strip`
+- for `dict`
+  - `dict_maybe_get` - point-free `dict.get(key, None)`
+  - `dict_try_get` - point-free `dict[key]`
