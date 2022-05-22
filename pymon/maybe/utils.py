@@ -2,24 +2,6 @@ from typing import Callable, TypeVar
 
 from pymon.core import hof1
 
-TKey = TypeVar("TKey")
-TValue = TypeVar("TValue")
-
-
-@hof1
-def maybe_get(key: TKey, dct: dict[TKey, TValue]) -> TValue | None:
-    """Maybe get some value from dictionary.
-
-    Args:
-        key (TKey): of dict.
-        dct (dict[TKey, TValue]): dictionary.
-
-    Returns:
-        TValue | None: value of key if one is present.
-    """
-    return dct.get(key, None)
-
-
 T = TypeVar("T")
 
 
