@@ -23,17 +23,3 @@ def try_get(key: TKey, arg: dict[TKey, TValue]) -> TValue:
         TValue: value.
     """
     return arg[key]
-
-
-@hof1
-def maybe_get(key: TKey, arg: dict[TKey, TValue]) -> TValue | None:
-    """Point-free versuib if `dict.get` with default `None`.
-
-    Args:
-        key (TKey): to get.
-        arg (dict[TKey,TValue]): to get from.
-
-    Returns:
-        TValue | None: value.
-    """
-    return arg.get(key, None)
