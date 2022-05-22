@@ -1,0 +1,25 @@
+from typing import TypeVar
+
+from pymon.core import hof1
+from pymon.result.core import safe
+
+TKey = TypeVar("TKey")
+TValue = TypeVar("TValue")
+
+
+@hof1
+@safe
+def try_get(key: TKey, arg: dict[TKey, TValue]) -> TValue:
+    """Point-free version of `dict[key]`.
+
+    Error-safe, returns `KeyError` in case key is not present and  `__missing__()` is
+    not provided.
+
+    Args:
+        key (TKey): to get.
+        arg (dict[TKey, TValue]): to get from.
+
+    Returns:
+        TValue: value.
+    """
+    return arg[key]
