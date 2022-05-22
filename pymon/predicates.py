@@ -1,4 +1,4 @@
-from typing import Iterable
+from typing import Iterable, Sized, TypeVar
 
 from pymon.core import hof1
 
@@ -25,3 +25,11 @@ def len_less_or_equals(length: int, iterable: Iterable) -> bool:
 def len_more_or_equals(length: int, iterable: Iterable) -> bool:
     """If `iterable` length is more or equals `length`."""
     return len(iterable) >= length
+
+
+TSized = TypeVar("TSized", bound=Sized)
+
+
+def is_empty(obj: TSized) -> bool:
+    """If `obj` is empty."""
+    return len(obj) == 0
