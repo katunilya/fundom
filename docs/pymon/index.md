@@ -5,5 +5,7 @@
 - [Pymon](../README.md#-pymon) / [Modules](../MODULES.md#pymon-modules) / Pymon
     - Modules
         - [Core](core.md#core)
-        - [Maybe](maybe/index.md#maybe)
-        - [Result](result/index.md#result)
+        - [Maybe](maybe.md#maybe)
+        - [Pointfree](pointfree/index.md#pointfree)
+        - [Predicates](predicates.md#predicates)
+        - [Result](result.md#result)
