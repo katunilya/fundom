@@ -8,11 +8,11 @@ T = TypeVar("T")
 TError = TypeVar("TError", bound=Exception)
 
 
-def if_ok(func: Callable[[T], V]) -> Callable[[T | TError], V]:
+def if_ok(func: Callable[[T], V]):
     """Decorateor that protects function from being executed on `Exception` value."""
 
     @wraps(func)
-    def _wrapper(t: T | TError) -> V:
+    def _wrapper(t: T) -> V:
         match t:
             case Exception():
                 return t
@@ -22,11 +22,11 @@ def if_ok(func: Callable[[T], V]) -> Callable[[T | TError], V]:
     return _wrapper
 
 
-def if_error(func: Callable[[TError], V]) -> Callable[[T | TError], T | V]:
+def if_error(func: Callable[[T], V]):
     """Decorator that executes some function only on `Exception` input."""
 
     @wraps(func)
-    def _wrapper(t: T | TError) -> T | V:
+    def _wrapper(t: T) -> V | Exception:
         match t:
             case Exception():
                 return func(t)
@@ -37,7 +37,7 @@ def if_error(func: Callable[[TError], V]) -> Callable[[T | TError], T | V]:
 
 
 @hof1
-def if_error_returns(replacement: V, value: T | TError) -> V | T:
+def if_error_returns(replacement: V, value: T) -> V | T:
     """Replace `value` with `replacement` if one is `Exception`.
 
     Args:
