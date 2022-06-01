@@ -62,7 +62,7 @@ def some_when(predicate: Callable[[T], bool], data: T) -> T | None:
         data (T): to process.
 
     Returns:
-        T | None: retult.
+        T | None: result.
     """
     match predicate(data):
         case True:
