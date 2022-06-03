@@ -10,6 +10,7 @@ from .core import (
     hof3,
     returns,
     returns_async,
+    returns_future,
     this,
     this_async,
 )
