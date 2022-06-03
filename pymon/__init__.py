@@ -8,6 +8,7 @@ from .core import (
     hof1,
     hof2,
     hof3,
+    pipeline,
     returns,
     returns_async,
     returns_future,
