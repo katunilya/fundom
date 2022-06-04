@@ -3,16 +3,113 @@
 > Auto-generated documentation for [pymon.result](https://github.com/katunilya/pymon/blob/main/pymon/result.py) module.
 
 - [Pymon](../README.md#-pymon) / [Modules](../MODULES.md#pymon-modules) / [Pymon](index.md#pymon) / Result
+    - [PolicyViolationError](#policyviolationerror)
+    - [check](#check)
+    - [check_future](#check_future)
+    - [choose_ok](#choose_ok)
+    - [choose_ok_future](#choose_ok_future)
     - [if_error](#if_error)
     - [if_error_returns](#if_error_returns)
     - [if_ok](#if_ok)
     - [ok_when](#ok_when)
+    - [ok_when_future](#ok_when_future)
     - [safe](#safe)
-    - [safe_async](#safe_async)
+    - [safe_future](#safe_future)
+
+## PolicyViolationError
+
+[[find in source code]](https://github.com/katunilya/pymon/blob/main/pymon/result.py#L137)
+
+```python
+dataclass(slots=True, frozen=True)
+class PolicyViolationError(Exception):
+```
+
+Exception that marks that policy is violated.
+
+## check
+
+[[find in source code]](https://github.com/katunilya/pymon/blob/main/pymon/result.py#L143)
+
+```python
+def check(predicate: Callable[P, bool]) -> T | PolicyViolationError:
+```
+
+Pass value next only if predicate is True, otherwise policy is violated.
+
+#### Arguments
+
+- `predicate` *Predicate[T]* - to check.
+
+#### Returns
+
+T | PolicyViolationError: result
+
+#### See also
+
+- [P](#p)
+
+## check_future
+
+[[find in source code]](https://github.com/katunilya/pymon/blob/main/pymon/result.py#L155)
+
+```python
+def check_future(
+    predicate: Callable[P, Awaitable[bool]],
+) -> Future[T] | Future[PolicyViolationError]:
+```
+
+Pass value next only if predicate is True, otherwise policy is violated.
+
+#### Arguments
+
+predicate (Callable[P, Future[bool]]): to check.
+
+#### Returns
+
+Future[T] | Future[PolicyViolationError]: result.
+
+#### See also
+
+- [P](#p)
+
+## choose_ok
+
+[[find in source code]](https://github.com/katunilya/pymon/blob/main/pymon/result.py#L169)
+
+```python
+def choose_ok(*funcs: Callable[[T], V | TError]) -> Callable[[T], V | TError]:
+```
+
+Combines multiple sync functions that might return error into one.
+
+Result of the first function to return non-Exception result is returned.
+
+#### See also
+
+- [T](#t)
+
+## choose_ok_future
+
+[[find in source code]](https://github.com/katunilya/pymon/blob/main/pymon/result.py#L190)
+
+```python
+def choose_ok_future(
+    *funcs: Callable[[T], Future[V | TError]],
+) -> Callable[[T], Future[V | TError]]:
+```
+
+Combines multiple async functions that might return error into one.
+
+Result of the first function to return non-Exception result is returned.
+
+#### See also
+
+- [T](#t)
 
 ## if_error
 
-[[find in source code]](https://github.com/katunilya/pymon/blob/main/pymon/result.py#L25)
+[[find in source code]](https://github.com/katunilya/pymon/blob/main/pymon/result.py#L26)
 
 ```python
 def if_error(func: Callable[[T], V]):
@@ -27,7 +124,7 @@ Decorator that executes some function only on `Exception` input.
 
 ## if_error_returns
 
-[[find in source code]](https://github.com/katunilya/pymon/blob/main/pymon/result.py#L39)
+[[find in source code]](https://github.com/katunilya/pymon/blob/main/pymon/result.py#L40)
 
 ```python
 @hof1
@@ -53,13 +150,13 @@ V | T: error-safe result.
 
 ## if_ok
 
-[[find in source code]](https://github.com/katunilya/pymon/blob/main/pymon/result.py#L11)
+[[find in source code]](https://github.com/katunilya/pymon/blob/main/pymon/result.py#L12)
 
 ```python
 def if_ok(func: Callable[[T], V]):
 ```
 
-Decorateor that protects function from being executed on `Exception` value.
+Decorator that protects function from being executed on `Exception` value.
 
 #### See also
 
@@ -71,6 +168,7 @@ Decorateor that protects function from being executed on `Exception` value.
 [[find in source code]](https://github.com/katunilya/pymon/blob/main/pymon/result.py#L94)
 
 ```python
+@hof2
 def ok_when(
     predicate: Callable[[T], bool],
     error: TError,
@@ -94,10 +192,42 @@ T | TError: result.
 
 - [TError](#terror)
 - [T](#t)
+- [hof2](core.md#hof2)
+
+## ok_when_future
+
+[[find in source code]](https://github.com/katunilya/pymon/blob/main/pymon/result.py#L119)
+
+```python
+@hof2
+def ok_when_future(
+    predicate: Callable[[T], Awaitable[bool]],
+    error: TError,
+    value: T,
+) -> Future[T] | Future[TError]:
+```
+
+Pass value only if async predicate is True, otherwise return error.
+
+#### Arguments
+
+predicate (Callable[[T], bool]): to fulfill.
+- `error` *TError* - to replace with.
+- `value` *T* - to process.
+
+#### Returns
+
+Future[T] | Future[TError]: result.
+
+#### See also
+
+- [TError](#terror)
+- [T](#t)
+- [hof2](core.md#hof2)
 
 ## safe
 
-[[find in source code]](https://github.com/katunilya/pymon/blob/main/pymon/result.py#L60)
+[[find in source code]](https://github.com/katunilya/pymon/blob/main/pymon/result.py#L61)
 
 ```python
 def safe(func: Callable[P, V]) -> Callable[P, V | Exception]:
@@ -112,14 +242,14 @@ Excepts exception and returns that instead.
 - [P](#p)
 - [V](#v)
 
-## safe_async
+## safe_future
 
-[[find in source code]](https://github.com/katunilya/pymon/blob/main/pymon/result.py#L76)
+[[find in source code]](https://github.com/katunilya/pymon/blob/main/pymon/result.py#L77)
 
 ```python
-def safe_async(
+def safe_future(
     func: Callable[P, Awaitable[V]],
-) -> Callable[P, Awaitable[V | Exception]]:
+) -> Callable[P, Future[V | TError]]:
 ```
 
 Decorator for async function that might raise an exception.
