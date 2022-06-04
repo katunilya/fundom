@@ -181,6 +181,41 @@ def returns_async(x: T) -> Callable[P, Future[T]]:
     return _returns_async
 
 
+@dataclass(slots=True, frozen=True)
+class Func(Generic[P, V]):
+    """Function composition abstraction."""
+
+    func: Callable[P, V] = this
+
+    def __call__(self, *args: P.args, **kwds: P.kwargs) -> V:  # noqa
+        return self.func(*args, **kwds)
+
+    def __lshift__(self, other: Callable[[V], U]) -> Func[P, U]:
+        def composition(*args: P.args, **kwargs: P.kwargs) -> U:
+            match self.func(*args, **kwargs):
+                case Future() as future:
+                    return future << other
+                case value:
+                    return other(value)
+
+        return Func(composition)
+
+    def __rshift__(self, other: Callable[[V], Future[U]]) -> Func[P, Future[U]]:
+        def composition(*args: P.args, **kwargs: P.kwargs) -> Future[U]:
+            match self.func(*args, **kwargs):
+                case Future() as future:
+                    return future >> other
+                case value:
+                    return other(value)
+
+        return Func(composition)
+
+
+def func(func: Callable[P, V]) -> Func[P, V]:
+    """Decorator for making functions composable."""
+    return Func(func)
+
+
 # curring utils
 
 A1 = TypeVar("A1")
@@ -281,38 +316,3 @@ def cfilter(predicate: Callable[[A1], bool], lst: Iterable[A1]) -> Iterable[A1]:
         Iterable[A1]: filtered iterable.
     """
     return filter(predicate, lst)
-
-
-@dataclass(slots=True, frozen=True)
-class Func(Generic[P, V]):
-    """Function composition abstraction."""
-
-    func: Callable[P, V] = this
-
-    def __call__(self, *args: P.args, **kwds: P.kwargs) -> V:  # noqa
-        return self.func(*args, **kwds)
-
-    def __lshift__(self, other: Callable[[V], U]) -> Func[P, U]:
-        def composition(*args: P.args, **kwargs: P.kwargs) -> U:
-            match self.func(*args, **kwargs):
-                case Future() as future:
-                    return future << other
-                case value:
-                    return other(value)
-
-        return Func(composition)
-
-    def __rshift__(self, other: Callable[[V], Future[U]]) -> Func[P, Future[U]]:
-        def composition(*args: P.args, **kwargs: P.kwargs) -> Future[U]:
-            match self.func(*args, **kwargs):
-                case Future() as future:
-                    return future >> other
-                case value:
-                    return other(value)
-
-        return Func(composition)
-
-
-def func(func: Callable[P, V]) -> Func[P, V]:
-    """Decorator for making functions composable."""
-    return Func(func)
