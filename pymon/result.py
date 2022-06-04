@@ -89,3 +89,21 @@ def safe_async(
             return err
 
     return _wrapper
+
+
+def ok_when(predicate: Callable[[T], bool], error: TError, value: T) -> T | TError:
+    """Pass value only if predicate is True, otherwise return error.
+
+    Args:
+        predicate (Callable[[T], bool]): to fulfill.
+        error (TError): to replace with.
+        value (T): to process.
+
+    Returns:
+        T | TError: result.
+    """
+    match predicate(value):
+        case True:
+            return value
+        case False:
+            return error
