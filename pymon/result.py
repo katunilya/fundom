@@ -1,7 +1,9 @@
+from dataclasses import dataclass
 from functools import wraps
 from typing import Awaitable, Callable, ParamSpec, TypeVar
 
 from pymon.core import hof1
+from pymon.predicate import Predicate
 
 V = TypeVar("V")
 T = TypeVar("T")
@@ -107,3 +109,22 @@ def ok_when(predicate: Callable[[T], bool], error: TError, value: T) -> T | TErr
             return value
         case False:
             return error
+
+
+@dataclass(slots=True, frozen=True)
+class PolicyViolationError(Exception):
+    """Exception that marks that policy is violated."""
+
+    message: str
+
+
+def check(predicate: Predicate[T]) -> T | PolicyViolationError:
+    """Pass value next only if predicate is True, otherwise policy is violated.
+
+    Args:
+        predicate (Predicate[T]): to check.
+
+    Returns:
+        T | PolicyViolationError: result
+    """
+    return ok_when(predicate, PolicyViolationError(message=str(predicate)))
