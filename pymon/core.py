@@ -73,7 +73,7 @@ class Future(Generic[T]):
 
 
 def returns_future(func: Callable[P, T]):
-    """Wraps  returned value of async function to `Future`."""
+    """Wraps returned value of async function to `Future`."""
 
     @wraps(func)
     def wrapper(*args: P.args, **kwargs: P.kwargs) -> Future[T]:
