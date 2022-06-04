@@ -24,6 +24,7 @@ class Future(Generic[T]):
     """Abstraction over awaitable value to run in pipeline.
 
     Example::
+
             result = await (
                 Future(get_user_async)
                 << if_role_is("moderator")
@@ -73,7 +74,7 @@ class Future(Generic[T]):
 
 
 def returns_future(func: Callable[P, T]):
-    """Wraps  returned value of async function to `Future`."""
+    """Wraps returned value of async function to `Future`."""
 
     @wraps(func)
     def wrapper(*args: P.args, **kwargs: P.kwargs) -> Future[T]:
@@ -91,6 +92,7 @@ class Pipe(Generic[T]):
     """Abstraction over some value to run in pipeline.
 
     Example::
+
             result: int = (
                 Pipe(12)
                 << (lambda x: x + 1)
@@ -154,7 +156,7 @@ def pipeline(func: Callable[P, Pipe[T]]) -> Callable[P, T]:
 
 
 def this(x: T) -> T:
-    """Syncronous identity function."""
+    """Synchronous identity function."""
     return x
 
 
