@@ -34,6 +34,11 @@ class Predicate(Callable[[T], bool]):
         return self._invert()
 
 
+def predicate(func: Callable[[T], bool]) -> Predicate[T]:
+    """Makes function composable `Predicate` instance."""
+    return Predicate(func)
+
+
 @hof1
 def len_more_then(length: int, iterable: Iterable) -> bool:
     """If `iterable` length is strictly more than `length`."""
