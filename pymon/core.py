@@ -24,6 +24,7 @@ class Future(Generic[T]):
     """Abstraction over awaitable value to run in pipeline.
 
     Example::
+
             result = await (
                 Future(get_user_async)
                 << if_role_is("moderator")
@@ -73,7 +74,7 @@ class Future(Generic[T]):
 
 
 def returns_future(func: Callable[P, T]):
-    """Wraps  returned value of async function to `Future`."""
+    """Wraps returned value of async function to `Future`."""
 
     @wraps(func)
     def wrapper(*args: P.args, **kwargs: P.kwargs) -> Future[T]:
@@ -91,6 +92,7 @@ class Pipe(Generic[T]):
     """Abstraction over some value to run in pipeline.
 
     Example::
+
             result: int = (
                 Pipe(12)
                 << (lambda x: x + 1)
@@ -154,7 +156,7 @@ def pipeline(func: Callable[P, Pipe[T]]) -> Callable[P, T]:
 
 
 def this(x: T) -> T:
-    """Syncronous identity function."""
+    """Synchronous identity function."""
     return x
 
 
@@ -181,6 +183,60 @@ def returns_async(x: T) -> Callable[P, Future[T]]:
     return _returns_async
 
 
+@dataclass(slots=True, frozen=True)
+class FutureFunc(Generic[P, V]):
+    """Abstraction over async function."""
+
+    func: Callable[P, Awaitable[V]] = this
+
+    def __call__(self, *args: P.args, **kwds: P.kwargs) -> Future[V]:  # noqa
+        return Future(self.func(*args, **kwds))
+
+    def __lshift__(self, other: Callable[[V], U]) -> FutureFunc[P, U]:
+        def composition(*args: P.args, **kwargs: P.kwargs) -> U:
+            return self.__call__(*args, **kwargs) << other
+
+        return FutureFunc(composition)
+
+    def __rshift__(self, other: Callable[[V], Awaitable[U]]) -> FutureFunc[P, U]:
+        def composition(*args: P.args, **kwargs: P.kwargs) -> Future[U]:
+            return self.__call__(*args, **kwargs) >> other
+
+        return FutureFunc(composition)
+
+
+@dataclass(slots=True, frozen=True)
+class Func(Generic[P, V]):
+    """Function composition abstraction."""
+
+    func: Callable[P, V] = this
+
+    def __call__(self, *args: P.args, **kwds: P.kwargs) -> V:  # noqa
+        return self.func(*args, **kwds)
+
+    def __lshift__(self, other: Callable[[V], U]) -> Func[P, U]:
+        def composition(*args: P.args, **kwargs: P.kwargs) -> U:
+            return other(self.__call__(*args, **kwargs))
+
+        return Func(composition)
+
+    def __rshift__(self, other: Callable[[V], Awaitable[U]]) -> FutureFunc[P, U]:
+        def composition(*args: P.args, **kwargs: P.kwargs) -> Awaitable[U]:
+            return other(self.__call__(*args, **kwargs))
+
+        return FutureFunc(composition)
+
+
+def func(func: Callable[P, V]) -> Func[P, V]:
+    """Decorator for making functions composable."""
+    return Func(func)
+
+
+def future_func(func: Callable[P, Awaitable[V]]) -> FutureFunc[P, V]:
+    """Decorator for making async functions composable."""
+    return FutureFunc(func)
+
+
 # curring utils
 
 A1 = TypeVar("A1")
@@ -189,36 +245,45 @@ A3 = TypeVar("A3")
 AResult = TypeVar("AResult")
 
 
-def hof1(func: Callable[Concatenate[A1, P], AResult]):
+def hof1(f: Callable[Concatenate[A1, P], AResult]):
     """Separate first argument from other."""
 
+    @func
+    @wraps(f)
     def _wrapper(arg_1: A1) -> Callable[P, AResult]:
+        @func
         def _func(*args: P.args, **kwargs: P.kwargs) -> AResult:
-            return func(arg_1, *args, **kwargs)
+            return f(arg_1, *args, **kwargs)
 
         return _func
 
     return _wrapper
 
 
-def hof2(func: Callable[Concatenate[A1, A2, P], AResult]):
+def hof2(f: Callable[Concatenate[A1, A2, P], AResult]):
     """Separate first 2 arguments from other."""
 
+    @func
+    @wraps(f)
     def _wrapper(arg_1: A1, arg_2: A2) -> Callable[P, AResult]:
+        @func
         def _func(*args: P.args, **kwargs: P.kwargs) -> AResult:
-            return func(arg_1, arg_2, *args, **kwargs)
+            return f(arg_1, arg_2, *args, **kwargs)
 
         return _func
 
     return _wrapper
 
 
-def hof3(func: Callable[Concatenate[A1, A2, A3, P], AResult]):
+def hof3(f: Callable[Concatenate[A1, A2, A3, P], AResult]):
     """Separate first 3 arguments from other."""
 
+    @func
+    @wraps(f)
     def _wrapper(arg_1: A1, arg_2: A2, arg_3: A3) -> Callable[P, AResult]:
+        @func
         def _func(*args: P.args, **kwargs: P.kwargs) -> AResult:
-            return func(arg_1, arg_2, arg_3, *args, **kwargs)
+            return f(arg_1, arg_2, arg_3, *args, **kwargs)
 
         return _func
 
