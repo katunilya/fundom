@@ -24,6 +24,7 @@ class Future(Generic[T]):
     """Abstraction over awaitable value to run in pipeline.
 
     Example::
+
             result = await (
                 Future(get_user_async)
                 << if_role_is("moderator")
