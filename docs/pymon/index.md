@@ -7,5 +7,5 @@
         - [Core](core.md#core)
         - [Maybe](maybe.md#maybe)
         - [Pointfree](pointfree/index.md#pointfree)
-        - [Predicates](predicates.md#predicates)
+        - [Predicate](predicate.md#predicate)
         - [Result](result.md#result)
