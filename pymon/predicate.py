@@ -1,34 +1,112 @@
-from dataclasses import dataclass
-from typing import Callable, Iterable, ParamSpec, Sized, TypeVar
+from __future__ import annotations
 
-from pymon.core import Func, Future
+from dataclasses import dataclass
+from typing import Awaitable, Callable, Iterable, ParamSpec, Sized, TypeVar
+
+from pymon.core import Func, FutureFunc
 
 P = ParamSpec("P")
-TBool = TypeVar("TBool", bool, Future[bool])
+
+
+class FuturePredicate(FutureFunc[P, bool]):
+    """Abstraction over async predicates."""
+
+    func: Callable[P, Awaitable[bool]]
+
+    def __mul__(self, other: Callable[P, bool]) -> FuturePredicate[P]:
+        def _mul(other: Callable[P, Awaitable[bool]]):
+            async def __mul(*args: P.args, **kwargs: P.kwargs) -> bool:
+                return await self.func(*args, **kwargs) and other(*args, **kwargs)
+
+            return __mul
+
+        return FuturePredicate(_mul(other))
+
+    def __add__(self, other: Callable[P, bool]) -> FuturePredicate[P]:
+        def _add(other: Callable[P, Awaitable[bool]]):
+            async def __add(*args: P.args, **kwargs: P.kwargs) -> bool:
+                return await self.func(*args, **kwargs) or other(*args, **kwargs)
+
+            return __add
+
+        return FuturePredicate(_add(other))
+
+    def __and__(self, other: Callable[P, Awaitable[bool]]) -> FuturePredicate[P]:
+        def _and(other: Callable[P, Awaitable[bool]]):
+            async def __and(*args: P.args, **kwargs: P.kwargs) -> bool:
+                return await self.func(*args, **kwargs) and await other(*args, **kwargs)
+
+            return __and
+
+        return FuturePredicate(_and(other))
+
+    def __or__(self, other: Callable[P, Awaitable[bool]]) -> Predicate[P]:
+        def _or(other: Callable[P, Awaitable[bool]]):
+            async def __or(*args: P.args, **kwargs: P.kwargs) -> bool:
+                return await self.func(*args, **kwargs) or await other(*args, **kwargs)
+
+            return __or
+
+        return FuturePredicate(_or(other))
+
+    def __invert__(self) -> FuturePredicate[P]:
+        async def _invert(*args, **kwargs) -> bool:
+            return not await self.func(*args, **kwargs)
+
+        return FuturePredicate(_invert)
 
 
 @dataclass(slots=True, frozen=True)
-class Predicate(Func[P, TBool]):
-    """Abstraction over predicates for seamless composition of predicate functions."""
+class Predicate(Func[P, bool]):
+    """Abstraction over predicates."""
 
-    func: Callable[P, TBool]
+    func: Callable[P, bool]
 
-    def __call__(self, *args: P.args, **kwargs: P.kwargs) -> TBool:  # noqa
-        return self._predicate(*args, **kwargs)
+    def __mul__(self, other: Callable[P, bool]) -> Predicate[P]:
+        def _mul(*args: P.args, **kwargs: P.kwargs) -> bool:
+            return self.func(*args, **kwargs) and other(*args, **kwargs)
 
-    def __and__(self, other: "Predicate[P, TBool]") -> "Predicate[P, TBool]":
-        return Predicate(lambda v: self._predicate(v) and other._predicate(v))
+        return Predicate(_mul)
 
-    def __or__(self, other: "Predicate[P, TBool]") -> "Predicate[P, TBool]":
-        return Predicate(lambda v: self._predicate(v) or other._predicate(v))
+    def __add__(self, other: Callable[P, bool]) -> Predicate[P]:
+        def _add(*args: P.args, **kwargs: P.kwargs) -> bool:
+            return self.func(*args, **kwargs) or other(*args, **kwargs)
 
-    def __invert__(self) -> "Predicate[P, TBool]":
-        return Predicate(lambda v: not self._predicate(v))
+        return Predicate(_add)
+
+    def __and__(self, other: Callable[P, Awaitable[bool]]) -> FuturePredicate[P]:
+        def _and(other: Callable[P, Awaitable[bool]]):
+            async def __and(*args: P.args, **kwargs: P.kwargs) -> bool:
+                return self.func(*args, **kwargs) and await other(*args, **kwargs)
+
+            return __and
+
+        return FuturePredicate(_and(other))
+
+    def __or__(self, other: Callable[P, Awaitable[bool]]) -> FuturePredicate[P]:
+        def _or(other: Callable[P, Awaitable[bool]]):
+            async def __or(*args: P.args, **kwargs: P.kwargs) -> bool:
+                return self.func(*args, **kwargs) or await other(*args, **kwargs)
+
+            return __or
+
+        return FuturePredicate(_or(other))
+
+    def __invert__(self) -> Predicate[P]:
+        def _invert(*args: P.args, **kwargs: P.kwargs):
+            return not self.func(*args, **kwargs)
+
+        return Predicate(_invert)
 
 
-def predicate(func: Callable[P, TBool]):
+def predicate(p: Callable[P, bool]):
     """Makes function composable `Predicate` instance."""
-    return Predicate(func)
+    return Predicate(p)
+
+
+def future_predicate(p: Callable[P, Awaitable[bool]]):
+    """Makes function composable `FuturePredicate` instance."""
+    return FuturePredicate(p)
 
 
 def len_more_then(length: int):
