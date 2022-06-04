@@ -6,6 +6,7 @@
     - [if_error](#if_error)
     - [if_error_returns](#if_error_returns)
     - [if_ok](#if_ok)
+    - [ok_when](#ok_when)
     - [safe](#safe)
     - [safe_async](#safe_async)
 
@@ -64,6 +65,35 @@ Decorateor that protects function from being executed on `Exception` value.
 
 - [T](#t)
 - [V](#v)
+
+## ok_when
+
+[[find in source code]](https://github.com/katunilya/pymon/blob/main/pymon/result.py#L94)
+
+```python
+def ok_when(
+    predicate: Callable[[T], bool],
+    error: TError,
+    value: T,
+) -> T | TError:
+```
+
+Pass value only if predicate is True, otherwise return error.
+
+#### Arguments
+
+predicate (Callable[[T], bool]): to fulfill.
+- `error` *TError* - to replace with.
+- `value` *T* - to process.
+
+#### Returns
+
+T | TError: result.
+
+#### See also
+
+- [TError](#terror)
+- [T](#t)
 
 ## safe
 
