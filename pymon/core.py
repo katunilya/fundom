@@ -91,6 +91,7 @@ class Pipe(Generic[T]):
     """Abstraction over some value to run in pipeline.
 
     Example::
+
             result: int = (
                 Pipe(12)
                 << (lambda x: x + 1)
