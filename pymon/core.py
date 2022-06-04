@@ -311,3 +311,8 @@ class Func(Generic[P, V]):
                     return other(value)
 
         return Func(composition)
+
+
+def func(func: Callable[P, V]) -> Func[P, V]:
+    """Decorator for making functions composable."""
+    return Func(func)
