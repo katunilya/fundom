@@ -1,63 +1,152 @@
+from __future__ import annotations
+
 from dataclasses import dataclass
-from typing import Callable, Generic, Iterable, Sized, TypeVar
+from typing import Awaitable, Callable, Iterable, ParamSpec, Sized, TypeVar
 
-T = TypeVar("T")
+from pymon.core import Func, FutureFunc
 
-
-@dataclass(slots=True)
-class Predicate(Generic[T]):
-    """Abstraction over predicates for seamless composition of predicate functions."""
-
-    _predicate: Callable[[T], bool]
-
-    def __init__(self, predicate: Callable[[T], bool]) -> None:
-        self._predicate = predicate
-
-    def __call__(self, value: T) -> bool:  # noqa
-        return self._predicate(value)
-
-    def _and(self, other: "Predicate[T]") -> "Predicate[T]":
-        return Predicate(lambda v: self._predicate(v) and other._predicate(v))
-
-    def __and__(self, other: "Predicate[T]") -> "Predicate[T]":
-        return self._and(other)
-
-    def _or(self, other: "Predicate[T]") -> "Predicate[T]":
-        return Predicate(lambda v: self._predicate(v) or other._predicate(v))
-
-    def __or__(self, other: "Predicate[T]") -> "Predicate[T]":
-        return self._or(other)
-
-    def _invert(self) -> "Predicate[T]":
-        return Predicate(lambda v: not self._predicate(v))
-
-    def __invert__(self) -> "Predicate[T]":
-        return self._invert()
+P = ParamSpec("P")
 
 
-def predicate(func: Callable[[T], bool]) -> Predicate[T]:
+class FuturePredicate(FutureFunc[P, bool]):
+    """Abstraction over async predicates."""
+
+    func: Callable[P, Awaitable[bool]]
+
+    def __mul__(self, other: Callable[P, bool]) -> FuturePredicate[P]:
+        def _mul(other: Callable[P, Awaitable[bool]]):
+            async def __mul(*args: P.args, **kwargs: P.kwargs) -> bool:
+                return await self.func(*args, **kwargs) and other(*args, **kwargs)
+
+            return __mul
+
+        return FuturePredicate(_mul(other))
+
+    def __add__(self, other: Callable[P, bool]) -> FuturePredicate[P]:
+        def _add(other: Callable[P, Awaitable[bool]]):
+            async def __add(*args: P.args, **kwargs: P.kwargs) -> bool:
+                return await self.func(*args, **kwargs) or other(*args, **kwargs)
+
+            return __add
+
+        return FuturePredicate(_add(other))
+
+    def __and__(self, other: Callable[P, Awaitable[bool]]) -> FuturePredicate[P]:
+        def _and(other: Callable[P, Awaitable[bool]]):
+            async def __and(*args: P.args, **kwargs: P.kwargs) -> bool:
+                return await self.func(*args, **kwargs) and await other(*args, **kwargs)
+
+            return __and
+
+        return FuturePredicate(_and(other))
+
+    def __or__(self, other: Callable[P, Awaitable[bool]]) -> Predicate[P]:
+        def _or(other: Callable[P, Awaitable[bool]]):
+            async def __or(*args: P.args, **kwargs: P.kwargs) -> bool:
+                return await self.func(*args, **kwargs) or await other(*args, **kwargs)
+
+            return __or
+
+        return FuturePredicate(_or(other))
+
+    def __invert__(self) -> FuturePredicate[P]:
+        async def _invert(*args, **kwargs) -> bool:
+            return not await self.func(*args, **kwargs)
+
+        return FuturePredicate(_invert)
+
+
+@dataclass(slots=True, frozen=True)
+class Predicate(Func[P, bool]):
+    """Abstraction over predicates."""
+
+    func: Callable[P, bool]
+
+    def __mul__(self, other: Callable[P, bool]) -> Predicate[P]:
+        def _mul(*args: P.args, **kwargs: P.kwargs) -> bool:
+            return self.func(*args, **kwargs) and other(*args, **kwargs)
+
+        return Predicate(_mul)
+
+    def __add__(self, other: Callable[P, bool]) -> Predicate[P]:
+        def _add(*args: P.args, **kwargs: P.kwargs) -> bool:
+            return self.func(*args, **kwargs) or other(*args, **kwargs)
+
+        return Predicate(_add)
+
+    def __and__(self, other: Callable[P, Awaitable[bool]]) -> FuturePredicate[P]:
+        def _and(other: Callable[P, Awaitable[bool]]):
+            async def __and(*args: P.args, **kwargs: P.kwargs) -> bool:
+                return self.func(*args, **kwargs) and await other(*args, **kwargs)
+
+            return __and
+
+        return FuturePredicate(_and(other))
+
+    def __or__(self, other: Callable[P, Awaitable[bool]]) -> FuturePredicate[P]:
+        def _or(other: Callable[P, Awaitable[bool]]):
+            async def __or(*args: P.args, **kwargs: P.kwargs) -> bool:
+                return self.func(*args, **kwargs) or await other(*args, **kwargs)
+
+            return __or
+
+        return FuturePredicate(_or(other))
+
+    def __invert__(self) -> Predicate[P]:
+        def _invert(*args: P.args, **kwargs: P.kwargs):
+            return not self.func(*args, **kwargs)
+
+        return Predicate(_invert)
+
+
+def predicate(p: Callable[P, bool]):
     """Makes function composable `Predicate` instance."""
-    return Predicate(func)
+    return Predicate(p)
 
 
-def len_more_then(length: int) -> Predicate[Iterable]:
+def future_predicate(p: Callable[P, Awaitable[bool]]):
+    """Makes function composable `FuturePredicate` instance."""
+    return FuturePredicate(p)
+
+
+def len_more_then(length: int):
     """If `iterable` length is strictly more than `length`."""
-    return Predicate(lambda iterable: length < len(iterable))
+
+    @predicate
+    def _predicate(iterable: Iterable) -> bool:
+        return length < len(iterable)
+
+    return _predicate
 
 
-def len_less_then(length: int) -> Predicate[Iterable]:
+def len_less_then(length: int):
     """If `iterable` length is strictly less than `length`."""
-    return Predicate(lambda iterable: length > len(iterable))
+
+    @predicate
+    def _predicate(iterable: Iterable) -> bool:
+        return length > len(iterable)
+
+    return _predicate
 
 
-def len_less_or_equals(length: int) -> Predicate[Iterable]:
+def len_less_or_equals(length: int):
     """If `iterable` length is less or equals `length`."""
-    return Predicate(lambda iterable: len(iterable) <= length)
+
+    @predicate
+    def _predicate(iterable: Iterable) -> bool:
+        return len(iterable) <= length
+
+    return _predicate
 
 
-def len_more_or_equals(length: int) -> Predicate[Iterable]:
+def len_more_or_equals(length: int):
     """If `iterable` length is more or equals `length`."""
-    return Predicate(lambda iterable: len(iterable) >= length)
+
+    @predicate
+    def _predicate(iterable: Iterable) -> bool:
+        return len(iterable) >= length
+
+    return _predicate
 
 
 TSized = TypeVar("TSized", bound=Sized)

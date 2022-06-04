@@ -2,8 +2,7 @@ from dataclasses import dataclass
 from functools import wraps
 from typing import Awaitable, Callable, ParamSpec, TypeVar
 
-from pymon.core import hof1, this
-from pymon.predicate import Predicate
+from pymon.core import Future, hof1, hof2, returns_future, this, this_async
 
 V = TypeVar("V")
 T = TypeVar("T")
@@ -75,16 +74,15 @@ def safe(func: Callable[P, V]) -> Callable[P, V | Exception]:
     return _wrapper
 
 
-def safe_async(
-    func: Callable[P, Awaitable[V]]
-) -> Callable[P, Awaitable[V | Exception]]:
+def safe_future(func: Callable[P, Awaitable[V]]) -> Callable[P, Future[V | TError]]:
     """Decorator for async function that might raise an exception.
 
     Excepts exception and returns that instead.
     """
 
     @wraps(func)
-    async def _wrapper(*args: P.args, **kwargs: P.kwargs) -> V | Exception:
+    @returns_future
+    async def _wrapper(*args: P.args, **kwargs: P.kwargs) -> V | TError:
         try:
             return await func(*args, **kwargs)
         except Exception() as err:
@@ -93,6 +91,7 @@ def safe_async(
     return _wrapper
 
 
+@hof2
 def ok_when(predicate: Callable[[T], bool], error: TError, value: T) -> T | TError:
     """Pass value only if predicate is True, otherwise return error.
 
@@ -111,6 +110,29 @@ def ok_when(predicate: Callable[[T], bool], error: TError, value: T) -> T | TErr
             return error
 
 
+async def __ok_when_future(
+    predicate: Callable[[T], Awaitable[bool]], error: TError, value: T
+) -> Future[T] | Future[TError]:
+    return value if await predicate(value) else error
+
+
+@hof2
+def ok_when_future(
+    predicate: Callable[[T], Awaitable[bool]], error: TError, value: T
+) -> Future[T] | Future[TError]:
+    """Pass value only if async predicate is True, otherwise return error.
+
+    Args:
+        predicate (Callable[[T], bool]): to fulfill.
+        error (TError): to replace with.
+        value (T): to process.
+
+    Returns:
+        Future[T] | Future[TError]: result.
+    """
+    return Future(__ok_when_future(predicate, error, value))
+
+
 @dataclass(slots=True, frozen=True)
 class PolicyViolationError(Exception):
     """Exception that marks that policy is violated."""
@@ -118,7 +140,7 @@ class PolicyViolationError(Exception):
     message: str
 
 
-def check(predicate: Predicate[T]) -> T | PolicyViolationError:
+def check(predicate: Callable[P, bool]) -> T | PolicyViolationError:
     """Pass value next only if predicate is True, otherwise policy is violated.
 
     Args:
@@ -130,8 +152,22 @@ def check(predicate: Predicate[T]) -> T | PolicyViolationError:
     return ok_when(predicate, PolicyViolationError(message=str(predicate)))
 
 
+def check_future(
+    predicate: Callable[P, Awaitable[bool]]
+) -> Future[T] | Future[PolicyViolationError]:
+    """Pass value next only if predicate is True, otherwise policy is violated.
+
+    Args:
+        predicate (Callable[P, Future[bool]]): to check.
+
+    Returns:
+        Future[T] | Future[PolicyViolationError]: result.
+    """
+    return ok_when_future(predicate, PolicyViolationError(message=str(predicate)))
+
+
 def choose_ok(*funcs: Callable[[T], V | TError]) -> Callable[[T], V | TError]:
-    """Combines multiple functions that might return error into one.
+    """Combines multiple sync functions that might return error into one.
 
     Result of the first function to return non-Exception result is returned.
     """
@@ -143,6 +179,30 @@ def choose_ok(*funcs: Callable[[T], V | TError]) -> Callable[[T], V | TError]:
             def _choose(value: T) -> V | TError:
                 for func in funcs:
                     match func(value):
+                        case Exception():
+                            continue
+                        case success:
+                            return success
+
+            return _choose
+
+
+def choose_ok_future(
+    *funcs: Callable[[T], Future[V | TError]]
+) -> Callable[[T], Future[V | TError]]:
+    """Combines multiple async functions that might return error into one.
+
+    Result of the first function to return non-Exception result is returned.
+    """
+    match funcs:
+        case []:
+            return returns_future(this_async)
+        case _:
+
+            @returns_future
+            async def _choose(value: T) -> V | TError:
+                for func in funcs:
+                    match await func(value):
                         case Exception():
                             continue
                         case success:
