@@ -182,6 +182,28 @@ def returns_async(x: T) -> Callable[P, Future[T]]:
 
 
 @dataclass(slots=True, frozen=True)
+class FutureFunc(Generic[P, V]):
+    """Abstraction over async function."""
+
+    func: Callable[P, Awaitable[V]] = this
+
+    def __call__(self, *args: P.args, **kwds: P.kwargs) -> Future[V]:  # noqa
+        return Future(self.func(*args, **kwds))
+
+    def __lshift__(self, other: Callable[[V], U]) -> FutureFunc[P, U]:
+        def composition(*args: P.args, **kwargs: P.kwargs) -> U:
+            return self.__call__(*args, **kwargs) << other
+
+        return FutureFunc(composition)
+
+    def __rshift__(self, other: Callable[[V], Awaitable[U]]) -> FutureFunc[P, U]:
+        def composition(*args: P.args, **kwargs: P.kwargs) -> Future[U]:
+            return self.__call__(*args, **kwargs) >> other
+
+        return FutureFunc(composition)
+
+
+@dataclass(slots=True, frozen=True)
 class Func(Generic[P, V]):
     """Function composition abstraction."""
 
@@ -192,28 +214,25 @@ class Func(Generic[P, V]):
 
     def __lshift__(self, other: Callable[[V], U]) -> Func[P, U]:
         def composition(*args: P.args, **kwargs: P.kwargs) -> U:
-            match self.func(*args, **kwargs):
-                case Future() as future:
-                    return future << other
-                case value:
-                    return other(value)
+            return other(self.__call__(*args, **kwargs))
 
         return Func(composition)
 
-    def __rshift__(self, other: Callable[[V], Future[U]]) -> Func[P, Future[U]]:
-        def composition(*args: P.args, **kwargs: P.kwargs) -> Future[U]:
-            match self.func(*args, **kwargs):
-                case Future() as future:
-                    return future >> other
-                case value:
-                    return other(value)
+    def __rshift__(self, other: Callable[[V], Awaitable[U]]) -> FutureFunc[P, U]:
+        def composition(*args: P.args, **kwargs: P.kwargs) -> Awaitable[U]:
+            return other(self.__call__(*args, **kwargs))
 
-        return Func(composition)
+        return FutureFunc(composition)
 
 
 def func(func: Callable[P, V]) -> Func[P, V]:
     """Decorator for making functions composable."""
     return Func(func)
+
+
+def future_func(func: Callable[P, Awaitable[V]]) -> FutureFunc[P, V]:
+    """Decorator for making async functions composable."""
+    return FutureFunc(func)
 
 
 # curring utils
