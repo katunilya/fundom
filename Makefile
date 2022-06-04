@@ -52,7 +52,13 @@ setup_pre_commit:
 
 # ========================== Documentation Management ==========================
 
-docs:
+clean_docs:
+	@echo "📃 Cleaing documentation..."
+	@rm -f mkdocs.yml
+	@rm -f .readthedocs.yml
+	@rm -rf docs
+
+docs: clean_docs
 	@echo "📃 Updating documentation with handsdown..."
 	@poetry run handsdown --external `git config --get remote.origin.url`
 
