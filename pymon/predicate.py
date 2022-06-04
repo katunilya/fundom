@@ -1,8 +1,6 @@
 from dataclasses import dataclass
 from typing import Callable, Iterable, Sized, TypeVar
 
-from pymon.core import hof1
-
 T = TypeVar("T")
 
 
@@ -39,38 +37,36 @@ def predicate(func: Callable[[T], bool]) -> Predicate[T]:
     return Predicate(func)
 
 
-@hof1
-def len_more_then(length: int, iterable: Iterable) -> bool:
+def len_more_then(length: int) -> Predicate[Iterable]:
     """If `iterable` length is strictly more than `length`."""
-    return length < len(iterable)
+    return Predicate(lambda iterable: length < len(iterable))
 
 
-@hof1
-def len_less_then(length: int, iterable: Iterable) -> bool:
+def len_less_then(length: int) -> Predicate[Iterable]:
     """If `iterable` length is strictly less than `length`."""
-    return length > len(iterable)
+    return Predicate(lambda iterable: length > len(iterable))
 
 
-@hof1
-def len_less_or_equals(length: int, iterable: Iterable) -> bool:
+def len_less_or_equals(length: int) -> Predicate[Iterable]:
     """If `iterable` length is less or equals `length`."""
-    return len(iterable) <= length
+    return Predicate(lambda iterable: len(iterable) <= length)
 
 
-@hof1
-def len_more_or_equals(length: int, iterable: Iterable) -> bool:
+def len_more_or_equals(length: int) -> Predicate[Iterable]:
     """If `iterable` length is more or equals `length`."""
-    return len(iterable) >= length
+    return Predicate(lambda iterable: len(iterable) >= length)
 
 
 TSized = TypeVar("TSized", bound=Sized)
 
 
+@predicate
 def is_empty(obj: TSized) -> bool:
     """If `obj` is empty."""
     return len(obj) == 0
 
 
+@predicate
 def is_not_empty(obj: TSized) -> bool:
     """If `obj` is not empty."""
     return len(obj) != 0
