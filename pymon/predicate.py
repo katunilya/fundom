@@ -1,14 +1,17 @@
 from dataclasses import dataclass
-from typing import Callable, Iterable, Sized, TypeVar
+from typing import Callable, Generic, Iterable, Sized, TypeVar
 
 T = TypeVar("T")
 
 
-@dataclass(frozen=True, slots=True)
-class Predicate(Callable[[T], bool]):
+@dataclass(slots=True)
+class Predicate(Generic[T]):
     """Abstraction over predicates for seamless composition of predicate functions."""
 
     _predicate: Callable[[T], bool]
+
+    def __init__(self, predicate: Callable[[T], bool]) -> None:
+        self._predicate = predicate
 
     def __call__(self, value: T) -> bool:  # noqa
         return self._predicate(value)
