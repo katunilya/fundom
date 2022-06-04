@@ -91,12 +91,6 @@ def safe_future(func: Callable[P, Awaitable[V]]) -> Callable[P, Future[V | TErro
     return _wrapper
 
 
-async def _async_ternary(
-    condition: Future[bool], error: TError, value: T
-) -> Future[T] | Future[TError]:
-    return value if await condition else error
-
-
 @hof2
 def ok_when(predicate: Callable[[T], bool], error: TError, value: T) -> T | TError:
     """Pass value only if predicate is True, otherwise return error.
@@ -116,9 +110,15 @@ def ok_when(predicate: Callable[[T], bool], error: TError, value: T) -> T | TErr
             return error
 
 
+async def __ok_when_future(
+    predicate: Callable[[T], Awaitable[bool]], error: TError, value: T
+) -> Future[T] | Future[TError]:
+    return value if await predicate(value) else error
+
+
 @hof2
 def ok_when_future(
-    predicate: Callable[[T], bool], error: TError, value: T
+    predicate: Callable[[T], Awaitable[bool]], error: TError, value: T
 ) -> Future[T] | Future[TError]:
     """Pass value only if async predicate is True, otherwise return error.
 
@@ -130,7 +130,7 @@ def ok_when_future(
     Returns:
         Future[T] | Future[TError]: result.
     """
-    return Future(_async_ternary(predicate, error, value))
+    return Future(__ok_when_future(predicate, error, value))
 
 
 @dataclass(slots=True, frozen=True)
@@ -153,7 +153,7 @@ def check(predicate: Callable[P, bool]) -> T | PolicyViolationError:
 
 
 def check_future(
-    predicate: Callable[P, Future[bool]]
+    predicate: Callable[P, Awaitable[bool]]
 ) -> Future[T] | Future[PolicyViolationError]:
     """Pass value next only if predicate is True, otherwise policy is violated.
 
@@ -167,7 +167,7 @@ def check_future(
 
 
 def choose_ok(*funcs: Callable[[T], V | TError]) -> Callable[[T], V | TError]:
-    """Combines multiple functions that might return error into one.
+    """Combines multiple sync functions that might return error into one.
 
     Result of the first function to return non-Exception result is returned.
     """
@@ -188,9 +188,9 @@ def choose_ok(*funcs: Callable[[T], V | TError]) -> Callable[[T], V | TError]:
 
 
 def choose_ok_future(
-    *funcs: Callable[[T], Future[V] | Future[TError]]
-) -> Callable[[T], Future[V] | Future[TError]]:
-    """Combines multiple functions that might return error into one.
+    *funcs: Callable[[T], Future[V | TError]]
+) -> Callable[[T], Future[V | TError]]:
+    """Combines multiple async functions that might return error into one.
 
     Result of the first function to return non-Exception result is returned.
     """
@@ -202,13 +202,7 @@ def choose_ok_future(
             @returns_future
             async def _choose(value: T) -> V | TError:
                 for func in funcs:
-                    match func(value):
-                        case Future() as f:
-                            match await f:
-                                case Exception():
-                                    continue
-                                case success:
-                                    return success
+                    match await func(value):
                         case Exception():
                             continue
                         case success:
