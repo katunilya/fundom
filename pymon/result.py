@@ -10,7 +10,7 @@ TError = TypeVar("TError", bound=Exception)
 
 
 def if_ok(func: Callable[[T], V]):
-    """Decorateor that protects function from being executed on `Exception` value."""
+    """Decorator that protects function from being executed on `Exception` value."""
 
     @wraps(func)
     def _wrapper(t: T) -> V:
