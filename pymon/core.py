@@ -154,7 +154,7 @@ def pipeline(func: Callable[P, Pipe[T]]) -> Callable[P, T]:
 
 
 def this(x: T) -> T:
-    """Syncronous identity function."""
+    """Synchronous identity function."""
     return x
 
 
