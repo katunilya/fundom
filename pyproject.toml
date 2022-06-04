@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "pymon"
-version = "0.0.6"
+version = "0.0.7"
 description = "Common simple python monads for more readable and maintainable pipeline-based code."
 authors = ["Ilya Katun <katun.ilya@gmail.com>"]
 
