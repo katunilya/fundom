@@ -54,6 +54,24 @@ def if_none_returns(replacement: V, value: T) -> V | T:
 
 
 @hof1
+def if_some_returns(replacement: V, value: T) -> V | T:
+    """Replace some `value` when it is not `None`.
+
+    Args:
+        replacement (V): to replace with.
+        value (T): to replace.
+
+    Returns:
+        V | T: some result.
+    """
+    match value:
+        case None:
+            return None
+        case _:
+            return replacement
+
+
+@hof1
 def some_when(predicate: Callable[[T], bool], data: T) -> T | None:
     """Passes value next only when predicate is True, otherwise returns `None`.
 
