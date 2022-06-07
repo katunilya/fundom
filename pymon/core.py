@@ -248,10 +248,8 @@ AResult = TypeVar("AResult")
 def hof1(f: Callable[Concatenate[A1, P], AResult]):
     """Separate first argument from other."""
 
-    @func
     @wraps(f)
     def _wrapper(arg_1: A1) -> Callable[P, AResult]:
-        @func
         def _func(*args: P.args, **kwargs: P.kwargs) -> AResult:
             return f(arg_1, *args, **kwargs)
 
@@ -263,10 +261,8 @@ def hof1(f: Callable[Concatenate[A1, P], AResult]):
 def hof2(f: Callable[Concatenate[A1, A2, P], AResult]):
     """Separate first 2 arguments from other."""
 
-    @func
     @wraps(f)
     def _wrapper(arg_1: A1, arg_2: A2) -> Callable[P, AResult]:
-        @func
         def _func(*args: P.args, **kwargs: P.kwargs) -> AResult:
             return f(arg_1, arg_2, *args, **kwargs)
 
@@ -278,10 +274,8 @@ def hof2(f: Callable[Concatenate[A1, A2, P], AResult]):
 def hof3(f: Callable[Concatenate[A1, A2, A3, P], AResult]):
     """Separate first 3 arguments from other."""
 
-    @func
     @wraps(f)
     def _wrapper(arg_1: A1, arg_2: A2, arg_3: A3) -> Callable[P, AResult]:
-        @func
         def _func(*args: P.args, **kwargs: P.kwargs) -> AResult:
             return f(arg_1, arg_2, arg_3, *args, **kwargs)
 
