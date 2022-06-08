@@ -5,15 +5,15 @@ from pymon.result.core import safe
 
 
 @hof2
-def center(length: SupportsIndex, fillchar: bytes, arg: bytes) -> bytes:
+def center(length: SupportsIndex, fill_char: bytes, arg: bytes) -> bytes:
     """Point-free version of `bytes.center`.
 
     Args:
         length (SupportsIndex): of result bytestring.
-        fillchar (bytes): to fill `bytes` around.
+        fill_char (bytes): to fill `bytes` around.
         arg (bytes): to centralize.
     """
-    return arg.center(length, fillchar)
+    return arg.center(length, fill_char)
 
 
 @hof3
@@ -25,7 +25,7 @@ def count(sub: bytes, arg: bytes) -> int:
         arg (bytes): to count in.
 
     Returns:
-        int: number of occurances of `pattern` in `arg`.
+        int: number of occurrences of `pattern` in `arg`.
     """
     return arg.count(sub)
 
@@ -63,7 +63,7 @@ def find(sub: bytes, arg: bytes) -> int | None:
     """Point-free maybe version of `bytes.find`.
 
     Args:
-        sub (bytes): to serach.
+        sub (bytes): to search.
         arg (bytes): to search int.
 
     Returns:
@@ -114,7 +114,7 @@ def removesuffix(suffix: bytes, arg: bytes) -> bytes:
         arg (bytes): to remove from.
 
     Returns:
-        bytes: without suffix if it is possuble.
+        bytes: without suffix if it is possible.
     """
     return arg.removesuffix(suffix)
 

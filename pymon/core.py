@@ -316,7 +316,7 @@ def creducer(folder: Callable[[A1, A2], A2], initial: A2, lst: Iterable[A1]) -> 
 
 @hof1
 def cmap(mapper: Callable[[A1], A2], lst: Iterable[A1]) -> Iterable[A2]:
-    """Curreid `map` function.
+    """Curried `map` function.
 
     Args:
         mapper (Callable[[A1], A2]): mapper for element of iterable.

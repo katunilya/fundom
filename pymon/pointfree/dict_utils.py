@@ -27,7 +27,7 @@ def try_get(key: TKey, arg: dict[TKey, TValue]) -> TValue:
 
 @hof1
 def maybe_get(key: TKey, arg: dict[TKey, TValue]) -> TValue | None:
-    """Point-free versuib if `dict.get` with default `None`.
+    """Point-free version if `dict.get` with default `None`.
 
     Args:
         key (TKey): to get.
