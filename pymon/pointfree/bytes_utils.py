@@ -63,7 +63,7 @@ def find(sub: bytes, arg: bytes) -> int | None:
     """Point-free maybe version of `bytes.find`.
 
     Args:
-        sub (bytes): to serach.
+        sub (bytes): to search.
         arg (bytes): to search int.
 
     Returns:
