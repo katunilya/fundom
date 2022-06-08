@@ -92,17 +92,17 @@ def index(sub: str, arg: str) -> int:
 
 
 @hof1
-def join_by(concatenator: str, arg: Iterable[str]) -> str:
-    """Join incoming `Iterable[str]` by some `concatenatror`.
+def join_by(concatenation: str, arg: Iterable[str]) -> str:
+    """Join incoming `Iterable[str]` by some `concatenation`.
 
     Args:
-        concatenator (str): to join with.
+        concatenation (str): to join with.
         arg (Iterable[str]): to be joined.
 
     Returns:
         str: joined string.
     """
-    return concatenator.join(arg)
+    return concatenation.join(arg)
 
 
 @hof1
