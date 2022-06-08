@@ -63,7 +63,7 @@ def find(sub: str, arg: str) -> int | None:
     """Point-free maybe version of `str.find`.
 
     Args:
-        sub (str): to serach.
+        sub (str): to search.
         arg (str): to search int.
 
     Returns:
