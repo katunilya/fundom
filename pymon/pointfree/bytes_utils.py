@@ -25,7 +25,7 @@ def count(sub: bytes, arg: bytes) -> int:
         arg (bytes): to count in.
 
     Returns:
-        int: number of occurances of `pattern` in `arg`.
+        int: number of occurrences of `pattern` in `arg`.
     """
     return arg.count(sub)
 
