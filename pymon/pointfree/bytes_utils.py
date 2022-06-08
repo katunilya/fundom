@@ -114,7 +114,7 @@ def removesuffix(suffix: bytes, arg: bytes) -> bytes:
         arg (bytes): to remove from.
 
     Returns:
-        bytes: without suffix if it is possuble.
+        bytes: without suffix if it is possible.
     """
     return arg.removesuffix(suffix)
 
