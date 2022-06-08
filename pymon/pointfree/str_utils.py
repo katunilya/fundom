@@ -5,15 +5,15 @@ from pymon.result import safe
 
 
 @hof2
-def center(length: SupportsIndex, fillchar: str, arg: str) -> str:
+def center(length: SupportsIndex, fill_char: str, arg: str) -> str:
     """Point-free version of `str.center`.
 
     Args:
         length (SupportsIndex): of result string.
-        fillchar (str): to fill `str` around.
+        fill_char (str): to fill `str` around.
         arg (str): to centralize.
     """
-    return arg.center(length, fillchar)
+    return arg.center(length, fill_char)
 
 
 @hof3
