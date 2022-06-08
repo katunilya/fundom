@@ -285,7 +285,7 @@ def hof3(f: Callable[Concatenate[A1, A2, A3, P], AResult]):
 
 
 @hof2
-def creducel(folder: Callable[[A1, A2], A1], initial: A1, lst: Iterable[A2]) -> A1:
+def foldl(folder: Callable[[A1, A2], A1], initial: A1, lst: Iterable[A2]) -> A1:
     """Curried `reduce` left function.
 
     Args:
@@ -300,7 +300,7 @@ def creducel(folder: Callable[[A1, A2], A1], initial: A1, lst: Iterable[A2]) -> 
 
 
 @hof2
-def creducer(folder: Callable[[A1, A2], A2], initial: A2, lst: Iterable[A1]) -> A2:
+def foldr(folder: Callable[[A1, A2], A2], initial: A2, lst: Iterable[A1]) -> A2:
     """Curried `reduce` right function.
 
     Args:
