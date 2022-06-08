@@ -24,7 +24,7 @@
 
 ```python
 @hof2
-def center(length: SupportsIndex, fillchar: str, arg: str) -> str:
+def center(length: SupportsIndex, fill_char: str, arg: str) -> str:
 ```
 
 Point-free version of `str.center`.
@@ -32,7 +32,7 @@ Point-free version of `str.center`.
 #### Arguments
 
 - `length` *SupportsIndex* - of result string.
-- `fillchar` *str* - to fill `str` around.
+- `fill_char` *str* - to fill `str` around.
 - `arg` *str* - to centralize.
 
 #### See also
@@ -57,7 +57,7 @@ Point-free version of `str.count`.
 
 #### Returns
 
-- `int` - number of occurances of `pattern` in `arg`.
+- `int` - number of occurrences of `pattern` in `arg`.
 
 #### See also
 
@@ -125,7 +125,7 @@ Point-free maybe version of `str.find`.
 
 #### Arguments
 
-- `sub` *str* - to serach.
+- `sub` *str* - to search.
 - `arg` *str* - to search int.
 
 #### Returns
@@ -188,14 +188,14 @@ Point-free version of `str.join`.
 
 ```python
 @hof1
-def join_by(concatenator: str, arg: Iterable[str]) -> str:
+def join_by(concatenation: str, arg: Iterable[str]) -> str:
 ```
 
-Join incoming `Iterable[str]` by some `concatenatror`.
+Join incoming `Iterable[str]` by some `concatenation`.
 
 #### Arguments
 
-- `concatenator` *str* - to join with.
+- `concatenation` *str* - to join with.
 - `arg` *Iterable[str]* - to be joined.
 
 #### Returns

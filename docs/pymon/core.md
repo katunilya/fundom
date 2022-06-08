@@ -14,8 +14,8 @@
         - [Pipe().then_async](#pipethen_async)
     - [cfilter](#cfilter)
     - [cmap](#cmap)
-    - [creducel](#creducel)
-    - [creducer](#creducer)
+    - [foldl](#foldl)
+    - [foldr](#foldr)
     - [func](#func)
     - [future_func](#future_func)
     - [hof1](#hof1)
@@ -226,7 +226,7 @@ func (Callable[[T], Awaitable[V]]): to execute.
 
 ## cfilter
 
-[[find in source code]](https://github.com/katunilya/pymon/blob/main/pymon/core.py#L337)
+[[find in source code]](https://github.com/katunilya/pymon/blob/main/pymon/core.py#L331)
 
 ```python
 @hof1
@@ -254,14 +254,14 @@ predicate (Callable[[A1], bool]): to filter with.
 
 ## cmap
 
-[[find in source code]](https://github.com/katunilya/pymon/blob/main/pymon/core.py#L323)
+[[find in source code]](https://github.com/katunilya/pymon/blob/main/pymon/core.py#L317)
 
 ```python
 @hof1
 def cmap(mapper: Callable[[A1], A2], lst: Iterable[A1]) -> Iterable[A2]:
 ```
 
-Curreid `map` function.
+Curried `map` function.
 
 #### Arguments
 
@@ -278,13 +278,13 @@ mapper (Callable[[A1], A2]): mapper for element of iterable.
 - [A2](#a2)
 - [hof1](#hof1)
 
-## creducel
+## foldl
 
-[[find in source code]](https://github.com/katunilya/pymon/blob/main/pymon/core.py#L293)
+[[find in source code]](https://github.com/katunilya/pymon/blob/main/pymon/core.py#L287)
 
 ```python
 @hof2
-def creducel(
+def foldl(
     folder: Callable[[A1, A2], A1],
     initial: A1,
     lst: Iterable[A2],
@@ -309,13 +309,13 @@ folder (Callable[[A1, A2], A1]): aggregator.
 - [A2](#a2)
 - [hof2](#hof2)
 
-## creducer
+## foldr
 
-[[find in source code]](https://github.com/katunilya/pymon/blob/main/pymon/core.py#L308)
+[[find in source code]](https://github.com/katunilya/pymon/blob/main/pymon/core.py#L302)
 
 ```python
 @hof2
-def creducer(
+def foldr(
     folder: Callable[[A1, A2], A2],
     initial: A2,
     lst: Iterable[A1],
@@ -388,7 +388,7 @@ Separate first argument from other.
 
 ## hof2
 
-[[find in source code]](https://github.com/katunilya/pymon/blob/main/pymon/core.py#L263)
+[[find in source code]](https://github.com/katunilya/pymon/blob/main/pymon/core.py#L261)
 
 ```python
 def hof2(f: Callable[Concatenate[A1, A2, P], AResult]):
@@ -405,7 +405,7 @@ Separate first 2 arguments from other.
 
 ## hof3
 
-[[find in source code]](https://github.com/katunilya/pymon/blob/main/pymon/core.py#L278)
+[[find in source code]](https://github.com/katunilya/pymon/blob/main/pymon/core.py#L274)
 
 ```python
 def hof3(f: Callable[Concatenate[A1, A2, A3, P], AResult]):
