@@ -1,7 +1,7 @@
 from typing import TypeVar
 
 from pymon.core import hof1
-from pymon.result.core import safe
+from pymon.result import safe
 
 TKey = TypeVar("TKey")
 TValue = TypeVar("TValue")
