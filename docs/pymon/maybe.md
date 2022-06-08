@@ -6,6 +6,7 @@
     - [if_none](#if_none)
     - [if_none_returns](#if_none_returns)
     - [if_some](#if_some)
+    - [if_some_returns](#if_some_returns)
     - [some_when](#some_when)
 
 ## if_none
@@ -64,9 +65,35 @@ Decorator that protects function from being executed on `None` value.
 - [T](#t)
 - [V](#v)
 
-## some_when
+## if_some_returns
 
 [[find in source code]](https://github.com/katunilya/pymon/blob/main/pymon/maybe.py#L56)
+
+```python
+@hof1
+def if_some_returns(replacement: V, value: T) -> V | T:
+```
+
+Replace some `value` when it is not `None`.
+
+#### Arguments
+
+- `replacement` *V* - to replace with.
+- `value` *T* - to replace.
+
+#### Returns
+
+V | T: some result.
+
+#### See also
+
+- [T](#t)
+- [V](#v)
+- [hof1](core.md#hof1)
+
+## some_when
+
+[[find in source code]](https://github.com/katunilya/pymon/blob/main/pymon/maybe.py#L74)
 
 ```python
 @hof1

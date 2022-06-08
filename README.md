@@ -55,7 +55,7 @@ result = (
 each `then` step value returned by passed function is wrapped into `Pipe`
 container for further chaining.
 
-If your function returns `Pipe` objecct that to unpack that one can use
+If your function returns `Pipe` object that to unpack that one can use
 `@pipeline` decorator.
 
 ```python
@@ -63,7 +63,7 @@ If your function returns `Pipe` objecct that to unpack that one can use
 def parse_http_query(query: bytes) -> dict:
   return (
     Pipe(query)
-    << some_when(is_not_emtpy)
+    << some_when(is_not_empty)
     << if_some(bytes_decode("UTF-8"))
     << if_some(str_split("&"))
     << if_some(cmap(str_split("=")))
@@ -129,17 +129,17 @@ graph LR;
 Second point is actually the one that makes most problems. I see 3 significantly
 different ways of doing curring in Python:
 
-- Python `partial` from `functools` standart package.
+- Python `partial` from `functools` standard package.
 - Decorator like `@curry` from `toolz` package.
-- Writing Highter-Order Functions by yourself.
+- Writing Higher-Order Functions by yourself.
 
 There are drawbacks of each of the method:
 
-| Method | 👍 | 👎 |
-| --- | --- | --- |
-| `partial` | no additional dependencies; | type hints are lost; bad-looking syntax; |
-| `@curry` | easy syntax for any fucntion; | type hints are lost; |
-| HOFs | type hints remain; | might seem verbouse; |
+| Method    | 👍                             | 👎                                        |
+| --------- | ----------------------------- | ---------------------------------------- |
+| `partial` | no additional dependencies;   | type hints are lost; bad-looking syntax; |
+| `@curry`  | easy syntax for any function; | type hints are lost;                     |
+| HOFs      | type hints remain;            | might seem verbose;                     |
 
 I consider it is a matter of personal preference which way to stick to, but I
 prefer the last option. In many cases it is not that difficult and hard to write
@@ -169,8 +169,8 @@ result = (
 result = list(map(lambda s: s.encode("UTF-8"), "Hello, World!".split(" ")))
 ```
 
-In this way actually any function with multiple arguments can become
-singleargument function without lossing type hints.
+In this way actually any function with multiple arguments can become single
+argument function without losing type hints.
 
 #### Why 3 is max number of arguments for function to put in HOF?
 
@@ -187,8 +187,8 @@ much more complex and you can'y easily convert function to HOF.
 
 There are multiple common HOF composable functions:
 
-- `creducel` - curried reduce left
-- `creducer` - curried reduce right
+- `foldl` - curried reduce left
+- `foldr` - curried reduce right
 - `cmap` - curried map
 - `cfilter` - curried filter
 

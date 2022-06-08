@@ -15,7 +15,7 @@
 def maybe_get(key: TKey, arg: dict[TKey, TValue]) -> TValue | None:
 ```
 
-Point-free versuib if `dict.get` with default `None`.
+Point-free version if `dict.get` with default `None`.
 
 #### Arguments
 
@@ -61,3 +61,4 @@ arg (dict[TKey, TValue]): to get from.
 - [TKey](#tkey)
 - [TValue](#tvalue)
 - [hof1](../core.md#hof1)
+- [safe](../result.md#safe)

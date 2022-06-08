@@ -22,7 +22,7 @@
 
 ```python
 @hof2
-def center(length: SupportsIndex, fillchar: bytes, arg: bytes) -> bytes:
+def center(length: SupportsIndex, fill_char: bytes, arg: bytes) -> bytes:
 ```
 
 Point-free version of `bytes.center`.
@@ -30,7 +30,7 @@ Point-free version of `bytes.center`.
 #### Arguments
 
 - `length` *SupportsIndex* - of result bytestring.
-- `fillchar` *bytes* - to fill `bytes` around.
+- `fill_char` *bytes* - to fill `bytes` around.
 - `arg` *bytes* - to centralize.
 
 #### See also
@@ -55,7 +55,7 @@ Point-free version of `bytes.count`.
 
 #### Returns
 
-- `int` - number of occurances of `pattern` in `arg`.
+- `int` - number of occurrences of `pattern` in `arg`.
 
 #### See also
 
@@ -85,6 +85,7 @@ str | Exception: result.
 #### See also
 
 - [hof1](../core.md#hof1)
+- [safe](../result.md#safe)
 
 ## endswith
 
@@ -122,7 +123,7 @@ Point-free maybe version of `bytes.find`.
 
 #### Arguments
 
-- `sub` *bytes* - to serach.
+- `sub` *bytes* - to search.
 - `arg` *bytes* - to search int.
 
 #### Returns
@@ -153,6 +154,7 @@ Point-free version of `bytes.index`.
 #### See also
 
 - [hof1](../core.md#hof1)
+- [safe](../result.md#safe)
 
 ## removeprefix
 
@@ -196,7 +198,7 @@ Point-free version of `bytes.removesuffix`.
 
 #### Returns
 
-- `bytes` - without suffix if it is possuble.
+- `bytes` - without suffix if it is possible.
 
 #### See also
 

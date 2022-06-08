@@ -1,7 +1,7 @@
 from typing import TypeVar
 
 from pymon.core import hof1
-from pymon.result.core import safe
+from pymon.result import safe
 
 TKey = TypeVar("TKey")
 TValue = TypeVar("TValue")
@@ -27,7 +27,7 @@ def try_get(key: TKey, arg: dict[TKey, TValue]) -> TValue:
 
 @hof1
 def maybe_get(key: TKey, arg: dict[TKey, TValue]) -> TValue | None:
-    """Point-free versuib if `dict.get` with default `None`.
+    """Point-free version if `dict.get` with default `None`.
 
     Args:
         key (TKey): to get.

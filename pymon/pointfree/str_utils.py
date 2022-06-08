@@ -5,15 +5,15 @@ from pymon.result import safe
 
 
 @hof2
-def center(length: SupportsIndex, fillchar: str, arg: str) -> str:
+def center(length: SupportsIndex, fill_char: str, arg: str) -> str:
     """Point-free version of `str.center`.
 
     Args:
         length (SupportsIndex): of result string.
-        fillchar (str): to fill `str` around.
+        fill_char (str): to fill `str` around.
         arg (str): to centralize.
     """
-    return arg.center(length, fillchar)
+    return arg.center(length, fill_char)
 
 
 @hof3
@@ -25,7 +25,7 @@ def count(sub: str, arg: str) -> int:
         arg (str): to count in.
 
     Returns:
-        int: number of occurances of `pattern` in `arg`.
+        int: number of occurrences of `pattern` in `arg`.
     """
     return arg.count(sub)
 
@@ -63,7 +63,7 @@ def find(sub: str, arg: str) -> int | None:
     """Point-free maybe version of `str.find`.
 
     Args:
-        sub (str): to serach.
+        sub (str): to search.
         arg (str): to search int.
 
     Returns:
@@ -92,17 +92,17 @@ def index(sub: str, arg: str) -> int:
 
 
 @hof1
-def join_by(concatenator: str, arg: Iterable[str]) -> str:
-    """Join incoming `Iterable[str]` by some `concatenatror`.
+def join_by(concatenation: str, arg: Iterable[str]) -> str:
+    """Join incoming `Iterable[str]` by some `concatenation`.
 
     Args:
-        concatenator (str): to join with.
+        concatenation (str): to join with.
         arg (Iterable[str]): to be joined.
 
     Returns:
         str: joined string.
     """
-    return concatenator.join(arg)
+    return concatenation.join(arg)
 
 
 @hof1
