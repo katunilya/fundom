@@ -50,19 +50,19 @@ class future(Generic[T]):  # noqa
     def __lshift__(self, func: Callable[[T], V]) -> future[V]:
         return future(self.__then(func))
 
+    @staticmethod
+    def returns(func: Callable[P, T]):
+        """Wraps returned value of async function to `future`."""
 
-def returns_future(func: Callable[P, T]):
-    """Wraps returned value of async function to `future`."""
+        @wraps(func)
+        def wrapper(*args: P.args, **kwargs: P.kwargs) -> future[T]:
+            match func(*args, **kwargs):
+                case future() as _future:
+                    return _future
+                case awaitable:
+                    return future(awaitable)
 
-    @wraps(func)
-    def wrapper(*args: P.args, **kwargs: P.kwargs) -> future[T]:
-        match func(*args, **kwargs):
-            case future() as _future:
-                return _future
-            case awaitable:
-                return future(awaitable)
-
-    return wrapper
+        return wrapper
 
 
 @dataclass(slots=True, frozen=True)
