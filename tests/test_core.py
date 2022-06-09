@@ -1,6 +1,6 @@
 import pytest
 
-from pymon.core import Func, Future, func, this_async
+from pymon.core import Func, func, future, this_async
 
 
 def test_func():
@@ -24,7 +24,7 @@ def power2(x: int):
 
 
 def minus5(x: int):
-    return Future(this_async(x - 5))
+    return future(this_async(x - 5))
 
 
 @pytest.mark.asyncio

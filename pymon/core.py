@@ -20,13 +20,13 @@ P = ParamSpec("P")
 
 
 @dataclass(slots=True, frozen=True)
-class Future(Generic[T]):
+class future(Generic[T]):  # noqa
     """Abstraction over awaitable value to run in pipeline.
 
     Example::
 
             result = await (
-                Future(get_user_async)
+                future(get_user_async)
                 << if_role_is("moderator")
                 << set_role("admin")
                 >> update_user_async
@@ -41,60 +41,38 @@ class Future(Generic[T]):
     async def __then(self, func: Callable[[T], V]) -> V:
         return func(await self.value)
 
-    def then(self, func: Callable[[T], V]) -> Future[V]:
-        """Execute sync `func` next on awaited internal value.
-
-        Args:
-            func (Callable[[T], V]): to execute.
-
-        Returns:
-            Future[V]: awaitable result of execution.
-        """
-        return Future(self.__then(func))
-
     async def __then_async(self, func: Callable[[T], Awaitable[V]]) -> V:
         return await func(await self.value)
 
-    def then_async(self, func: Callable[[T], Awaitable[V]]) -> Future[V]:
-        """Execute async `func` next on awaited internal value.
+    def __rshift__(self, func: Callable[[T], Awaitable[V]]) -> future[V]:
+        return future(self.__then_async(func))
 
-        Args:
-            func (Callable[[T], Awaitable[V]]): to execute.
-
-        Returns:
-            Future[V]: awaitable result of execution.
-        """
-        return Future(self.__then_async(func))
-
-    def __rshift__(self, func: Callable[[T], Awaitable[V]]) -> Future[V]:
-        return self.then_async(func)
-
-    def __lshift__(self, func: Callable[[T], V]) -> Future[V]:
-        return self.then(func)
+    def __lshift__(self, func: Callable[[T], V]) -> future[V]:
+        return future(self.__then(func))
 
 
 def returns_future(func: Callable[P, T]):
-    """Wraps returned value of async function to `Future`."""
+    """Wraps returned value of async function to `future`."""
 
     @wraps(func)
-    def wrapper(*args: P.args, **kwargs: P.kwargs) -> Future[T]:
+    def wrapper(*args: P.args, **kwargs: P.kwargs) -> future[T]:
         match func(*args, **kwargs):
-            case Future() as future:
-                return future
+            case future() as _future:
+                return _future
             case awaitable:
-                return Future(awaitable)
+                return future(awaitable)
 
     return wrapper
 
 
 @dataclass(slots=True, frozen=True)
-class Pipe(Generic[T]):
+class pipe(Generic[T]):  # noqa
     """Abstraction over some value to run in pipeline.
 
     Example::
 
             result: int = (
-                Pipe(12)
+                pipe(12)
                 << (lambda x: x + 1)
                 << (lambda x: x**2)
                 << (lambda x: x // 3)
@@ -103,38 +81,14 @@ class Pipe(Generic[T]):
 
     value: T
 
-    def then(self, func: Callable[[T], V]) -> Pipe[V]:
-        """Execute sync `func` next on internal value.
+    def __lshift__(self, func: Callable[[T], V]) -> pipe[V]:
+        return pipe(func(self.value))
 
-        Args:
-            func (Callable[[T], V]): to execute.
-
-        Returns:
-            Pipe[V]: execution result.
-        """
-        return Pipe(func(self.value))
-
-    def then_async(self, func: Callable[[T], Awaitable[V]]) -> Future[V]:
-        """Execute async `func` next on internal value.
-
-        Returns `Future` for further pipeline.
-
-        Args:
-            func (Callable[[T], Awaitable[V]]): to execute.
-
-        Returns:
-            Future[V]: execution result.
-        """
-        return Future(func(self.value))
-
-    def __lshift__(self, func: Callable[[T], V]) -> Pipe[V]:
-        return self.then(func)
-
-    def __rshift__(self, func: Callable[[T], Awaitable[V]]) -> Future[V]:
-        return self.then_async(func)
+    def __rshift__(self, func: Callable[[T], Awaitable[V]]) -> future[V]:
+        return future(func(self.value))
 
     def finish(self) -> T:
-        """Finish `Pipe` by unpacking internal value.
+        """Finish `pipe` by unpacking internal value.
 
         Returns:
             T: internal value
@@ -142,7 +96,7 @@ class Pipe(Generic[T]):
         return self.value
 
 
-def pipeline(func: Callable[P, Pipe[T]]) -> Callable[P, T]:
+def pipeline(func: Callable[P, pipe[T]]) -> Callable[P, T]:
     """Decorator for functions that return `Pipe` object for seamless unwrapping."""
 
     @wraps(func)
@@ -174,7 +128,7 @@ def returns(x: T) -> Callable[P, T]:
     return _returns
 
 
-def returns_async(x: T) -> Callable[P, Future[T]]:
+def returns_async(x: T) -> Callable[P, future[T]]:
     """Return awaitable `T` on any input."""
 
     async def _returns_async(*_: P.args, **__: P.kwargs) -> T:
@@ -189,8 +143,8 @@ class FutureFunc(Generic[P, V]):
 
     func: Callable[P, Awaitable[V]] = this
 
-    def __call__(self, *args: P.args, **kwds: P.kwargs) -> Future[V]:  # noqa
-        return Future(self.func(*args, **kwds))
+    def __call__(self, *args: P.args, **kwds: P.kwargs) -> future[V]:  # noqa
+        return future(self.func(*args, **kwds))
 
     def __lshift__(self, other: Callable[[V], U]) -> FutureFunc[P, U]:
         def composition(*args: P.args, **kwargs: P.kwargs) -> U:
@@ -199,7 +153,7 @@ class FutureFunc(Generic[P, V]):
         return FutureFunc(composition)
 
     def __rshift__(self, other: Callable[[V], Awaitable[U]]) -> FutureFunc[P, U]:
-        def composition(*args: P.args, **kwargs: P.kwargs) -> Future[U]:
+        def composition(*args: P.args, **kwargs: P.kwargs) -> future[U]:
             return self.__call__(*args, **kwargs) >> other
 
         return FutureFunc(composition)

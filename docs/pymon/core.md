@@ -4,14 +4,10 @@
 
 - [Pymon](../README.md#-pymon) / [Modules](../MODULES.md#pymon-modules) / [Pymon](index.md#pymon) / Core
     - [Func](#func)
-    - [Future](#future)
-        - [Future().then](#futurethen)
-        - [Future().then_async](#futurethen_async)
     - [FutureFunc](#futurefunc)
-    - [Pipe](#pipe)
-        - [Pipe().finish](#pipefinish)
-        - [Pipe().then](#pipethen)
-        - [Pipe().then_async](#pipethen_async)
+    - [future](#future)
+    - [pipe](#pipe)
+        - [pipe().finish](#pipefinish)
     - [cfilter](#cfilter)
     - [cmap](#cmap)
     - [foldl](#foldl)
@@ -30,7 +26,7 @@
 
 ## Func
 
-[[find in source code]](https://github.com/katunilya/pymon/blob/main/pymon/core.py#L209)
+[[find in source code]](https://github.com/katunilya/pymon/blob/main/pymon/core.py#L163)
 
 ```python
 dataclass(slots=True, frozen=True)
@@ -44,81 +40,9 @@ Function composition abstraction.
 - [P](#p)
 - [V](#v)
 
-## Future
-
-[[find in source code]](https://github.com/katunilya/pymon/blob/main/pymon/core.py#L23)
-
-```python
-dataclass(slots=True, frozen=True)
-class Future(Generic[T]):
-```
-
-Abstraction over awaitable value to run in pipeline.
-
-Example
-
-```python
-result = await (
-    Future(get_user_async)
-    << if_role_is("moderator")
-    << set_role("admin")
-    >> update_user_async
-)
-```
-
-#### See also
-
-- [T](#t)
-
-### Future().then
-
-[[find in source code]](https://github.com/katunilya/pymon/blob/main/pymon/core.py#L44)
-
-```python
-def then(func: Callable[[T], V]) -> Future[V]:
-```
-
-Execute sync [func](#func) next on awaited internal value.
-
-#### Arguments
-
-func (Callable[[T], V]): to execute.
-
-#### Returns
-
-- `Future[V]` - awaitable result of execution.
-
-#### See also
-
-- [T](#t)
-- [V](#v)
-
-### Future().then_async
-
-[[find in source code]](https://github.com/katunilya/pymon/blob/main/pymon/core.py#L58)
-
-```python
-def then_async(func: Callable[[T], Awaitable[V]]) -> Future[V]:
-```
-
-Execute async [func](#func) next on awaited internal value.
-
-#### Arguments
-
-func (Callable[[T], Awaitable[V]]): to execute.
-
-#### Returns
-
-- `Future[V]` - awaitable result of execution.
-
-#### See also
-
-- [T](#t)
-- [V](#v)
-
 ## FutureFunc
 
-[[find in source code]](https://github.com/katunilya/pymon/blob/main/pymon/core.py#L187)
+[[find in source code]](https://github.com/katunilya/pymon/blob/main/pymon/core.py#L141)
 
 ```python
 dataclass(slots=True, frozen=True)
@@ -132,13 +56,39 @@ Abstraction over async function.
 - [P](#p)
 - [V](#v)
 
-## Pipe
+## future
 
-[[find in source code]](https://github.com/katunilya/pymon/blob/main/pymon/core.py#L91)
+[[find in source code]](https://github.com/katunilya/pymon/blob/main/pymon/core.py#L23)
 
 ```python
 dataclass(slots=True, frozen=True)
-class Pipe(Generic[T]):
+class future(Generic[T]):
+```
+
+Abstraction over awaitable value to run in pipeline.
+
+Example
+
+```python
+result = await (
+    future(get_user_async)
+    << if_role_is("moderator")
+    << set_role("admin")
+    >> update_user_async
+)
+```
+
+#### See also
+
+- [T](#t)
+
+## pipe
+
+[[find in source code]](https://github.com/katunilya/pymon/blob/main/pymon/core.py#L69)
+
+```python
+dataclass(slots=True, frozen=True)
+class pipe(Generic[T]):
 ```
 
 Abstraction over some value to run in pipeline.
@@ -147,7 +97,7 @@ Example
 
 ```python
 result: int = (
-    Pipe(12)
+    pipe(12)
     << (lambda x: x + 1)
     << (lambda x: x**2)
     << (lambda x: x // 3)
@@ -158,15 +108,15 @@ result: int = (
 
 - [T](#t)
 
-### Pipe().finish
+### pipe().finish
 
-[[find in source code]](https://github.com/katunilya/pymon/blob/main/pymon/core.py#L136)
+[[find in source code]](https://github.com/katunilya/pymon/blob/main/pymon/core.py#L90)
 
 ```python
 def finish() -> T:
 ```
 
-Finish [Pipe](#pipe) by unpacking internal value.
+Finish [pipe](#pipe) by unpacking internal value.
 
 #### Returns
 
@@ -176,57 +126,9 @@ Finish [Pipe](#pipe) by unpacking internal value.
 
 - [T](#t)
 
-### Pipe().then
-
-[[find in source code]](https://github.com/katunilya/pymon/blob/main/pymon/core.py#L106)
-
-```python
-def then(func: Callable[[T], V]) -> Pipe[V]:
-```
-
-Execute sync [func](#func) next on internal value.
-
-#### Arguments
-
-func (Callable[[T], V]): to execute.
-
-#### Returns
-
-- `Pipe[V]` - execution result.
-
-#### See also
-
-- [T](#t)
-- [V](#v)
-
-### Pipe().then_async
-
-[[find in source code]](https://github.com/katunilya/pymon/blob/main/pymon/core.py#L117)
-
-```python
-def then_async(func: Callable[[T], Awaitable[V]]) -> Future[V]:
-```
-
-Execute async [func](#func) next on internal value.
-
-Returns [Future](#future) for further pipeline.
-
-#### Arguments
-
-func (Callable[[T], Awaitable[V]]): to execute.
-
-#### Returns
-
-- `Future[V]` - execution result.
-
-#### See also
-
-- [T](#t)
-- [V](#v)
-
 ## cfilter
 
-[[find in source code]](https://github.com/katunilya/pymon/blob/main/pymon/core.py#L331)
+[[find in source code]](https://github.com/katunilya/pymon/blob/main/pymon/core.py#L285)
 
 ```python
 @hof1
@@ -254,7 +156,7 @@ predicate (Callable[[A1], bool]): to filter with.
 
 ## cmap
 
-[[find in source code]](https://github.com/katunilya/pymon/blob/main/pymon/core.py#L317)
+[[find in source code]](https://github.com/katunilya/pymon/blob/main/pymon/core.py#L271)
 
 ```python
 @hof1
@@ -280,7 +182,7 @@ mapper (Callable[[A1], A2]): mapper for element of iterable.
 
 ## foldl
 
-[[find in source code]](https://github.com/katunilya/pymon/blob/main/pymon/core.py#L287)
+[[find in source code]](https://github.com/katunilya/pymon/blob/main/pymon/core.py#L241)
 
 ```python
 @hof2
@@ -311,7 +213,7 @@ folder (Callable[[A1, A2], A1]): aggregator.
 
 ## foldr
 
-[[find in source code]](https://github.com/katunilya/pymon/blob/main/pymon/core.py#L302)
+[[find in source code]](https://github.com/katunilya/pymon/blob/main/pymon/core.py#L256)
 
 ```python
 @hof2
@@ -342,7 +244,7 @@ folder (Callable[[A1, A2], A2]): aggregator.
 
 ## func
 
-[[find in source code]](https://github.com/katunilya/pymon/blob/main/pymon/core.py#L230)
+[[find in source code]](https://github.com/katunilya/pymon/blob/main/pymon/core.py#L184)
 
 ```python
 def func(func: Callable[P, V]) -> Func[P, V]:
@@ -357,7 +259,7 @@ Decorator for making functions composable.
 
 ## future_func
 
-[[find in source code]](https://github.com/katunilya/pymon/blob/main/pymon/core.py#L235)
+[[find in source code]](https://github.com/katunilya/pymon/blob/main/pymon/core.py#L189)
 
 ```python
 def future_func(func: Callable[P, Awaitable[V]]) -> FutureFunc[P, V]:
@@ -372,7 +274,7 @@ Decorator for making async functions composable.
 
 ## hof1
 
-[[find in source code]](https://github.com/katunilya/pymon/blob/main/pymon/core.py#L248)
+[[find in source code]](https://github.com/katunilya/pymon/blob/main/pymon/core.py#L202)
 
 ```python
 def hof1(f: Callable[Concatenate[A1, P], AResult]):
@@ -388,7 +290,7 @@ Separate first argument from other.
 
 ## hof2
 
-[[find in source code]](https://github.com/katunilya/pymon/blob/main/pymon/core.py#L261)
+[[find in source code]](https://github.com/katunilya/pymon/blob/main/pymon/core.py#L215)
 
 ```python
 def hof2(f: Callable[Concatenate[A1, A2, P], AResult]):
@@ -405,7 +307,7 @@ Separate first 2 arguments from other.
 
 ## hof3
 
-[[find in source code]](https://github.com/katunilya/pymon/blob/main/pymon/core.py#L274)
+[[find in source code]](https://github.com/katunilya/pymon/blob/main/pymon/core.py#L228)
 
 ```python
 def hof3(f: Callable[Concatenate[A1, A2, A3, P], AResult]):
@@ -423,13 +325,13 @@ Separate first 3 arguments from other.
 
 ## pipeline
 
-[[find in source code]](https://github.com/katunilya/pymon/blob/main/pymon/core.py#L145)
+[[find in source code]](https://github.com/katunilya/pymon/blob/main/pymon/core.py#L99)
 
 ```python
-def pipeline(func: Callable[P, Pipe[T]]) -> Callable[P, T]:
+def pipeline(func: Callable[P, pipe[T]]) -> Callable[P, T]:
 ```
 
-Decorator for functions that return [Pipe](#pipe) object for seamless unwrapping.
+Decorator for functions that return `Pipe` object for seamless unwrapping.
 
 #### See also
 
@@ -438,7 +340,7 @@ Decorator for functions that return [Pipe](#pipe) object for seamless unwrapping
 
 ## returns
 
-[[find in source code]](https://github.com/katunilya/pymon/blob/main/pymon/core.py#L168)
+[[find in source code]](https://github.com/katunilya/pymon/blob/main/pymon/core.py#L122)
 
 ```python
 def returns(x: T) -> Callable[P, T]:
@@ -453,10 +355,10 @@ Return `T` on any input.
 
 ## returns_async
 
-[[find in source code]](https://github.com/katunilya/pymon/blob/main/pymon/core.py#L177)
+[[find in source code]](https://github.com/katunilya/pymon/blob/main/pymon/core.py#L131)
 
 ```python
-def returns_async(x: T) -> Callable[P, Future[T]]:
+def returns_async(x: T) -> Callable[P, future[T]]:
 ```
 
 Return awaitable `T` on any input.
@@ -468,13 +370,13 @@ Return awaitable `T` on any input.
 
 ## returns_future
 
-[[find in source code]](https://github.com/katunilya/pymon/blob/main/pymon/core.py#L76)
+[[find in source code]](https://github.com/katunilya/pymon/blob/main/pymon/core.py#L54)
 
 ```python
 def returns_future(func: Callable[P, T]):
 ```
 
-Wraps returned value of async function to [Future](#future).
+Wraps returned value of async function to [future](#future).
 
 #### See also
 
@@ -483,7 +385,7 @@ Wraps returned value of async function to [Future](#future).
 
 ## this
 
-[[find in source code]](https://github.com/katunilya/pymon/blob/main/pymon/core.py#L158)
+[[find in source code]](https://github.com/katunilya/pymon/blob/main/pymon/core.py#L112)
 
 ```python
 def this(x: T) -> T:
@@ -497,7 +399,7 @@ Synchronous identity function.
 
 ## this_async
 
-[[find in source code]](https://github.com/katunilya/pymon/blob/main/pymon/core.py#L163)
+[[find in source code]](https://github.com/katunilya/pymon/blob/main/pymon/core.py#L117)
 
 ```python
 async def this_async(x: T) -> T:

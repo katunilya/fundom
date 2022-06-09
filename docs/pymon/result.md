@@ -56,7 +56,7 @@ T | PolicyViolationError: result
 ```python
 def check_future(
     predicate: Callable[P, Awaitable[bool]],
-) -> Future[T] | Future[PolicyViolationError]:
+) -> future[T] | future[PolicyViolationError]:
 ```
 
 Pass value next only if predicate is True, otherwise policy is violated.
@@ -95,8 +95,8 @@ Result of the first function to return non-Exception result is returned.
 
 ```python
 def choose_ok_future(
-    *funcs: Callable[[T], Future[V | TError]],
-) -> Callable[[T], Future[V | TError]]:
+    *funcs: Callable[[T], future[V | TError]],
+) -> Callable[[T], future[V | TError]]:
 ```
 
 Combines multiple async functions that might return error into one.
@@ -204,7 +204,7 @@ def ok_when_future(
     predicate: Callable[[T], Awaitable[bool]],
     error: TError,
     value: T,
-) -> Future[T] | Future[TError]:
+) -> future[T] | future[TError]:
 ```
 
 Pass value only if async predicate is True, otherwise return error.
@@ -249,7 +249,7 @@ Excepts exception and returns that instead.
 ```python
 def safe_future(
     func: Callable[P, Awaitable[V]],
-) -> Callable[P, Future[V | TError]]:
+) -> Callable[P, future[V | TError]]:
 ```
 
 Decorator for async function that might raise an exception.
