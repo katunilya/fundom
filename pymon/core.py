@@ -128,13 +128,13 @@ def returns(x: T) -> Callable[P, T]:
     return _returns
 
 
-def returns_async(x: T) -> Callable[P, future[T]]:
+def returns_future(x: T) -> Callable[P, future[T]]:
     """Return awaitable `T` on any input."""
 
-    async def _returns_async(*_: P.args, **__: P.kwargs) -> T:
+    async def _returns_future(*_: P.args, **__: P.kwargs) -> T:
         return x
 
-    return _returns_async
+    return _returns_future
 
 
 @dataclass(slots=True, frozen=True)
