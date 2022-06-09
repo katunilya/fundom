@@ -95,15 +95,15 @@ class pipe(Generic[T]):  # noqa
         """
         return self.value
 
+    @staticmethod
+    def returns(func: Callable[P, pipe[T]]) -> Callable[P, T]:
+        """Decorator for functions that return `pipe` object for seamless unwrapping."""
 
-def pipeline(func: Callable[P, pipe[T]]) -> Callable[P, T]:
-    """Decorator for functions that return `Pipe` object for seamless unwrapping."""
+        @wraps(func)
+        def _wrapper(*args: P.args, **kwargs: P.kwargs) -> T:
+            return func(*args, **kwargs).value
 
-    @wraps(func)
-    def _wrapper(*args: P.args, **kwargs: P.kwargs) -> T:
-        return func(*args, **kwargs).value
-
-    return _wrapper
+        return _wrapper
 
 
 # identity utils
