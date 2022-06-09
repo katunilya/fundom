@@ -88,13 +88,13 @@ def returns_future(func: Callable[P, T]):
 
 
 @dataclass(slots=True, frozen=True)
-class Pipe(Generic[T]):
+class pipe(Generic[T]):  # noqa
     """Abstraction over some value to run in pipeline.
 
     Example::
 
             result: int = (
-                Pipe(12)
+                pipe(12)
                 << (lambda x: x + 1)
                 << (lambda x: x**2)
                 << (lambda x: x // 3)
@@ -103,16 +103,16 @@ class Pipe(Generic[T]):
 
     value: T
 
-    def then(self, func: Callable[[T], V]) -> Pipe[V]:
+    def then(self, func: Callable[[T], V]) -> pipe[V]:
         """Execute sync `func` next on internal value.
 
         Args:
             func (Callable[[T], V]): to execute.
 
         Returns:
-            Pipe[V]: execution result.
+            pipe[V]: execution result.
         """
-        return Pipe(func(self.value))
+        return pipe(func(self.value))
 
     def then_async(self, func: Callable[[T], Awaitable[V]]) -> Future[V]:
         """Execute async `func` next on internal value.
@@ -127,14 +127,14 @@ class Pipe(Generic[T]):
         """
         return Future(func(self.value))
 
-    def __lshift__(self, func: Callable[[T], V]) -> Pipe[V]:
+    def __lshift__(self, func: Callable[[T], V]) -> pipe[V]:
         return self.then(func)
 
     def __rshift__(self, func: Callable[[T], Awaitable[V]]) -> Future[V]:
         return self.then_async(func)
 
     def finish(self) -> T:
-        """Finish `Pipe` by unpacking internal value.
+        """Finish `pipe` by unpacking internal value.
 
         Returns:
             T: internal value
@@ -142,7 +142,7 @@ class Pipe(Generic[T]):
         return self.value
 
 
-def pipeline(func: Callable[P, Pipe[T]]) -> Callable[P, T]:
+def pipeline(func: Callable[P, pipe[T]]) -> Callable[P, T]:
     """Decorator for functions that return `Pipe` object for seamless unwrapping."""
 
     @wraps(func)
