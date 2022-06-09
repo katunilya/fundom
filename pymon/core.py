@@ -103,35 +103,11 @@ class pipe(Generic[T]):  # noqa
 
     value: T
 
-    def then(self, func: Callable[[T], V]) -> pipe[V]:
-        """Execute sync `func` next on internal value.
-
-        Args:
-            func (Callable[[T], V]): to execute.
-
-        Returns:
-            pipe[V]: execution result.
-        """
+    def __lshift__(self, func: Callable[[T], V]) -> pipe[V]:
         return pipe(func(self.value))
 
-    def then_async(self, func: Callable[[T], Awaitable[V]]) -> future[V]:
-        """Execute async `func` next on internal value.
-
-        Returns `future` for further pipeline.
-
-        Args:
-            func (Callable[[T], Awaitable[V]]): to execute.
-
-        Returns:
-            future[V]: execution result.
-        """
-        return future(func(self.value))
-
-    def __lshift__(self, func: Callable[[T], V]) -> pipe[V]:
-        return self.then(func)
-
     def __rshift__(self, func: Callable[[T], Awaitable[V]]) -> future[V]:
-        return self.then_async(func)
+        return future(func(self.value))
 
     def finish(self) -> T:
         """Finish `pipe` by unpacking internal value.
