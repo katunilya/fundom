@@ -1,12 +1,12 @@
 from .core import (
     Func,
-    Future,
     FutureFunc,
     cfilter,
     cmap,
     foldl,
     foldr,
     func,
+    future,
     future_func,
     hof1,
     hof2,
