@@ -41,36 +41,14 @@ class future(Generic[T]):  # noqa
     async def __then(self, func: Callable[[T], V]) -> V:
         return func(await self.value)
 
-    def then(self, func: Callable[[T], V]) -> future[V]:
-        """Execute sync `func` next on awaited internal value.
-
-        Args:
-            func (Callable[[T], V]): to execute.
-
-        Returns:
-            future[V]: awaitable result of execution.
-        """
-        return future(self.__then(func))
-
     async def __then_async(self, func: Callable[[T], Awaitable[V]]) -> V:
         return await func(await self.value)
 
-    def then_async(self, func: Callable[[T], Awaitable[V]]) -> future[V]:
-        """Execute async `func` next on awaited internal value.
-
-        Args:
-            func (Callable[[T], Awaitable[V]]): to execute.
-
-        Returns:
-            future[V]: awaitable result of execution.
-        """
+    def __rshift__(self, func: Callable[[T], Awaitable[V]]) -> future[V]:
         return future(self.__then_async(func))
 
-    def __rshift__(self, func: Callable[[T], Awaitable[V]]) -> future[V]:
-        return self.then_async(func)
-
     def __lshift__(self, func: Callable[[T], V]) -> future[V]:
-        return self.then(func)
+        return future(self.__then(func))
 
 
 def returns_future(func: Callable[P, T]):
