@@ -114,6 +114,7 @@ def this(x: T) -> T:
     return x
 
 
+@future.returns
 async def this_future(x: T) -> T:
     """Asynchronous identity function."""
     return x
@@ -131,6 +132,7 @@ def returns(x: T) -> Callable[P, T]:
 def returns_future(x: T) -> Callable[P, future[T]]:
     """Return awaitable `T` on any input."""
 
+    @future.returns
     async def _returns_future(*_: P.args, **__: P.kwargs) -> T:
         return x
 
