@@ -17,5 +17,5 @@ from .core import (
     returns_async,
     returns_future,
     this,
-    this_async,
+    this_future,
 )

@@ -2,7 +2,7 @@ from dataclasses import dataclass
 from functools import wraps
 from typing import Awaitable, Callable, ParamSpec, TypeVar
 
-from pymon.core import future, hof1, hof2, returns_future, this, this_async
+from pymon.core import future, hof1, hof2, returns_future, this, this_future
 
 V = TypeVar("V")
 T = TypeVar("T")
@@ -196,7 +196,7 @@ def choose_ok_future(
     """
     match funcs:
         case []:
-            return returns_future(this_async)
+            return returns_future(this_future)
         case _:
 
             @returns_future

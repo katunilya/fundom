@@ -114,7 +114,7 @@ def this(x: T) -> T:
     return x
 
 
-async def this_async(x: T) -> T:
+async def this_future(x: T) -> T:
     """Asynchronous identity function."""
     return x
 
