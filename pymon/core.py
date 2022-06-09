@@ -3,9 +3,11 @@ from __future__ import annotations
 from dataclasses import dataclass
 from functools import reduce, wraps
 from typing import (
+    Any,
     Awaitable,
     Callable,
     Concatenate,
+    Coroutine,
     Generator,
     Generic,
     Iterable,
@@ -51,7 +53,7 @@ class future(Generic[T]):  # noqa
         return future(self.__then(func))
 
     @staticmethod
-    def returns(func: Callable[P, T]):
+    def returns(func: Callable[P, Coroutine[Any, Any, T]]):
         """Wraps returned value of async function to `future`."""
 
         @wraps(func)
