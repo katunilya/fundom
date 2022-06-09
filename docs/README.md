@@ -8,14 +8,14 @@ Full Pymon project documentation can be found in [Modules](MODULES.md#pymon-modu
 
 - [▶️ pymon](#-pymon)
     - [Basics](#basics)
-        - [`Pipe` and `Future`](#pipe-and-future)
+        - [`pipe` and `future`](#pipe-and-future)
   - [Pymon Modules](MODULES.md#pymon-modules)
 
 ## Basics
 
-### `Pipe` and `Future`
+### `pipe` and `future`
 
-`Pipe` and `Future` are not really monads, but some abstractions that provides
+`pipe` and `future` are not really monads, but some abstractions that provides
 functionality for creating pipelines of sync and async functions. Inspired by
 `|>` F# operator.
 
@@ -33,45 +33,30 @@ operation is some multiply it by 2, than if result of previous operation is
 nothing return 0"
 
 Python does not have such operator. In this way I've attempted to provide 2
-abstraction compatible with each other - `Pipe` and `Future`.
+abstraction compatible with each other - `pipe` and `future`.
 
-`Pipe` is for calling synchronous functions one-by-one. Example:
-
-```python
-result = (
-  Pipe(3)
-  .then(lambda x: x + 1)
-  .then(lambda x: x * 2)
-  .finish()
-)
-```
-
-> Type hints are available. VS Code for example evaluates that the result is
-> `int` for this pipeline.
-
-Also `Pipe` supports `>>` and `<<` operators for executing async and sync
-functions:
+`pipe` is for calling synchronous functions one-by-one. Example:
 
 ```python
 result = (
-  Pipe(3)
+  pipe(3)
   << (lambda x: x + 1)
   << (lambda x: x * 2)
 ).finish()
 ```
 
-`finish` method is needed to return wrapped into `Pipe` container value, as on
-each `then` step value returned by passed function is wrapped into `Pipe`
+`finish` method is needed to return wrapped into `pipe` container value, as on
+each `<<` step value returned by passed function is wrapped into `pipe`
 container for further chaining.
 
-If your function returns `Pipe` object that to unpack that one can use
+If your function returns `pipe` object that to unpack that one can use
 `@pipeline` decorator.
 
 ```python
 @pipeline
 def parse_http_query(query: bytes) -> dict:
   return (
-    Pipe(query)
+    pipe(query)
     << some_when(is_not_empty)
     << if_some(bytes_decode("UTF-8"))
     << if_some(str_split("&"))
@@ -83,49 +68,38 @@ def parse_http_query(query: bytes) -> dict:
 
 However this limits us to working with synchronous functions only. What if we
 want to work with asynchronous functions (and event in synchronous context)? For
-that case we have `Future` container.
+that case we have `future` container.
 
-`Future` is some awaitable container that wraps some awaitable value and can
+`future` is some awaitable container that wraps some awaitable value and can
 evaluate next awaitable Future in synchronous context. It's easier to see once
 in action than to listen twice how it works.
 
 ```python
 result = await (
-  Pipe(3)
-  .then_async(this_async)  # returns Future
-  .then(lambda x: x + 1)
-  .then(lambda x: x * 2)
-)
-```
-
-Like `Pipe` supports `>>` and `<<` operators for executing functions.
-
-```python
-result = await (
-  Pipe(3)
+  pipe(3)
   >> this_async  # returns Future
   << (lambda x: x + 1)
   << (lambda x: x * 2)
 )
 ```
 
-`Future` does not have `finish` method like `Pipe` as it is awaitable and in
+`future` does not have `finish` method like `pipe` as it is awaitable and in
 some sense it has built-in unpacking keyword - `await`.
 
 Basically the way this containers map to each other looks like this. While we
-work with `Pipe` and sync functions we use `then` and remain in `Pipe` context.
-But right at the moment we need to apply some async function `Future` comes out
-and replaces `Pipe`.
+work with `pipe` and sync functions we use `<<` and remain in `pipe` context.
+But right at the moment we need to apply some async function `future` comes out
+and replaces `pipe`.
 
 ```mermaid
 graph LR;
   pipe(Pipe)
   future(Future)
 
-  pipe --then--> pipe
-  pipe --then_async--> future
-  future --then--> future
-  future --then_async--> future
+  pipe --"<<"--> pipe
+  pipe --">>"--> future
+  future --"<<"--> future
+  future --">>"--> future
 ```
 
 #### But why only one argument functions are supported?
@@ -148,7 +122,7 @@ There are drawbacks of each of the method:
 | --------- | ----------------------------- | ---------------------------------------- |
 | `partial` | no additional dependencies;   | type hints are lost; bad-looking syntax; |
 | `@curry`  | easy syntax for any function; | type hints are lost;                     |
-| HOFs      | type hints remain;            | might seem verbose;                     |
+| HOFs      | type hints remain;            | might seem verbose;                      |
 
 I consider it is a matter of personal preference which way to stick to, but I
 prefer the last option. In many cases it is not that difficult and hard to write
