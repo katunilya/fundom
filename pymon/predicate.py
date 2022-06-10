@@ -3,12 +3,12 @@ from __future__ import annotations
 from dataclasses import dataclass
 from typing import Awaitable, Callable, Iterable, ParamSpec, Sized, TypeVar
 
-from pymon.core import Func, FutureFunc
+from pymon.core import compose, compose_future
 
 P = ParamSpec("P")
 
 
-class FuturePredicate(FutureFunc[P, bool]):
+class FuturePredicate(compose_future[P, bool]):
     """Abstraction over async predicates."""
 
     func: Callable[P, Awaitable[bool]]
@@ -57,7 +57,7 @@ class FuturePredicate(FutureFunc[P, bool]):
 
 
 @dataclass(slots=True, frozen=True)
-class Predicate(Func[P, bool]):
+class Predicate(compose[P, bool]):
     """Abstraction over predicates."""
 
     func: Callable[P, bool]

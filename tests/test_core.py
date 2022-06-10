@@ -1,10 +1,10 @@
 import pytest
 
-from pymon.core import Func, func, future, this_future
+from pymon.core import compose, future, this_future
 
 
 def test_func():
-    f = Func(lambda x: x + 1)
+    f = compose(lambda x: x + 1)
 
     g = f << (lambda x: x + 3) << (lambda x: x**2)
 
@@ -28,6 +28,6 @@ def minus5(x: int):
 
 
 @pytest.mark.asyncio
-async def test_func_decorator():
-    f = func(add1) << add3 << power2 >> minus5
+async def test_compose():
+    f = compose() << add1 << add3 << power2 >> minus5
     assert await f(5) == 76

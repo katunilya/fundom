@@ -1,8 +1,8 @@
 from .core import (
-    Func,
-    FutureFunc,
     cfilter,
     cmap,
+    compose,
+    compose_future,
     foldl,
     foldr,
     func,
