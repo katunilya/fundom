@@ -143,7 +143,16 @@ def returns_future(x: T) -> Callable[P, future[T]]:
 
 @dataclass(slots=True, frozen=True)
 class compose_future(Generic[P, V]):  # noqa
-    """Abstraction over async function."""
+    """Abstraction over async function.
+
+    Example::
+
+            f: Callable[[int], future[int]] = (
+                compose_future()
+                >> async_add_1
+                << (lambda x: x ** 2)
+            )
+    """
 
     func: Callable[P, Awaitable[V]] = this_future
 
