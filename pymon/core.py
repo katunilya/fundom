@@ -165,7 +165,16 @@ class compose_future(Generic[P, V]):  # noqa
 
 @dataclass(slots=True, frozen=True)
 class compose(Generic[P, V]):  # noqa
-    """Function composition abstraction."""
+    """Function composition abstraction.
+
+    Example::
+
+            f: Callable[[int], int] = (
+                compose()
+                << (lambda x: x + 1)
+                << (lambda x: x ** 2)
+            )
+    """
 
     func: Callable[P, V] = this
 
