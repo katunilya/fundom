@@ -185,16 +185,6 @@ class compose(Generic[P, V]):  # noqa
         return compose_future(composition)
 
 
-def func(func: Callable[P, V]) -> compose[P, V]:
-    """Decorator for making functions composable."""
-    return compose(func)
-
-
-def future_func(func: Callable[P, Awaitable[V]]) -> compose_future[P, V]:
-    """Decorator for making async functions composable."""
-    return compose_future(func)
-
-
 # curring utils
 
 A1 = TypeVar("A1")
