@@ -111,15 +111,15 @@ class pipe(Generic[T]):  # noqa
 # identity utils
 
 
-def this(x: T) -> T:
+def this(*args: P.args, **_: P.kwargs):
     """Synchronous identity function."""
-    return x
+    return args
 
 
 @future.returns
-async def this_future(x: T) -> T:
+async def this_future(*args: P.args, **_: P.kwargs):
     """Asynchronous identity function."""
-    return x
+    return args
 
 
 def returns(x: T) -> Callable[P, T]:
