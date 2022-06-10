@@ -111,13 +111,13 @@ class pipe(Generic[T]):  # noqa
 # identity utils
 
 
-def this(args):
+def this(args: T) -> T:
     """Synchronous identity function."""
     return args
 
 
 @future.returns
-async def this_future(args):
+async def this_future(args: T) -> T:
     """Asynchronous identity function."""
     return args
 
