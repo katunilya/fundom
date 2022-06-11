@@ -141,9 +141,11 @@ def returns_future(x: T) -> Callable[P, future[T]]:
     return _returns_future
 
 
-@dataclass(slots=True, frozen=True)
+@dataclass(slots=True, init=False)
 class compose_future(Generic[P, V]):  # noqa
     """Abstraction over async function.
+
+    If no function is passed to composition than `Exception` would be raised on call.
 
     Example::
 
@@ -154,27 +156,79 @@ class compose_future(Generic[P, V]):  # noqa
             )
     """
 
-    func: Callable[P, Awaitable[V]] = this_future
+    funcs: list
+    first_async: bool | None
+    last_async: bool | None
 
-    def __call__(self, *args: P.args, **kwds: P.kwargs) -> future[V]:  # noqa
-        return future(self.func(*args, **kwds))
+    def __init__(self) -> None:
+        self.funcs = []
+        self.first_async = None
+        self.last_async = None
 
-    def __lshift__(self, other: Callable[[V], U]) -> compose_future[P, U]:
-        def composition(*args: P.args, **kwargs: P.kwargs) -> U:
-            return self.__call__(*args, **kwargs) << other
+    def __call__(self, *args: P.args, **_: P.kwargs) -> future[V]:  # noqa
+        if len(self.funcs) == 0:
+            raise Exception("Empty function composition.")
 
-        return compose_future(composition)
+        if self.first_async:
+            current_async = True
+            result = future(self.funcs[0][0](*args))
+            for f in self.funcs[0][1:]:
+                result = result >> f
+        else:
+            current_async = False
+            result = pipe(self.funcs[0][0](*args))
+            for f in self.funcs[0][1:]:
+                result = result << f
 
-    def __rshift__(self, other: Callable[[V], Awaitable[U]]) -> compose_future[P, U]:
-        def composition(*args: P.args, **kwargs: P.kwargs) -> future[U]:
-            return self.__call__(*args, **kwargs) >> other
+        current_async = not current_async
 
-        return compose_future(composition)
+        for g in self.funcs[1:]:
+            for f in g:
+                if current_async:
+                    result = result >> f
+                else:
+                    result = result >> f
+
+            current_async = not current_async
+
+        return result
+
+    def __lshift__(self, nxt: Callable[[V], U]) -> compose_future[P, U]:
+        if self.first_async is None:
+            self.first_async = False
+            self.last_async = False
+            self.funcs.append([nxt])
+            return self
+
+        if self.last_async:
+            self.funcs.append([nxt])
+            self.last_async = False
+        else:
+            self.funcs[-1].append(nxt)
+
+        return self
+
+    def __rshift__(self, nxt: Callable[[V], Awaitable[U]]) -> compose_future[P, U]:
+        if self.first_async is None:
+            self.first_async = True
+            self.last_async = True
+            self.funcs.append([nxt])
+            return self
+
+        if self.last_async:
+            self.funcs[-1].append(nxt)
+        else:
+            self.last_async = True
+            self.funcs.append([nxt])
+
+        return self
 
 
-@dataclass(slots=True, frozen=True)
+@dataclass(slots=True, init=False)
 class compose(Generic[P, V]):  # noqa
     """Function composition abstraction.
+
+    If no function is passed to composition than `Exception` would be raised on call.
 
     Example::
 
@@ -185,22 +239,32 @@ class compose(Generic[P, V]):  # noqa
             )
     """
 
-    func: Callable[P, V] = this
+    funcs: list[Callable]
 
-    def __call__(self, *args: P.args, **kwds: P.kwargs) -> V:  # noqa
-        return self.func(*args, **kwds)
+    def __init__(self) -> None:
+        self.funcs = []
 
-    def __lshift__(self, other: Callable[[V], U]) -> compose[P, U]:
-        def composition(*args: P.args, **kwargs: P.kwargs) -> U:
-            return other(self.__call__(*args, **kwargs))
+    def __call__(self, *args: P.args, **_: P.kwargs) -> V:  # noqa
+        if len(self.funcs) == 0:
+            raise Exception("Empty function composition.")
 
-        return compose(composition)
+        result = self.funcs[0](*args)
 
-    def __rshift__(self, other: Callable[[V], Awaitable[U]]) -> compose_future[P, U]:
-        def composition(*args: P.args, **kwargs: P.kwargs) -> Awaitable[U]:
-            return other(self.__call__(*args, **kwargs))
+        for func in self.funcs[1:]:
+            result = func(result)
 
-        return compose_future(composition)
+        return result
+
+    def __lshift__(self, nxt: Callable[[V], U]) -> compose[P, U]:
+        self.funcs.append(nxt)
+        return self
+
+    def __rshift__(self, nxt: Callable[[V], Awaitable[U]]) -> compose_future[P, U]:
+        cf = compose_future()
+        for f in self.funcs:
+            cf = cf << f
+
+        return cf >> nxt
 
 
 # curring utils
