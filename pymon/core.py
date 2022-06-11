@@ -142,7 +142,7 @@ def returns_future(x: T) -> Callable[P, future[T]]:
 
 
 @dataclass(slots=True, init=False)
-class compose_future(Generic[P, V]):  # noqa
+class _compose_future(Generic[P, V]):  # noqa
     """Abstraction over async function.
 
     If no function is passed to composition than `Exception` would be raised on call.
@@ -193,7 +193,7 @@ class compose_future(Generic[P, V]):  # noqa
 
         return result
 
-    def __lshift__(self, nxt: Callable[[V], U]) -> compose_future[P, U]:
+    def __lshift__(self, nxt: Callable[[V], U]) -> _compose_future[P, U]:
         if self.first_async is None:
             self.first_async = False
             self.last_async = False
@@ -208,7 +208,7 @@ class compose_future(Generic[P, V]):  # noqa
 
         return self
 
-    def __rshift__(self, nxt: Callable[[V], Awaitable[U]]) -> compose_future[P, U]:
+    def __rshift__(self, nxt: Callable[[V], Awaitable[U]]) -> _compose_future[P, U]:
         if self.first_async is None:
             self.first_async = True
             self.last_async = True
@@ -259,8 +259,8 @@ class compose(Generic[P, V]):  # noqa
         self.funcs.append(nxt)
         return self
 
-    def __rshift__(self, nxt: Callable[[V], Awaitable[U]]) -> compose_future[P, U]:
-        cf = compose_future()
+    def __rshift__(self, nxt: Callable[[V], Awaitable[U]]) -> _compose_future[P, U]:
+        cf = _compose_future()
         for f in self.funcs:
             cf = cf << f
 

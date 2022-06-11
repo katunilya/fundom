@@ -2,7 +2,6 @@ from .core import (
     cfilter,
     cmap,
     compose,
-    compose_future,
     foldl,
     foldr,
     future,
