@@ -46,3 +46,16 @@ async def test_compose_async_only(funcs, arg, result):
         c = c >> func
 
     assert await c(arg) == result
+
+
+@pytest.mark.asyncio
+async def test_compose_sync_async():
+    f = (
+        compose()
+        << (lambda x: x + 1)
+        << (lambda x: x**2)
+        >> add_1
+        >> more_then_3
+        << (lambda t: not t)
+    )
+    assert await f(3) is False
