@@ -2,7 +2,7 @@ from dataclasses import dataclass
 from functools import wraps
 from typing import Awaitable, Callable, ParamSpec, TypeVar
 
-from pymon.core import future, hof1, hof2, returns_future, this, this_async
+from pymon.core import future, hof1, hof2, this, this_future
 
 V = TypeVar("V")
 T = TypeVar("T")
@@ -81,7 +81,7 @@ def safe_future(func: Callable[P, Awaitable[V]]) -> Callable[P, future[V | TErro
     """
 
     @wraps(func)
-    @returns_future
+    @future.returns
     async def _wrapper(*args: P.args, **kwargs: P.kwargs) -> V | TError:
         try:
             return await func(*args, **kwargs)
@@ -196,10 +196,10 @@ def choose_ok_future(
     """
     match funcs:
         case []:
-            return returns_future(this_async)
+            return this_future
         case _:
 
-            @returns_future
+            @future.returns
             async def _choose(value: T) -> V | TError:
                 for func in funcs:
                     match await func(value):
