@@ -187,7 +187,7 @@ class compose_future(Generic[P, V]):  # noqa
                 if current_async:
                     result = result >> f
                 else:
-                    result = result >> f
+                    result = result << f
 
             current_async = not current_async
 
