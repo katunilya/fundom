@@ -17,3 +17,32 @@ def test_compose_sync_only(funcs, arg, result):
         c = c << func
 
     assert c(arg) == result
+
+
+async def add_1(x: int) -> int:
+    return x + 1
+
+
+async def power_2(x: int) -> int:
+    return x**2
+
+
+async def more_then_3(x: int) -> bool:
+    return x > 3
+
+
+@pytest.mark.asyncio
+@pytest.mark.parametrize(
+    "funcs, arg, result",
+    [
+        ([add_1], 3, 4),
+        ([add_1, power_2], 3, 16),
+        ([more_then_3], 1, False),
+    ],
+)
+async def test_compose_async_only(funcs, arg, result):
+    c = compose()
+    for func in funcs:
+        c = c >> func
+
+    assert await c(arg) == result
