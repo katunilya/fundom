@@ -1,7 +1,7 @@
 from typing import Iterable, SupportsIndex
 
-from pymon.core import hof1, hof2, hof3
-from pymon.result import safe
+from fundom.core import hof1, hof2, hof3
+from fundom.result import safe
 
 
 @hof2

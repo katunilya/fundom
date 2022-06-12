@@ -1,21 +1,28 @@
-# ▶️ pymon
+# ▶️ fundom
 
 > Auto-generated documentation index.
 
-`pymon` is an API for writing functional pipelines with Python3.10+.
+`fundom` is an API for writing functional pipelines with Python3.10+. It is
+developed with Domain Driven Design in mind and highly inspired by the concepts
+of functional domain modelling.
 
 Full Pymon project documentation can be found in [Modules](MODULES.md#pymon-modules)
 
-- [▶️ pymon](#-pymon)
-    - [Basics](#basics)
-        - [`Pipe` and `Future`](#pipe-and-future)
+- [▶️ fundom](#-fundom)
+    - [Features](#features)
+        - [`pipe` and `future`](#pipe-and-future)
+        - [Composition](#composition)
+        - [Maybe monad](#maybe-monad)
+        - [Result monad](#result-monad)
+        - [Predicates](#predicates)
+        - [FAQ](#faq)
   - [Pymon Modules](MODULES.md#pymon-modules)
 
-## Basics
+## Features
 
-### `Pipe` and `Future`
+### `pipe` and `future`
 
-`Pipe` and `Future` are not really monads, but some abstractions that provides
+`pipe` and `future` are not really monads, but some abstractions that provides
 functionality for creating pipelines of sync and async functions. Inspired by
 `|>` F# operator.
 
@@ -33,45 +40,30 @@ operation is some multiply it by 2, than if result of previous operation is
 nothing return 0"
 
 Python does not have such operator. In this way I've attempted to provide 2
-abstraction compatible with each other - `Pipe` and `Future`.
+abstraction compatible with each other - `pipe` and `future`.
 
-`Pipe` is for calling synchronous functions one-by-one. Example:
-
-```python
-result = (
-  Pipe(3)
-  .then(lambda x: x + 1)
-  .then(lambda x: x * 2)
-  .finish()
-)
-```
-
-> Type hints are available. VS Code for example evaluates that the result is
-> `int` for this pipeline.
-
-Also `Pipe` supports `>>` and `<<` operators for executing async and sync
-functions:
+`pipe` is for calling synchronous functions one-by-one. Example:
 
 ```python
 result = (
-  Pipe(3)
+  pipe(3)
   << (lambda x: x + 1)
   << (lambda x: x * 2)
 ).finish()
 ```
 
-`finish` method is needed to return wrapped into `Pipe` container value, as on
-each `then` step value returned by passed function is wrapped into `Pipe`
+`finish` method is needed to return wrapped into `pipe` container value, as on
+each `<<` step value returned by passed function is wrapped into `pipe`
 container for further chaining.
 
-If your function returns `Pipe` object that to unpack that one can use
-`@pipeline` decorator.
+If your function returns `pipe` object that to unpack that one can use
+`@pipe.returns` decorator.
 
 ```python
-@pipeline
+@pipe.returns
 def parse_http_query(query: bytes) -> dict:
   return (
-    Pipe(query)
+    pipe(query)
     << some_when(is_not_empty)
     << if_some(bytes_decode("UTF-8"))
     << if_some(str_split("&"))
@@ -83,50 +75,127 @@ def parse_http_query(query: bytes) -> dict:
 
 However this limits us to working with synchronous functions only. What if we
 want to work with asynchronous functions (and event in synchronous context)? For
-that case we have `Future` container.
+that case we have `future` container.
 
-`Future` is some awaitable container that wraps some awaitable value and can
+`future` is some awaitable container that wraps some awaitable value and can
 evaluate next awaitable Future in synchronous context. It's easier to see once
 in action than to listen twice how it works.
 
 ```python
 result = await (
-  Pipe(3)
-  .then_async(this_async)  # returns Future
-  .then(lambda x: x + 1)
-  .then(lambda x: x * 2)
-)
-```
-
-Like `Pipe` supports `>>` and `<<` operators for executing functions.
-
-```python
-result = await (
-  Pipe(3)
+  pipe(3)
   >> this_async  # returns Future
   << (lambda x: x + 1)
   << (lambda x: x * 2)
 )
 ```
 
-`Future` does not have `finish` method like `Pipe` as it is awaitable and in
+`future` does not have `finish` method like `pipe` as it is awaitable and in
 some sense it has built-in unpacking keyword - `await`.
 
+Also sometimes it might be useful to wrap value returns by async function into
+future. For that one can use `@future.returns` decorator:
+
+```py
+@future.returns
+async def some_future_function(arg: int) -> bool:
+  ...
+```
+
 Basically the way this containers map to each other looks like this. While we
-work with `Pipe` and sync functions we use `then` and remain in `Pipe` context.
-But right at the moment we need to apply some async function `Future` comes out
-and replaces `Pipe`.
+work with `pipe` and sync functions we use `<<` and remain in `pipe` context.
+But right at the moment we need to apply some async function `future` comes out
+and replaces `pipe`.
 
 ```mermaid
 graph LR;
   pipe(Pipe)
   future(Future)
 
-  pipe --then--> pipe
-  pipe --then_async--> future
-  future --then--> future
-  future --then_async--> future
+  pipe --"<<"--> pipe
+  pipe --">>"--> future
+  future --"<<"--> future
+  future --">>"--> future
 ```
+
+This scheme describes how `pipe` and `future` convert to each other during
+pipeline execution.
+
+`pipe` and `future` are main building blocks for functional pipelines.
+
+### Composition
+
+Function composition is important feature that allows us to build functions on
+the fly. For that `fundom` provides special `compose` function (actually it is
+class). It has the same interface as `pipe`/`future` but does not take input
+argument:
+
+```py
+parse_http_query: Callable[[bytes], dict] = (
+  compose()
+  << some_when(is_not_empty)
+  << if_some(bytes_decode("UTF-8"))
+  << if_some(str_split("&"))
+  << if_some(cmap(str_split("=")))
+  << if_some(dict)
+  << if_none(returns({}))
+)
+```
+
+Sync functions are composed with `<<` and async with `>>`. I suggest providing
+type annotation for functions created via `compose`, especially it is important
+for domain modelling.
+
+### Maybe monad
+
+`fundom` does not provide dedicated `Maybe` monad with dedicates containers like
+`Just`/`Some` and `Nothing`, but provides multiple functions for handling
+`None`:
+
+- `if_some`
+- `if_none`
+- `if_some_returns`
+- `if_none_returns`
+- `some_when`
+- `some_when_future`
+- `choose_some`
+- `choose_some_future`
+
+### Result monad
+
+`Result` monad also known as `Either` is not provided by `fundom` too. But there
+is interface for handling `Exception` objects:
+
+- `if_ok`
+- `if_error`
+- `if_ok_returns`
+- `if_error_returns`
+- `ok_when`
+- `ok_when_future`
+- `choose_ok`
+- `choose_ok_future`
+- `safe`
+- `safe_future`
+
+### Predicates
+
+Often we have some expressions that return boolean values (logical). To provide
+composition for such functions - predicates - there are 2 combinators: `each`
+and `one`.
+
+`each` performs logical AND operation across predicates and stands for
+mathematical conjunction. `one` on the other hand performs logical OR and
+implements disjunction.
+
+```py
+p = (
+  one()
+  << (each() << (lambda x: x > 3) << (lambda x: x < 10))
+  << (each() << (lambda x: x > 23) << (lambda x: x < 55))
+)
+```
+
+### FAQ
 
 #### But why only one argument functions are supported?
 
@@ -148,7 +217,7 @@ There are drawbacks of each of the method:
 | --------- | ----------------------------- | ---------------------------------------- |
 | `partial` | no additional dependencies;   | type hints are lost; bad-looking syntax; |
 | `@curry`  | easy syntax for any function; | type hints are lost;                     |
-| HOFs      | type hints remain;            | might seem verbose;                     |
+| HOFs      | type hints remain;            | might seem verbose;                      |
 
 I consider it is a matter of personal preference which way to stick to, but I
 prefer the last option. In many cases it is not that difficult and hard to write
@@ -168,7 +237,7 @@ def encode(encoding: str, data: str) -> bytes:
   return data.encode(encoding)
 
 result = (
-  Pipe("Hello, world!")
+  pipe("Hello, world!")
   << split(" ")
   << cmap(encode("UTF-8"))
   << list

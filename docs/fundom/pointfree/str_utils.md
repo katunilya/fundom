@@ -1,8 +1,8 @@
 # Str Utils
 
-> Auto-generated documentation for [pymon.pointfree.str_utils](https://github.com/katunilya/pymon/blob/main/pymon/pointfree/str_utils.py) module.
+> Auto-generated documentation for [fundom.pointfree.str_utils](https://github.com/katunilya/pymon/blob/main/fundom/pointfree/str_utils.py) module.
 
-- [Pymon](../../README.md#-pymon) / [Modules](../../MODULES.md#pymon-modules) / [Pymon](../index.md#pymon) / [Pointfree](index.md#pointfree) / Str Utils
+- [Pymon](../../README.md#-fundom) / [Modules](../../MODULES.md#pymon-modules) / [Fundom](../index.md#fundom) / [Pointfree](index.md#pointfree) / Str Utils
     - [center](#center)
     - [count](#count)
     - [encode](#encode)
@@ -20,7 +20,7 @@
 
 ## center
 
-[[find in source code]](https://github.com/katunilya/pymon/blob/main/pymon/pointfree/str_utils.py#L7)
+[[find in source code]](https://github.com/katunilya/pymon/blob/main/fundom/pointfree/str_utils.py#L7)
 
 ```python
 @hof2
@@ -41,7 +41,7 @@ Point-free version of `str.center`.
 
 ## count
 
-[[find in source code]](https://github.com/katunilya/pymon/blob/main/pymon/pointfree/str_utils.py#L19)
+[[find in source code]](https://github.com/katunilya/pymon/blob/main/fundom/pointfree/str_utils.py#L19)
 
 ```python
 @hof3
@@ -65,7 +65,7 @@ Point-free version of `str.count`.
 
 ## encode
 
-[[find in source code]](https://github.com/katunilya/pymon/blob/main/pymon/pointfree/str_utils.py#L33)
+[[find in source code]](https://github.com/katunilya/pymon/blob/main/fundom/pointfree/str_utils.py#L33)
 
 ```python
 @hof1
@@ -91,7 +91,7 @@ bytes | Exception: result
 
 ## endswith
 
-[[find in source code]](https://github.com/katunilya/pymon/blob/main/pymon/pointfree/str_utils.py#L48)
+[[find in source code]](https://github.com/katunilya/pymon/blob/main/fundom/pointfree/str_utils.py#L48)
 
 ```python
 @hof1
@@ -115,7 +115,7 @@ Point-free version of `str.endswith`.
 
 ## find
 
-[[find in source code]](https://github.com/katunilya/pymon/blob/main/pymon/pointfree/str_utils.py#L62)
+[[find in source code]](https://github.com/katunilya/pymon/blob/main/fundom/pointfree/str_utils.py#L62)
 
 ```python
 def find(sub: str, arg: str) -> int | None:
@@ -134,7 +134,7 @@ int | None: lowest index in arg where sub is found. `None` if nothing found.
 
 ## index
 
-[[find in source code]](https://github.com/katunilya/pymon/blob/main/pymon/pointfree/str_utils.py#L79)
+[[find in source code]](https://github.com/katunilya/pymon/blob/main/fundom/pointfree/str_utils.py#L79)
 
 ```python
 @hof1
@@ -160,7 +160,7 @@ Point-free version of `str.index`.
 
 ## join
 
-[[find in source code]](https://github.com/katunilya/pymon/blob/main/pymon/pointfree/str_utils.py#L108)
+[[find in source code]](https://github.com/katunilya/pymon/blob/main/fundom/pointfree/str_utils.py#L108)
 
 ```python
 @hof1
@@ -184,7 +184,7 @@ Point-free version of `str.join`.
 
 ## join_by
 
-[[find in source code]](https://github.com/katunilya/pymon/blob/main/pymon/pointfree/str_utils.py#L94)
+[[find in source code]](https://github.com/katunilya/pymon/blob/main/fundom/pointfree/str_utils.py#L94)
 
 ```python
 @hof1
@@ -208,7 +208,7 @@ Join incoming `Iterable[str]` by some `concatenation`.
 
 ## removeprefix
 
-[[find in source code]](https://github.com/katunilya/pymon/blob/main/pymon/pointfree/str_utils.py#L122)
+[[find in source code]](https://github.com/katunilya/pymon/blob/main/fundom/pointfree/str_utils.py#L122)
 
 ```python
 @hof1
@@ -233,7 +233,7 @@ Otherwise, return a copy of the original string:
 
 ## removesuffix
 
-[[find in source code]](https://github.com/katunilya/pymon/blob/main/pymon/pointfree/str_utils.py#L137)
+[[find in source code]](https://github.com/katunilya/pymon/blob/main/fundom/pointfree/str_utils.py#L137)
 
 ```python
 @hof1
@@ -258,7 +258,7 @@ return string[:-len(suffix)]. Otherwise, return a copy of the original string:
 
 ## replace
 
-[[find in source code]](https://github.com/katunilya/pymon/blob/main/pymon/pointfree/str_utils.py#L152)
+[[find in source code]](https://github.com/katunilya/pymon/blob/main/fundom/pointfree/str_utils.py#L152)
 
 ```python
 @hof2
@@ -283,7 +283,7 @@ Point-free version of `str.replace`.
 
 ## split
 
-[[find in source code]](https://github.com/katunilya/pymon/blob/main/pymon/pointfree/str_utils.py#L167)
+[[find in source code]](https://github.com/katunilya/pymon/blob/main/fundom/pointfree/str_utils.py#L167)
 
 ```python
 @hof1
@@ -307,7 +307,7 @@ Point-free version of `str.split`.
 
 ## startswith
 
-[[find in source code]](https://github.com/katunilya/pymon/blob/main/pymon/pointfree/str_utils.py#L181)
+[[find in source code]](https://github.com/katunilya/pymon/blob/main/fundom/pointfree/str_utils.py#L181)
 
 ```python
 @hof1
@@ -331,7 +331,7 @@ Point-free version of `str.startswith`.
 
 ## strip
 
-[[find in source code]](https://github.com/katunilya/pymon/blob/main/pymon/pointfree/str_utils.py#L195)
+[[find in source code]](https://github.com/katunilya/pymon/blob/main/fundom/pointfree/str_utils.py#L195)
 
 ```python
 @hof1

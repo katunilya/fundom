@@ -30,10 +30,20 @@ jobs:
           poetry install
       - name: Check flake8
         run: |
-          poetry run flake8 pymon --count --show-source --statistics
+          poetry run flake8 fundom --count --show-source --statistics
       - name: Check isort
         run: |
-          poetry run isort pymon/**/*.py --check-only --verbose
+          poetry run isort fundom/**/*.py --check-only --verbose
       - name: Test with pytest
         run: |
           poetry run pytest
+      - name: Generate Report
+        run: |
+          poetry run pytest --cov=./ --cov-report=xml
+      - name: Upload Coverage to Codecov
+        uses: codecov/codecov-action@v3.1.0
+        with:
+          token: ${{ secrets.CODECOV_TOKEN }}
+          env_vars: OS,PYTHON
+          fail_ci_if_error: true
+          verbose: true
