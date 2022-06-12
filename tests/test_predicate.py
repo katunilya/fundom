@@ -89,3 +89,13 @@ async def test_one_sync_and_async():
     assert await e(6) is True
     assert await e(7) is True
     assert await e(15) is True
+
+
+def test_one_returns_false():
+    o = one()
+    assert o(1) is False
+
+
+def test_each_returns_true():
+    e = each()
+    assert e(1) is True
