@@ -54,7 +54,16 @@ class future(Generic[T]):  # noqa
 
     @staticmethod
     def returns(func: Callable[P, Coroutine[Any, Any, T]]):
-        """Wraps returned value of async function to `future`."""
+        """Wraps returned value of async function to `future`.
+
+        Return value of function is wrapped into `future`.
+
+        Example::
+
+                @future.returns
+                async def some_async_func(x: int, y: int) -> str:
+                    ...
+        """
 
         @wraps(func)
         def wrapper(*args: P.args, **kwargs: P.kwargs) -> future[T]:
