@@ -2,7 +2,7 @@ import inspect
 
 import pytest
 
-from pymon.core import compose, future
+from pymon.core import compose, future, pipe
 
 
 @pytest.mark.parametrize(
@@ -99,3 +99,10 @@ async def test_future_rshift():
 
     assert inspect.isawaitable(fv)
     assert await fv == 4
+
+
+def test_pipe_lshift():
+    pl = pipe(3) << (lambda x: x + 3)
+
+    assert isinstance(pl, pipe)
+    assert pl.value == 6
