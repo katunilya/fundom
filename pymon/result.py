@@ -96,6 +96,10 @@ def check(
 ) -> T | TError:
     """Pass value only if predicate is True, otherwise return error.
 
+    Examples::
+
+            policy = check(lambda x: x > 10, lambda _: Exception("More than 10"))
+
     Args:
         predicate (Callable[[T], bool]): to fulfill.
         create_error (Callable[[T], TError]): factory function for error.
@@ -123,13 +127,17 @@ def check_future(
 ) -> future[T] | future[TError]:
     """Pass value only if async predicate is True, otherwise return error.
 
+    Examples::
+
+            policy = check_future(more_than_10, lambda _: Exception("More than 10"))
+
     Args:
         predicate (Callable[[T], bool]): to fulfill.
         create_error (Callable[[T], TError]): factory function for error.
         value (T): to process.
 
     Returns:
-        Future[T] | Future[TError]: result.
+        future[T] | future[TError]: result.
     """
     return future(__check_future(predicate, create_error, value))
 
