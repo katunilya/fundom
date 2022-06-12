@@ -119,3 +119,8 @@ async def test_pipe_rshift():
 def test_pipe_finish():
     pl = pipe(3) << (lambda x: x + 3)
     assert pl.finish() == 6
+
+
+def test_pipe_returns():
+    f = pipe.returns(lambda x: pipe(x) >> (lambda x: x + 3))
+    assert f(3) == 6
