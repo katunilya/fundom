@@ -91,7 +91,7 @@ def safe_future(func: Callable[P, Awaitable[V]]) -> Callable[P, future[V | TErro
 
 
 @hof2
-def ok_when(
+def check(
     predicate: Callable[[T], bool], create_error: Callable[[T], TError], value: T
 ) -> T | TError:
     """Pass value only if predicate is True, otherwise return error.
@@ -107,7 +107,7 @@ def ok_when(
     return value if predicate(value) else create_error(value)
 
 
-async def __ok_when_future(
+async def __check_future(
     predicate: Callable[[T], Awaitable[bool]],
     create_error: Callable[[T], TError],
     value: T,
@@ -116,7 +116,7 @@ async def __ok_when_future(
 
 
 @hof2
-def ok_when_future(
+def check_future(
     predicate: Callable[[T], Awaitable[bool]],
     create_error: Callable[[T], TError],
     value: T,
@@ -131,7 +131,7 @@ def ok_when_future(
     Returns:
         Future[T] | Future[TError]: result.
     """
-    return future(__ok_when_future(predicate, create_error, value))
+    return future(__check_future(predicate, create_error, value))
 
 
 def choose_ok(*funcs: Callable[[T], V | TError]) -> Callable[[T], V | TError]:
