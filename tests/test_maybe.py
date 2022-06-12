@@ -14,7 +14,6 @@ def test_if_some_returns(replacement, value, result):
     assert if_some_returns(replacement)(value) == result
 
 
-# TODO rename
 @pytest.mark.parametrize(
     "value, funcs, result",
     [
@@ -24,7 +23,7 @@ def test_if_some_returns(replacement, value, result):
         (3, [lambda _: None, lambda x: x + 2], 5),
     ],
 )
-def test_choose(value, funcs, result):
+def test_choose_some(value, funcs, result):
     c = choose_some()
 
     for func in funcs:
@@ -33,14 +32,12 @@ def test_choose(value, funcs, result):
     assert c(value) == result
 
 
-# TODO rename
-def test_choose_some_returns_error_on_empty():
+def test_choose_some_returns_none_on_empty():
     c = choose_some()
     assert c(1) is None
 
 
-# TODO rename
-def test_choose_some_returns_error_on_failed():
+def test_choose_some_returns_none_on_failed():
     c = (
         choose_some()
         | (lambda x: x if x < 3 else None)
