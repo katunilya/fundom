@@ -86,11 +86,7 @@ def some_when(predicate: Callable[[T], bool], data: T) -> T | None:
     Returns:
         T | None: result.
     """
-    match predicate(data):
-        case True:
-            return data
-        case False:
-            return None
+    return data if predicate(data) else None
 
 
 P = ParamSpec("P")
