@@ -11,6 +11,8 @@ from pymon.result import (
     if_error_returns,
     if_ok,
     if_ok_returns,
+    ok_when,
+    ok_when_future,
 )
 
 
@@ -61,6 +63,23 @@ def test_if_ok_returns(replacement, value, result):
 )
 def test_if_error_returns(replacement, value, result):
     assert if_error_returns(replacement)(value) == result
+
+
+def test_ok_when():
+    p = ok_when(lambda x: x > 15, lambda _: TestError())
+    assert p(10) == TestError()
+    assert p(16) == 16
+
+
+async def more_than_15(x: int) -> bool:
+    return x > 15
+
+
+@pytest.mark.asyncio
+async def test_ok_when_future():
+    p = ok_when_future(more_than_15, lambda _: TestError())
+    assert await p(10) == TestError()
+    assert await p(16) == 16
 
 
 @pytest.mark.parametrize(
