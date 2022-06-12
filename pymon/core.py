@@ -54,7 +54,16 @@ class future(Generic[T]):  # noqa
 
     @staticmethod
     def returns(func: Callable[P, Coroutine[Any, Any, T]]):
-        """Wraps returned value of async function to `future`."""
+        """Wraps returned value of async function to `future`.
+
+        Return value of function is wrapped into `future`.
+
+        Example::
+
+                @future.returns
+                async def some_async_func(x: int, y: int) -> str:
+                    ...
+        """
 
         @wraps(func)
         def wrapper(*args: P.args, **kwargs: P.kwargs) -> future[T]:
@@ -92,6 +101,15 @@ class pipe(Generic[T]):  # noqa
     def finish(self) -> T:
         """Finish `pipe` by unpacking internal value.
 
+        Example::
+
+                result = (
+                    pipe(3)
+                    << (lambda x: x + 1)
+                    << (lambda x: x**2)
+                )
+                value = result.finish()
+
         Returns:
             T: internal value
         """
@@ -99,7 +117,21 @@ class pipe(Generic[T]):  # noqa
 
     @staticmethod
     def returns(func: Callable[P, pipe[T]]) -> Callable[P, T]:
-        """Decorator for functions that return `pipe` object for seamless unwrapping."""
+        """Decorator for functions that return `pipe` object for seamless unwrapping.
+
+        Example::
+
+                @pipe.returns
+                def some_function(x: int) -> pipe[bool]:
+                    return (
+                        pipe(x)
+                        << (lambda x: x + 1)
+                        << some_when(lambda x: x > 10)
+                        << if_some_returns(True)
+                        << if_none_returns(False)
+
+                # returned type is bool
+        """
 
         @wraps(func)
         def _wrapper(*args: P.args, **kwargs: P.kwargs) -> T:
@@ -112,18 +144,33 @@ class pipe(Generic[T]):  # noqa
 
 
 def this(args: T) -> T:
-    """Synchronous identity function."""
+    """Synchronous identity function.
+
+    Example::
+
+            this(3)  # 3
+    """
     return args
 
 
 @future.returns
 async def this_future(args: T) -> T:
-    """Asynchronous identity function."""
+    """Asynchronous identity function.
+
+    Example::
+
+            this_future(3)  # future(3)
+    """
     return args
 
 
 def returns(x: T) -> Callable[P, T]:
-    """Return `T` on any input."""
+    """Return `T` on any input.
+
+    Example::
+
+            get_none: Callable[..., None] = returns(None)
+    """
 
     def _returns(*_: P.args, **__: P.kwargs) -> T:
         return x
@@ -132,7 +179,12 @@ def returns(x: T) -> Callable[P, T]:
 
 
 def returns_future(x: T) -> Callable[P, future[T]]:
-    """Return awaitable `T` on any input."""
+    """Return awaitable `T` on any input.
+
+    Example::
+
+            get_none_future: Callable[..., future[None]] = returns_future(None)
+    """
 
     @future.returns
     async def _returns_future(*_: P.args, **__: P.kwargs) -> T:
@@ -143,18 +195,6 @@ def returns_future(x: T) -> Callable[P, future[T]]:
 
 @dataclass(slots=True, init=False)
 class _compose_future(Generic[P, V]):  # noqa
-    """Abstraction over async function.
-
-    If no function is passed to composition than `Exception` would be raised on call.
-
-    Example::
-
-            f: Callable[[int], future[int]] = (
-                compose_future()
-                >> async_add_1
-                << (lambda x: x ** 2)
-            )
-    """
 
     funcs: list
     first_async: bool | None

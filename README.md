@@ -1,8 +1,10 @@
 # ▶️ pymon
 
-`pymon` is an API for writing functional pipelines with Python3.10+.
+`pymon` is an API for writing functional pipelines with Python3.10+. It is
+developed with Domain Driven Design in mind and highly inspired by the concepts
+of functional domain modelling.
 
-## Basics
+## Features
 
 ### `pipe` and `future`
 
@@ -41,10 +43,10 @@ each `<<` step value returned by passed function is wrapped into `pipe`
 container for further chaining.
 
 If your function returns `pipe` object that to unpack that one can use
-`@pipeline` decorator.
+`@pipe.returns` decorator.
 
 ```python
-@pipeline
+@pipe.returns
 def parse_http_query(query: bytes) -> dict:
   return (
     pipe(query)
@@ -77,6 +79,15 @@ result = await (
 `future` does not have `finish` method like `pipe` as it is awaitable and in
 some sense it has built-in unpacking keyword - `await`.
 
+Also sometimes it might be useful to wrap value returns by async function into
+future. For that one can use `@future.returns` decorator:
+
+```py
+@future.returns
+async def some_future_function(arg: int) -> bool:
+  ...
+```
+
 Basically the way this containers map to each other looks like this. While we
 work with `pipe` and sync functions we use `<<` and remain in `pipe` context.
 But right at the moment we need to apply some async function `future` comes out
@@ -92,6 +103,85 @@ graph LR;
   future --"<<"--> future
   future --">>"--> future
 ```
+
+This scheme describes how `pipe` and `future` convert to each other during
+pipeline execution.
+
+`pipe` and `future` are main building blocks for functional pipelines.
+
+### Composition
+
+Function composition is important feature that allows us to build functions on
+the fly. For that `pymon` provides special `compose` function (actually it is
+class). It has the same interface as `pipe`/`future` but does not take input
+argument:
+
+```py
+parse_http_query: Callable[[bytes], dict] = (
+  compose()
+  << some_when(is_not_empty)
+  << if_some(bytes_decode("UTF-8"))
+  << if_some(str_split("&"))
+  << if_some(cmap(str_split("=")))
+  << if_some(dict)
+  << if_none(returns({}))
+)
+```
+
+Sync functions are composed with `<<` and async with `>>`. I suggest providing
+type annotation for functions created via `compose`, especially it is important
+for domain modelling.
+
+### Maybe monad
+
+`pymon` does not provide dedicated `Maybe` monad with dedicates containers like
+`Just`/`Some` and `Nothing`, but provides multiple functions for handling
+`None`:
+
+- `if_some`
+- `if_none`
+- `if_some_returns`
+- `if_none_returns`
+- `some_when`
+- `some_when_future`
+- `choose_some`
+- `choose_some_future`
+
+### Result monad
+
+`Result` monad also known as `Either` is not provided by `pymon` too. But there
+is interface for handling `Exception` objects:
+
+- `if_ok`
+- `if_error`
+- `if_ok_returns`
+- `if_error_returns`
+- `ok_when`
+- `ok_when_future`
+- `choose_ok`
+- `choose_ok_future`
+- `safe`
+- `safe_future`
+
+### Predicates
+
+Often we have some expressions that return boolean values (logical). To provide
+composition for such functions - predicates - there are 2 combinators: `each`
+and `one`.
+
+`each` performs logical AND operation across predicates and stands for
+mathematical conjunction. `one` on the other hand performs logical OR and
+implements disjunction.
+
+```py
+p = (
+  one()
+  << (each() << (lambda x: x > 3) << (lambda x: x < 10))
+  << (each() << (lambda x: x > 23) << (lambda x: x < 55))
+)
+```
+
+### FAQ
 
 #### But why only one argument functions are supported?
 
@@ -133,7 +223,7 @@ def encode(encoding: str, data: str) -> bytes:
   return data.encode(encoding)
 
 result = (
-  Pipe("Hello, world!")
+  pipe("Hello, world!")
   << split(" ")
   << cmap(encode("UTF-8"))
   << list

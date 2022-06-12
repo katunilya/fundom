@@ -13,7 +13,17 @@ TError = TypeVar("TError", bound=Exception)
 
 
 def if_ok(func: Callable[[T], V]):
-    """Decorator that protects function from being executed on `Exception` value."""
+    """Decorator that protects function from being executed on `Exception` value.
+
+    Example::
+
+            result = (
+                pipe({"body": b"hello", "status": 200})
+                << safe(lambda dct: dct["Hello"])
+                << if_ok(bytes_decode("UTF-8"))
+                << if_error(lambda err: str(err))
+            )
+    """
 
     @wraps(func)
     def _wrapper(t: T) -> V:
@@ -27,7 +37,17 @@ def if_ok(func: Callable[[T], V]):
 
 
 def if_error(func: Callable[[T], V]):
-    """Decorator that executes some function only on `Exception` input."""
+    """Decorator that executes some function only on `Exception` input.
+
+    Example::
+
+            result = (
+                pipe({"body": b"hello", "status": 200})
+                << safe(lambda dct: dct["Hello"])
+                << if_ok(bytes_decode("UTF-8"))
+                << if_error(lambda err: str(err))
+            )
+    """
 
     @wraps(func)
     def _wrapper(t: T) -> V | Exception:
@@ -43,6 +63,16 @@ def if_error(func: Callable[[T], V]):
 @hof1
 def if_ok_returns(replacement: V, value: T) -> V | T:
     """Replace `value` with `replacement` if one is not `Exception`.
+
+    Example::
+
+            result = (
+                pipe({"body": b"hello", "status": 200})
+                << get("body")
+                << if_ok_returns("Ok")
+                << if_error_returns("")
+            )
+
 
     Args:
         replacement (V): to replace with.
@@ -61,6 +91,14 @@ def if_ok_returns(replacement: V, value: T) -> V | T:
 @hof1
 def if_error_returns(replacement: V, value: T) -> V | T:
     """Replace `value` with `replacement` if one is `Exception`.
+
+    Example::
+
+            result = (
+                pipe({"body": "hello", "status": 200})
+                << get("body")
+                << if_error_returns("")
+            )
 
     Args:
         replacement (V): to replace with.
@@ -83,6 +121,14 @@ def safe(func: Callable[P, V]) -> Callable[P, V | Exception]:
     """Decorator for sync function that might raise an exception.
 
     Excepts exception and returns that instead.
+
+    Example::
+
+            @safe
+            def get_key(key: Any, dct: dict) -> Any:
+                return dct[key]  # raises error
+
+            # type: str, dict -> Any | Exception
     """
 
     @wraps(func)
@@ -99,6 +145,14 @@ def safe_future(func: Callable[P, Awaitable[V]]) -> Callable[P, future[V | TErro
     """Decorator for async function that might raise an exception.
 
     Excepts exception and returns that instead.
+
+    Example::
+
+            @safe_future
+            async def connect_database(conn_str: str) -> Database:
+                return Database(conn_str)
+
+            # type: str -> Database | Exception
     """
 
     @wraps(func)

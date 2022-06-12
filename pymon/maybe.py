@@ -12,7 +12,17 @@ V = TypeVar("V")
 
 
 def if_some(func: Callable[[T], V]):
-    """Decorator that protects function from being executed on `None` value."""
+    """Decorator that protects function from being executed on `None` value.
+
+    Example::
+
+            result = (
+                pipe({"body": b"hello", "status": 200})
+                << (lambda dct: dct.get("Hello", None))
+                << if_some(bytes_decode("UTF-8"))
+                << if_none(lambda _: "")
+            )
+    """
 
     @wraps(func)
     def _wrapper(t: T):
@@ -26,7 +36,17 @@ def if_some(func: Callable[[T], V]):
 
 
 def if_none(func: Callable[[T], V]):
-    """Decorator that executes some function only on `None` input."""
+    """Decorator that executes some function only on `None` input.
+
+    Example::
+
+            result = (
+                pipe({"body": b"hello", "status": 200})
+                << (lambda dct: dct.get("Hello", None))
+                << if_some(bytes_decode("UTF-8"))
+                << if_none(lambda _: "")
+            )
+    """
 
     @wraps(func)
     def _wrapper(t: T) -> V | None:
@@ -42,6 +62,15 @@ def if_none(func: Callable[[T], V]):
 @hof1
 def if_none_returns(replacement: V, value: T) -> V | T:
     """Replace `value` with `replacement` if one is `None`.
+
+    Example::
+
+            result = (
+                pipe({"body": b"hello", "status": 200})
+                << (lambda dct: dct.get("Hello", None))
+                << if_some(bytes_decode("UTF-8"))
+                << if_none_returns("")
+            )
 
     Args:
         replacement (V): to replace with.
@@ -60,6 +89,15 @@ def if_none_returns(replacement: V, value: T) -> V | T:
 @hof1
 def if_some_returns(replacement: V, value: T) -> V | T:
     """Replace some `value` when it is not `None`.
+
+    Example::
+
+            result = (
+                pipe({"body": b"hello", "status": 200})
+                << (lambda dct: dct.get("Hello", None))
+                << if_some_returns(True)
+                << if_none_returns(False)
+            )
 
     Args:
         replacement (V): to replace with.

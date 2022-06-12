@@ -6,6 +6,7 @@
     - Modules
         - [Core](core.md#core)
         - [Maybe](maybe.md#maybe)
+        - [Model](model.md#model)
         - [Pointfree](pointfree/index.md#pointfree)
         - [Predicate](predicate.md#predicate)
         - [Result](result.md#result)
