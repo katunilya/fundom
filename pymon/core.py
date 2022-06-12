@@ -195,18 +195,6 @@ def returns_future(x: T) -> Callable[P, future[T]]:
 
 @dataclass(slots=True, init=False)
 class _compose_future(Generic[P, V]):  # noqa
-    """Abstraction over async function.
-
-    If no function is passed to composition than `Exception` would be raised on call.
-
-    Example::
-
-            f: Callable[[int], future[int]] = (
-                compose_future()
-                >> async_add_1
-                << (lambda x: x ** 2)
-            )
-    """
 
     funcs: list
     first_async: bool | None
