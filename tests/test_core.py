@@ -83,3 +83,11 @@ async def test_future_returns():
 
     assert inspect.isawaitable(fv)
     assert await fv == 3
+
+
+@pytest.mark.asyncio
+async def test_future_lshift():
+    fv = future(async_identity(3)) << (lambda x: x + 1)
+
+    assert inspect.isawaitable(fv)
+    assert await fv == 4
