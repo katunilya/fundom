@@ -1,6 +1,6 @@
 import pytest
 
-from pymon.result import choose_ok
+from pymon.result import EmptyChooseOkError, FailedChooseOkError, choose_ok
 
 
 @pytest.mark.parametrize(
@@ -19,3 +19,19 @@ def test_choose(value, funcs, result):
         c = c | func
 
     assert c(value) == result
+
+
+def test_choose_ok_returns_error_on_empty():
+    c = choose_ok()
+    assert isinstance(c(None), EmptyChooseOkError)
+
+
+def test_choose_ok_returns_error_on_failed():
+    c = (
+        choose_ok()
+        | (lambda x: x if x < 3 else Exception())
+        | (lambda x: x if x > 10 else Exception())
+    )
+    result = c(6)
+    assert isinstance(result, FailedChooseOkError)
+    assert result.args == (6,)
