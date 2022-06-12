@@ -62,6 +62,14 @@ def if_ok_returns(replacement: V, value: T) -> V | T:
 def if_error_returns(replacement: V, value: T) -> V | T:
     """Replace `value` with `replacement` if one is `Exception`.
 
+    Example::
+
+            result = (
+                pipe({"body": "hello", "status": 200})
+                << get("body")
+                << if_error_returns("")
+            )
+
     Args:
         replacement (V): to replace with.
         value (T | TError): to replace.
