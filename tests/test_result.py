@@ -1,3 +1,5 @@
+from dataclasses import dataclass
+
 import pytest
 
 from pymon.result import (
@@ -5,7 +7,60 @@ from pymon.result import (
     FailedChooseOkError,
     choose_ok,
     choose_ok_future,
+    if_error,
+    if_error_returns,
+    if_ok,
+    if_ok_returns,
 )
+
+
+@dataclass
+class TestError(Exception):  # noqa
+    ...
+
+
+@pytest.mark.parametrize(
+    "arg, result",
+    [
+        (3, 3),
+        (TestError(), TestError()),
+    ],
+)
+def test_if_ok(arg, result):
+    assert if_ok(lambda x: x)(arg) == result
+
+
+@pytest.mark.parametrize(
+    "arg, result",
+    [
+        (3, 3),
+        (TestError(), 10),
+    ],
+)
+def test_if_error(arg, result):
+    assert if_error(lambda _: 10)(arg) == result
+
+
+@pytest.mark.parametrize(
+    "replacement, value, result",
+    [
+        (True, 1, True),
+        (True, TestError(), TestError()),
+    ],
+)
+def test_if_ok_returns(replacement, value, result):
+    assert if_ok_returns(replacement)(value) == result
+
+
+@pytest.mark.parametrize(
+    "replacement, value, result",
+    [
+        (True, 1, 1),
+        (True, TestError(), True),
+    ],
+)
+def test_if_error_returns(replacement, value, result):
+    assert if_error_returns(replacement)(value) == result
 
 
 @pytest.mark.parametrize(
