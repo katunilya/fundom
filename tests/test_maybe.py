@@ -1,6 +1,17 @@
 import pytest
 
-from pymon.maybe import choose_some, choose_some_future, if_some_returns
+from pymon.maybe import choose_some, choose_some_future, if_some, if_some_returns
+
+
+@pytest.mark.parametrize(
+    "arg, result",
+    [
+        (3, 3),
+        (None, None),
+    ],
+)
+def test_if_some(arg, result):
+    assert if_some(lambda x: x)(arg) == result
 
 
 @pytest.mark.parametrize(
