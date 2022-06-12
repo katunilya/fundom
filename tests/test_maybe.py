@@ -7,6 +7,7 @@ from pymon.maybe import (
     if_none_returns,
     if_some,
     if_some_returns,
+    some_when,
     some_when_future,
 )
 
@@ -138,6 +139,12 @@ async def more_then_10(x: int) -> int | None:
 async def test_choose_some_future_returns_none_on_failed():
     c = choose_some_future() | less_then_3 | more_then_10
     assert await c(6) is None
+
+
+def test_some_when():
+    p = some_when(lambda x: x > 15)
+    assert p(10) is None
+    assert p(16) == 16
 
 
 async def more_than_15(x: int) -> bool:
