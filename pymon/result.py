@@ -83,6 +83,14 @@ def safe(func: Callable[P, V]) -> Callable[P, V | Exception]:
     """Decorator for sync function that might raise an exception.
 
     Excepts exception and returns that instead.
+
+    Example::
+
+            @safe
+            def get_key(key: Any, dct: dict) -> Any:
+                return dct[key]  # raises error
+
+            # type: str, dict -> Any | Exception
     """
 
     @wraps(func)
