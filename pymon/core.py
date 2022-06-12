@@ -144,7 +144,12 @@ class pipe(Generic[T]):  # noqa
 
 
 def this(args: T) -> T:
-    """Synchronous identity function."""
+    """Synchronous identity function.
+
+    Example::
+
+            this(3)  # 3
+    """
     return args
 
 
