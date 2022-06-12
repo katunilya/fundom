@@ -2,7 +2,7 @@ import inspect
 
 import pytest
 
-from pymon.core import compose, future, pipe
+from pymon.core import compose, future, pipe, this
 
 
 @pytest.mark.parametrize(
@@ -124,3 +124,8 @@ def test_pipe_finish():
 def test_pipe_returns():
     f = pipe.returns(lambda x: pipe(x) >> (lambda x: x + 3))
     assert f(3) == 6
+
+
+@pytest.mark.parametrize("arg", [{}, 1, 2, -1, "hello"])
+def test_this(arg):
+    assert this(arg) == arg
