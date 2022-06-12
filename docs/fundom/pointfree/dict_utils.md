@@ -1,14 +1,14 @@
 # Dict Utils
 
-> Auto-generated documentation for [pymon.pointfree.dict_utils](https://github.com/katunilya/pymon/blob/main/pymon/pointfree/dict_utils.py) module.
+> Auto-generated documentation for [fundom.pointfree.dict_utils](https://github.com/katunilya/pymon/blob/main/fundom/pointfree/dict_utils.py) module.
 
-- [Pymon](../../README.md#-pymon) / [Modules](../../MODULES.md#pymon-modules) / [Pymon](../index.md#pymon) / [Pointfree](index.md#pointfree) / Dict Utils
+- [Pymon](../../README.md#-fundom) / [Modules](../../MODULES.md#pymon-modules) / [Fundom](../index.md#fundom) / [Pointfree](index.md#pointfree) / Dict Utils
     - [maybe_get](#maybe_get)
     - [try_get](#try_get)
 
 ## maybe_get
 
-[[find in source code]](https://github.com/katunilya/pymon/blob/main/pymon/pointfree/dict_utils.py#L28)
+[[find in source code]](https://github.com/katunilya/pymon/blob/main/fundom/pointfree/dict_utils.py#L28)
 
 ```python
 @hof1
@@ -34,7 +34,7 @@ TValue | None: value.
 
 ## try_get
 
-[[find in source code]](https://github.com/katunilya/pymon/blob/main/pymon/pointfree/dict_utils.py#L10)
+[[find in source code]](https://github.com/katunilya/pymon/blob/main/fundom/pointfree/dict_utils.py#L10)
 
 ```python
 @hof1

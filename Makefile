@@ -30,7 +30,7 @@ deps_export: update_deps
 
 check_flake8:
 	@echo "🎨 Checking with Flake8..."
-	@poetry run flake8 ./pymon --count --show-source --statistics
+	@poetry run flake8 ./fundom --count --show-source --statistics
 	@echo "✅ Flake8 check finished!"
 
 check_isort:

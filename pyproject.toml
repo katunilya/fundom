@@ -1,5 +1,5 @@
 [tool.poetry]
-name = "pymon"
+name = "fundom"
 version = "0.0.8"
 description = "Common simple python monads for more readable and maintainable pipeline-based code."
 authors = ["Ilya Katun <katun.ilya@gmail.com>"]

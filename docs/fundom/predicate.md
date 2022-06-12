@@ -1,8 +1,8 @@
 # Predicate
 
-> Auto-generated documentation for [pymon.predicate](https://github.com/katunilya/pymon/blob/main/pymon/predicate.py) module.
+> Auto-generated documentation for [fundom.predicate](https://github.com/katunilya/pymon/blob/main/fundom/predicate.py) module.
 
-- [Pymon](../README.md#-pymon) / [Modules](../MODULES.md#pymon-modules) / [Pymon](index.md#pymon) / Predicate
+- [Pymon](../README.md#-fundom) / [Modules](../MODULES.md#pymon-modules) / [Fundom](index.md#fundom) / Predicate
     - [each](#each)
     - [one](#one)
     - [is_empty](#is_empty)
@@ -14,7 +14,7 @@
 
 ## each
 
-[[find in source code]](https://github.com/katunilya/pymon/blob/main/pymon/predicate.py#L44)
+[[find in source code]](https://github.com/katunilya/pymon/blob/main/fundom/predicate.py#L44)
 
 ```python
 dataclass(slots=True, init=False)
@@ -43,7 +43,7 @@ p: Callable[[int], bool] = (
 
 ## one
 
-[[find in source code]](https://github.com/katunilya/pymon/blob/main/pymon/predicate.py#L114)
+[[find in source code]](https://github.com/katunilya/pymon/blob/main/fundom/predicate.py#L114)
 
 ```python
 dataclass(slots=True, init=False)
@@ -72,7 +72,7 @@ p: Callable[[int], bool] = (
 
 ## is_empty
 
-[[find in source code]](https://github.com/katunilya/pymon/blob/main/pymon/predicate.py#L189)
+[[find in source code]](https://github.com/katunilya/pymon/blob/main/fundom/predicate.py#L189)
 
 ```python
 def is_empty(obj: TSized) -> bool:
@@ -86,7 +86,7 @@ If `obj` is empty.
 
 ## is_not_empty
 
-[[find in source code]](https://github.com/katunilya/pymon/blob/main/pymon/predicate.py#L194)
+[[find in source code]](https://github.com/katunilya/pymon/blob/main/fundom/predicate.py#L194)
 
 ```python
 def is_not_empty(obj: TSized) -> bool:
@@ -100,7 +100,7 @@ If `obj` is not empty.
 
 ## len_less_or_equals
 
-[[find in source code]](https://github.com/katunilya/pymon/blob/main/pymon/predicate.py#L168)
+[[find in source code]](https://github.com/katunilya/pymon/blob/main/fundom/predicate.py#L168)
 
 ```python
 def len_less_or_equals(length: int):
@@ -110,7 +110,7 @@ If `iterable` length is less or equals `length`.
 
 ## len_less_then
 
-[[find in source code]](https://github.com/katunilya/pymon/blob/main/pymon/predicate.py#L159)
+[[find in source code]](https://github.com/katunilya/pymon/blob/main/fundom/predicate.py#L159)
 
 ```python
 def len_less_then(length: int):
@@ -120,7 +120,7 @@ If `iterable` length is strictly less than `length`.
 
 ## len_more_or_equals
 
-[[find in source code]](https://github.com/katunilya/pymon/blob/main/pymon/predicate.py#L177)
+[[find in source code]](https://github.com/katunilya/pymon/blob/main/fundom/predicate.py#L177)
 
 ```python
 def len_more_or_equals(length: int):
@@ -130,7 +130,7 @@ If `iterable` length is more or equals `length`.
 
 ## len_more_then
 
-[[find in source code]](https://github.com/katunilya/pymon/blob/main/pymon/predicate.py#L150)
+[[find in source code]](https://github.com/katunilya/pymon/blob/main/fundom/predicate.py#L150)
 
 ```python
 def len_more_then(length: int):

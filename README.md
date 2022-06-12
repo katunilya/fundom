@@ -1,6 +1,6 @@
-# ▶️ pymon
+# ▶️ fundom
 
-`pymon` is an API for writing functional pipelines with Python3.10+. It is
+`fundom` is an API for writing functional pipelines with Python3.10+. It is
 developed with Domain Driven Design in mind and highly inspired by the concepts
 of functional domain modelling.
 
@@ -112,7 +112,7 @@ pipeline execution.
 ### Composition
 
 Function composition is important feature that allows us to build functions on
-the fly. For that `pymon` provides special `compose` function (actually it is
+the fly. For that `fundom` provides special `compose` function (actually it is
 class). It has the same interface as `pipe`/`future` but does not take input
 argument:
 
@@ -134,7 +134,7 @@ for domain modelling.
 
 ### Maybe monad
 
-`pymon` does not provide dedicated `Maybe` monad with dedicates containers like
+`fundom` does not provide dedicated `Maybe` monad with dedicates containers like
 `Just`/`Some` and `Nothing`, but provides multiple functions for handling
 `None`:
 
@@ -149,7 +149,7 @@ for domain modelling.
 
 ### Result monad
 
-`Result` monad also known as `Either` is not provided by `pymon` too. But there
+`Result` monad also known as `Either` is not provided by `fundom` too. But there
 is interface for handling `Exception` objects:
 
 - `if_ok`

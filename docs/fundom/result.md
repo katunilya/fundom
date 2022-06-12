@@ -1,8 +1,8 @@
 # Result
 
-> Auto-generated documentation for [pymon.result](https://github.com/katunilya/pymon/blob/main/pymon/result.py) module.
+> Auto-generated documentation for [fundom.result](https://github.com/katunilya/pymon/blob/main/fundom/result.py) module.
 
-- [Pymon](../README.md#-pymon) / [Modules](../MODULES.md#pymon-modules) / [Pymon](index.md#pymon) / Result
+- [Pymon](../README.md#-fundom) / [Modules](../MODULES.md#pymon-modules) / [Fundom](index.md#fundom) / Result
     - [EmptyChooseOkError](#emptychooseokerror)
     - [FailedChooseOkError](#failedchooseokerror)
     - [choose_ok](#choose_ok)
@@ -18,7 +18,7 @@
 
 ## EmptyChooseOkError
 
-[[find in source code]](https://github.com/katunilya/pymon/blob/main/pymon/result.py#L221)
+[[find in source code]](https://github.com/katunilya/pymon/blob/main/fundom/result.py#L221)
 
 ```python
 class EmptyChooseOkError(Exception):
@@ -28,7 +28,7 @@ Returned when [choose_ok](#choose_ok) or [choose_ok_future](#choose_ok_future) h
 
 ## FailedChooseOkError
 
-[[find in source code]](https://github.com/katunilya/pymon/blob/main/pymon/result.py#L225)
+[[find in source code]](https://github.com/katunilya/pymon/blob/main/fundom/result.py#L225)
 
 ```python
 class FailedChooseOkError(Exception, Generic[P]):
@@ -43,7 +43,7 @@ Returned when no function in [choose_ok](#choose_ok) or [choose_ok_future](#choo
 
 ## choose_ok
 
-[[find in source code]](https://github.com/katunilya/pymon/blob/main/pymon/result.py#L233)
+[[find in source code]](https://github.com/katunilya/pymon/blob/main/fundom/result.py#L233)
 
 ```python
 dataclass(slots=True, init=False)
@@ -74,7 +74,7 @@ f = (
 
 ## choose_ok_future
 
-[[find in source code]](https://github.com/katunilya/pymon/blob/main/pymon/result.py#L274)
+[[find in source code]](https://github.com/katunilya/pymon/blob/main/fundom/result.py#L274)
 
 ```python
 dataclass(slots=True, init=False)
@@ -105,7 +105,7 @@ f = (
 
 ## if_error
 
-[[find in source code]](https://github.com/katunilya/pymon/blob/main/pymon/result.py#L39)
+[[find in source code]](https://github.com/katunilya/pymon/blob/main/fundom/result.py#L39)
 
 ```python
 def if_error(func: Callable[[T], V]):
@@ -131,7 +131,7 @@ result = (
 
 ## if_error_returns
 
-[[find in source code]](https://github.com/katunilya/pymon/blob/main/pymon/result.py#L91)
+[[find in source code]](https://github.com/katunilya/pymon/blob/main/fundom/result.py#L91)
 
 ```python
 @hof1
@@ -167,7 +167,7 @@ V | T: error-safe result.
 
 ## if_ok
 
-[[find in source code]](https://github.com/katunilya/pymon/blob/main/pymon/result.py#L15)
+[[find in source code]](https://github.com/katunilya/pymon/blob/main/fundom/result.py#L15)
 
 ```python
 def if_ok(func: Callable[[T], V]):
@@ -193,7 +193,7 @@ result = (
 
 ## if_ok_returns
 
-[[find in source code]](https://github.com/katunilya/pymon/blob/main/pymon/result.py#L63)
+[[find in source code]](https://github.com/katunilya/pymon/blob/main/fundom/result.py#L63)
 
 ```python
 @hof1
@@ -230,7 +230,7 @@ V | T: error-safe result.
 
 ## ok_when
 
-[[find in source code]](https://github.com/katunilya/pymon/blob/main/pymon/result.py#L169)
+[[find in source code]](https://github.com/katunilya/pymon/blob/main/fundom/result.py#L169)
 
 ```python
 @hof2
@@ -267,7 +267,7 @@ T | TError: result.
 
 ## ok_when_future
 
-[[find in source code]](https://github.com/katunilya/pymon/blob/main/pymon/result.py#L198)
+[[find in source code]](https://github.com/katunilya/pymon/blob/main/fundom/result.py#L198)
 
 ```python
 @hof2
@@ -304,7 +304,7 @@ future[T] | future[TError]: result.
 
 ## safe
 
-[[find in source code]](https://github.com/katunilya/pymon/blob/main/pymon/result.py#L120)
+[[find in source code]](https://github.com/katunilya/pymon/blob/main/fundom/result.py#L120)
 
 ```python
 def safe(func: Callable[P, V]) -> Callable[P, V | Exception]:
@@ -331,7 +331,7 @@ def get_key(key: Any, dct: dict) -> Any:
 
 ## safe_future
 
-[[find in source code]](https://github.com/katunilya/pymon/blob/main/pymon/result.py#L144)
+[[find in source code]](https://github.com/katunilya/pymon/blob/main/fundom/result.py#L144)
 
 ```python
 def safe_future(

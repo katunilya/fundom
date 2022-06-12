@@ -3,7 +3,7 @@ from __future__ import annotations
 from dataclasses import dataclass
 from typing import Awaitable, Callable, Generic, Iterable, ParamSpec, Sized, TypeVar
 
-from pymon.core import future
+from fundom.core import future
 
 P = ParamSpec("P")
 

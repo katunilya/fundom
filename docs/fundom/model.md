@@ -1,15 +1,15 @@
 # Model
 
-> Auto-generated documentation for [pymon.model](https://github.com/katunilya/pymon/blob/main/pymon/model.py) module.
+> Auto-generated documentation for [fundom.model](https://github.com/katunilya/pymon/blob/main/fundom/model.py) module.
 
-- [Pymon](../README.md#-pymon) / [Modules](../MODULES.md#pymon-modules) / [Pymon](index.md#pymon) / Model
+- [Pymon](../README.md#-fundom) / [Modules](../MODULES.md#pymon-modules) / [Fundom](index.md#fundom) / Model
     - [Auditable](#auditable)
     - [Entity](#entity)
     - [Signed](#signed)
 
 ## Auditable
 
-[[find in source code]](https://github.com/katunilya/pymon/blob/main/pymon/model.py#L27)
+[[find in source code]](https://github.com/katunilya/pymon/blob/main/fundom/model.py#L27)
 
 ```python
 class Auditable(Signed[TAuthor], Protocol):
@@ -23,7 +23,7 @@ Type that has time information about it changes.
 
 ## Entity
 
-[[find in source code]](https://github.com/katunilya/pymon/blob/main/pymon/model.py#L7)
+[[find in source code]](https://github.com/katunilya/pymon/blob/main/fundom/model.py#L7)
 
 ```python
 class Entity(Protocol, Generic[TId]):
@@ -40,7 +40,7 @@ differentiate in terms of identities they are considered different.
 
 ## Signed
 
-[[find in source code]](https://github.com/katunilya/pymon/blob/main/pymon/model.py#L20)
+[[find in source code]](https://github.com/katunilya/pymon/blob/main/fundom/model.py#L20)
 
 ```python
 class Signed(Protocol, Generic[TAuthor]):

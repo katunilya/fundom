@@ -1,8 +1,8 @@
 # Maybe
 
-> Auto-generated documentation for [pymon.maybe](https://github.com/katunilya/pymon/blob/main/pymon/maybe.py) module.
+> Auto-generated documentation for [fundom.maybe](https://github.com/katunilya/pymon/blob/main/fundom/maybe.py) module.
 
-- [Pymon](../README.md#-pymon) / [Modules](../MODULES.md#pymon-modules) / [Pymon](index.md#pymon) / Maybe
+- [Pymon](../README.md#-fundom) / [Modules](../MODULES.md#pymon-modules) / [Fundom](index.md#fundom) / Maybe
     - [choose_some](#choose_some)
     - [choose_some_future](#choose_some_future)
     - [if_none](#if_none)
@@ -14,7 +14,7 @@
 
 ## choose_some
 
-[[find in source code]](https://github.com/katunilya/pymon/blob/main/pymon/maybe.py#L159)
+[[find in source code]](https://github.com/katunilya/pymon/blob/main/fundom/maybe.py#L159)
 
 ```python
 dataclass(slots=True, init=False)
@@ -44,7 +44,7 @@ f = (
 
 ## choose_some_future
 
-[[find in source code]](https://github.com/katunilya/pymon/blob/main/pymon/maybe.py#L196)
+[[find in source code]](https://github.com/katunilya/pymon/blob/main/fundom/maybe.py#L196)
 
 ```python
 dataclass(slots=True, init=False)
@@ -74,7 +74,7 @@ f = (
 
 ## if_none
 
-[[find in source code]](https://github.com/katunilya/pymon/blob/main/pymon/maybe.py#L38)
+[[find in source code]](https://github.com/katunilya/pymon/blob/main/fundom/maybe.py#L38)
 
 ```python
 def if_none(func: Callable[[T], V]):
@@ -100,7 +100,7 @@ result = (
 
 ## if_none_returns
 
-[[find in source code]](https://github.com/katunilya/pymon/blob/main/pymon/maybe.py#L62)
+[[find in source code]](https://github.com/katunilya/pymon/blob/main/fundom/maybe.py#L62)
 
 ```python
 @hof1
@@ -137,7 +137,7 @@ V | T: some result.
 
 ## if_some
 
-[[find in source code]](https://github.com/katunilya/pymon/blob/main/pymon/maybe.py#L14)
+[[find in source code]](https://github.com/katunilya/pymon/blob/main/fundom/maybe.py#L14)
 
 ```python
 def if_some(func: Callable[[T], V]):
@@ -163,7 +163,7 @@ result = (
 
 ## if_some_returns
 
-[[find in source code]](https://github.com/katunilya/pymon/blob/main/pymon/maybe.py#L89)
+[[find in source code]](https://github.com/katunilya/pymon/blob/main/fundom/maybe.py#L89)
 
 ```python
 @hof1
@@ -200,7 +200,7 @@ V | T: some result.
 
 ## some_when
 
-[[find in source code]](https://github.com/katunilya/pymon/blob/main/pymon/maybe.py#L116)
+[[find in source code]](https://github.com/katunilya/pymon/blob/main/fundom/maybe.py#L116)
 
 ```python
 @hof1
@@ -231,7 +231,7 @@ T | None: result.
 
 ## some_when_future
 
-[[find in source code]](https://github.com/katunilya/pymon/blob/main/pymon/maybe.py#L134)
+[[find in source code]](https://github.com/katunilya/pymon/blob/main/fundom/maybe.py#L134)
 
 ```python
 @hof1

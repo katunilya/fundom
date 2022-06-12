@@ -1,6 +1,6 @@
 import pytest
 
-from pymon.maybe import (
+from fundom.maybe import (
     choose_some,
     choose_some_future,
     if_none,

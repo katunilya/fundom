@@ -1,6 +1,6 @@
 import pytest
 
-from pymon.predicate import each, one
+from fundom.predicate import each, one
 
 
 @pytest.mark.parametrize(
