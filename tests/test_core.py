@@ -1,6 +1,8 @@
+import inspect
+
 import pytest
 
-from pymon.core import compose
+from pymon.core import compose, future, pipe, returns, returns_future, this, this_future
 
 
 @pytest.mark.parametrize(
@@ -59,3 +61,101 @@ async def test_compose_sync_async():
         << (lambda t: not t)
     )
     assert await f(3) is False
+
+
+async def async_identity(x):
+    return x
+
+
+@pytest.mark.asyncio
+async def test_future():
+    fv = future(async_identity(3))
+
+    assert inspect.isawaitable(fv)
+    assert await fv == 3
+
+
+@pytest.mark.asyncio
+async def test_future_returns():
+    async_identity_future = future.returns(async_identity)
+
+    fv = async_identity_future(3)
+
+    assert inspect.isawaitable(fv)
+    assert await fv == 3
+
+
+@pytest.mark.asyncio
+async def test_future_lshift():
+    fv = future(async_identity(3)) << (lambda x: x + 1)
+
+    assert inspect.isawaitable(fv)
+    assert await fv == 4
+
+
+@pytest.mark.asyncio
+async def test_future_rshift():
+    fv = future(async_identity(3)) >> add_1
+
+    assert inspect.isawaitable(fv)
+    assert await fv == 4
+
+
+def test_pipe_lshift():
+    pl = pipe(3) << (lambda x: x + 3)
+
+    assert isinstance(pl, pipe)
+    assert pl.value == 6
+
+
+@pytest.mark.asyncio
+async def test_pipe_rshift():
+    pl = pipe(3) >> add_1
+
+    assert isinstance(pl, future)
+    assert await pl == 4
+
+
+def test_pipe_finish():
+    pl = pipe(3) << (lambda x: x + 3)
+    assert pl.finish() == 6
+
+
+def test_pipe_returns():
+    f = pipe.returns(lambda x: pipe(x) >> (lambda x: x + 3))
+    assert f(3) == 6
+
+
+@pytest.mark.parametrize("arg", [{}, 1, 2, -1, "hello"])
+def test_this(arg):
+    assert this(arg) == arg
+
+
+@pytest.mark.asyncio
+@pytest.mark.parametrize("arg", [{}, 1, 2, -1, "hello"])
+async def test_this_future(arg):
+    fv = this_future(arg)
+
+    assert inspect.isawaitable(fv)
+    assert isinstance(fv, future)
+    assert await fv == arg
+
+
+@pytest.mark.parametrize("arg", [{}, 1, 2, -1, "hello"])
+def test_returns(arg):
+    r = returns(arg)
+    assert r() == arg
+    assert r(arg) == arg
+    assert r(some="wow") == arg
+    assert r(5, 3, 2) == arg
+
+
+@pytest.mark.asyncio
+@pytest.mark.parametrize("arg", [{}, 1, 2, -1, "hello"])
+async def test_returns_future(arg):
+    r = returns_future(arg)
+
+    for fv in [r(), r(arg), r(some="wow"), r(5, 3, 2)]:
+        assert inspect.isawaitable(fv)
+        assert isinstance(fv, future)
+        assert await fv == arg

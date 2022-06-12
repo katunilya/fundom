@@ -3,9 +3,35 @@ import pytest
 from pymon.maybe import (
     choose_some,
     choose_some_future,
+    if_none,
+    if_none_returns,
+    if_some,
     if_some_returns,
+    some_when,
     some_when_future,
 )
+
+
+@pytest.mark.parametrize(
+    "arg, result",
+    [
+        (3, 3),
+        (None, None),
+    ],
+)
+def test_if_some(arg, result):
+    assert if_some(lambda x: x)(arg) == result
+
+
+@pytest.mark.parametrize(
+    "arg, result",
+    [
+        (3, 3),
+        (None, 10),
+    ],
+)
+def test_if_none(arg, result):
+    assert if_none(lambda _: 10)(arg) == result
 
 
 @pytest.mark.parametrize(
@@ -19,7 +45,17 @@ def test_if_some_returns(replacement, value, result):
     assert if_some_returns(replacement)(value) == result
 
 
-# TODO rename
+@pytest.mark.parametrize(
+    "replacement, value, result",
+    [
+        (True, 1, 1),
+        (True, None, True),
+    ],
+)
+def test_if_none_returns(replacement, value, result):
+    assert if_none_returns(replacement)(value) == result
+
+
 @pytest.mark.parametrize(
     "value, funcs, result",
     [
@@ -29,7 +65,7 @@ def test_if_some_returns(replacement, value, result):
         (3, [lambda _: None, lambda x: x + 2], 5),
     ],
 )
-def test_choose(value, funcs, result):
+def test_choose_some(value, funcs, result):
     c = choose_some()
 
     for func in funcs:
@@ -38,14 +74,12 @@ def test_choose(value, funcs, result):
     assert c(value) == result
 
 
-# TODO rename
-def test_choose_some_returns_error_on_empty():
+def test_choose_some_returns_none_on_empty():
     c = choose_some()
     assert c(1) is None
 
 
-# TODO rename
-def test_choose_some_returns_error_on_failed():
+def test_choose_some_returns_none_on_failed():
     c = (
         choose_some()
         | (lambda x: x if x < 3 else None)
@@ -91,20 +125,24 @@ async def test_choose_some_future_returns_none_on_empty():
     assert await c(1) is None
 
 
-# TODO rename
-async def less_then_3(x: int) -> int | None:
+async def less_than_3(x: int) -> int | None:
     return x if x < 3 else None
 
 
-# TODO rename
-async def more_then_10(x: int) -> int | None:
+async def more_than_10(x: int) -> int | None:
     return x if x > 10 else None
 
 
 @pytest.mark.asyncio
 async def test_choose_some_future_returns_none_on_failed():
-    c = choose_some_future() | less_then_3 | more_then_10
+    c = choose_some_future() | less_than_3 | more_than_10
     assert await c(6) is None
+
+
+def test_some_when():
+    p = some_when(lambda x: x > 15)
+    assert p(10) is None
+    assert p(16) == 16
 
 
 async def more_than_15(x: int) -> bool:

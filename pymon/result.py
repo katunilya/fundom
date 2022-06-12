@@ -41,6 +41,24 @@ def if_error(func: Callable[[T], V]):
 
 
 @hof1
+def if_ok_returns(replacement: V, value: T) -> V | T:
+    """Replace `value` with `replacement` if one is not `Exception`.
+
+    Args:
+        replacement (V): to replace with.
+        value (T): to replace.
+
+    Returns:
+        V | T: error-safe result.
+    """
+    match value:
+        case Exception() as err:
+            return err
+        case _:
+            return replacement
+
+
+@hof1
 def if_error_returns(replacement: V, value: T) -> V | T:
     """Replace `value` with `replacement` if one is `Exception`.
 
@@ -71,7 +89,7 @@ def safe(func: Callable[P, V]) -> Callable[P, V | Exception]:
     def _wrapper(*args: P.args, **kwargs: P.kwargs) -> V | Exception:
         try:
             return func(*args, **kwargs)
-        except Exception() as err:
+        except Exception as err:
             return err
 
     return _wrapper
@@ -88,7 +106,7 @@ def safe_future(func: Callable[P, Awaitable[V]]) -> Callable[P, future[V | TErro
     async def _wrapper(*args: P.args, **kwargs: P.kwargs) -> V | TError:
         try:
             return await func(*args, **kwargs)
-        except Exception() as err:
+        except Exception as err:
             return err
 
     return _wrapper

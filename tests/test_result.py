@@ -1,3 +1,5 @@
+from dataclasses import dataclass
+
 import pytest
 
 from pymon.result import (
@@ -5,7 +7,104 @@ from pymon.result import (
     FailedChooseOkError,
     choose_ok,
     choose_ok_future,
+    if_error,
+    if_error_returns,
+    if_ok,
+    if_ok_returns,
+    ok_when,
+    ok_when_future,
+    safe,
+    safe_future,
 )
+
+
+@dataclass
+class TestError(Exception):  # noqa
+    ...
+
+
+@pytest.mark.parametrize(
+    "arg, result",
+    [
+        (3, 3),
+        (TestError(), TestError()),
+    ],
+)
+def test_if_ok(arg, result):
+    assert if_ok(lambda x: x)(arg) == result
+
+
+@pytest.mark.parametrize(
+    "arg, result",
+    [
+        (3, 3),
+        (TestError(), 10),
+    ],
+)
+def test_if_error(arg, result):
+    assert if_error(lambda _: 10)(arg) == result
+
+
+@pytest.mark.parametrize(
+    "replacement, value, result",
+    [
+        (True, 1, True),
+        (True, TestError(), TestError()),
+    ],
+)
+def test_if_ok_returns(replacement, value, result):
+    assert if_ok_returns(replacement)(value) == result
+
+
+def test_safe():
+    @safe
+    def test_func(x: int):
+        if x > 10:
+            raise TestError()
+        return x
+
+    assert test_func(5) == 5
+    assert test_func(20) == TestError()
+
+
+@pytest.mark.asyncio
+async def test_safe_future():
+    @safe_future
+    async def test_func(x: int):
+        if x > 10:
+            raise TestError()
+        return x
+
+    assert await test_func(5) == 5
+    assert await test_func(20) == TestError()
+
+
+@pytest.mark.parametrize(
+    "replacement, value, result",
+    [
+        (True, 1, 1),
+        (True, TestError(), True),
+    ],
+)
+def test_if_error_returns(replacement, value, result):
+    assert if_error_returns(replacement)(value) == result
+
+
+def test_ok_when():
+    p = ok_when(lambda x: x > 15, lambda _: TestError())
+    assert p(10) == TestError()
+    assert p(16) == 16
+
+
+async def more_than_15(x: int) -> bool:
+    return x > 15
+
+
+@pytest.mark.asyncio
+async def test_ok_when_future():
+    p = ok_when_future(more_than_15, lambda _: TestError())
+    assert await p(10) == TestError()
+    assert await p(16) == 16
 
 
 @pytest.mark.parametrize(
