@@ -44,6 +44,16 @@ def if_error(func: Callable[[T], V]):
 def if_ok_returns(replacement: V, value: T) -> V | T:
     """Replace `value` with `replacement` if one is not `Exception`.
 
+    Example::
+
+            result = (
+                pipe({"body": b"hello", "status": 200})
+                << get("body")
+                << if_ok_returns("Ok")
+                << if_error_returns("")
+            )
+
+
     Args:
         replacement (V): to replace with.
         value (T): to replace.
