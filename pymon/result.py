@@ -1,4 +1,3 @@
-from dataclasses import dataclass
 from functools import wraps
 from typing import Awaitable, Callable, ParamSpec, TypeVar
 
@@ -92,78 +91,55 @@ def safe_future(func: Callable[P, Awaitable[V]]) -> Callable[P, future[V | TErro
 
 
 @hof2
-def ok_when(predicate: Callable[[T], bool], error: TError, value: T) -> T | TError:
+def check(
+    predicate: Callable[[T], bool], create_error: Callable[[T], TError], value: T
+) -> T | TError:
     """Pass value only if predicate is True, otherwise return error.
+
+    Examples::
+
+            policy = check(lambda x: x > 10, lambda _: Exception("More than 10"))
 
     Args:
         predicate (Callable[[T], bool]): to fulfill.
-        error (TError): to replace with.
+        create_error (Callable[[T], TError]): factory function for error.
         value (T): to process.
 
     Returns:
         T | TError: result.
     """
-    match predicate(value):
-        case True:
-            return value
-        case False:
-            return error
+    return value if predicate(value) else create_error(value)
 
 
-async def __ok_when_future(
-    predicate: Callable[[T], Awaitable[bool]], error: TError, value: T
+async def __check_future(
+    predicate: Callable[[T], Awaitable[bool]],
+    create_error: Callable[[T], TError],
+    value: T,
 ) -> future[T] | future[TError]:
-    return value if await predicate(value) else error
+    return value if await predicate(value) else create_error(value)
 
 
 @hof2
-def ok_when_future(
-    predicate: Callable[[T], Awaitable[bool]], error: TError, value: T
+def check_future(
+    predicate: Callable[[T], Awaitable[bool]],
+    create_error: Callable[[T], TError],
+    value: T,
 ) -> future[T] | future[TError]:
     """Pass value only if async predicate is True, otherwise return error.
 
+    Examples::
+
+            policy = check_future(more_than_10, lambda _: Exception("More than 10"))
+
     Args:
         predicate (Callable[[T], bool]): to fulfill.
-        error (TError): to replace with.
+        create_error (Callable[[T], TError]): factory function for error.
         value (T): to process.
 
     Returns:
-        Future[T] | Future[TError]: result.
+        future[T] | future[TError]: result.
     """
-    return future(__ok_when_future(predicate, error, value))
-
-
-@dataclass(slots=True, frozen=True)
-class PolicyViolationError(Exception):
-    """Exception that marks that policy is violated."""
-
-    message: str
-
-
-def check(predicate: Callable[P, bool]) -> T | PolicyViolationError:
-    """Pass value next only if predicate is True, otherwise policy is violated.
-
-    Args:
-        predicate (Predicate[T]): to check.
-
-    Returns:
-        T | PolicyViolationError: result
-    """
-    return ok_when(predicate, PolicyViolationError(message=str(predicate)))
-
-
-def check_future(
-    predicate: Callable[P, Awaitable[bool]]
-) -> future[T] | future[PolicyViolationError]:
-    """Pass value next only if predicate is True, otherwise policy is violated.
-
-    Args:
-        predicate (Callable[P, Future[bool]]): to check.
-
-    Returns:
-        Future[T] | Future[PolicyViolationError]: result.
-    """
-    return ok_when_future(predicate, PolicyViolationError(message=str(predicate)))
+    return future(__check_future(predicate, create_error, value))
 
 
 def choose_ok(*funcs: Callable[[T], V | TError]) -> Callable[[T], V | TError]:
