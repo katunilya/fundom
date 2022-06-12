@@ -14,6 +14,7 @@ from pymon.result import (
     ok_when,
     ok_when_future,
     safe,
+    safe_future,
 )
 
 
@@ -64,6 +65,18 @@ def test_safe():
 
     assert test_func(5) == 5
     assert test_func(20) == TestError()
+
+
+@pytest.mark.asyncio
+async def test_safe_future():
+    @safe_future
+    async def test_func(x: int):
+        if x > 10:
+            raise TestError()
+        return x
+
+    assert await test_func(5) == 5
+    assert await test_func(20) == TestError()
 
 
 @pytest.mark.parametrize(
