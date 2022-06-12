@@ -101,6 +101,15 @@ class pipe(Generic[T]):  # noqa
     def finish(self) -> T:
         """Finish `pipe` by unpacking internal value.
 
+        Example::
+
+                result = (
+                    pipe(3)
+                    << (lambda x: x + 1)
+                    << (lambda x: x**2)
+                )
+                value = result.finish()
+
         Returns:
             T: internal value
         """
