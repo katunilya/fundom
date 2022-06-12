@@ -1,5 +1,9 @@
+from __future__ import annotations
+
+import copy
+from dataclasses import dataclass
 from functools import wraps
-from typing import Callable, TypeVar
+from typing import Callable, Generic, ParamSpec, TypeVar
 
 from pymon.core import hof1
 
@@ -87,3 +91,43 @@ def some_when(predicate: Callable[[T], bool], data: T) -> T | None:
             return data
         case False:
             return None
+
+
+P = ParamSpec("P")
+
+
+@dataclass(slots=True, init=False)
+class choose_some(Generic[P, T]):  # noqa
+    """Combines multiple sync functions into switch-case like statement.
+
+    The first function to return non-`None` result is used. If no function passed than
+    `None` is returned. Uses deepcopy to keep arguments immutable during attempts.
+
+    Examples::
+
+            f = (
+                choose_some()
+                | create_linked_node
+                | create_isolated_node
+            )
+    """
+
+    funcs: list[Callable[P, T | None]]
+
+    def __init__(self) -> None:
+        self.funcs = []
+
+    def __call__(self, *args: P.args, **_: P.kwargs) -> T | None:  # noqa
+        if len(self.funcs) == 0:
+            return None
+
+        for func in self.funcs:
+            copy_args = copy.deepcopy(args)
+            if result := func(*copy_args):
+                return result
+
+        return None
+
+    def __or__(self, option: Callable[P, T]) -> choose_some[P, T]:
+        self.funcs.append(option)
+        return self
