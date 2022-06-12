@@ -93,6 +93,27 @@ def some_when(predicate: Callable[[T], bool], data: T) -> T | None:
     return data if predicate(data) else None
 
 
+@hof1
+@future.returns
+async def some_when_future(
+    predicate: Callable[[T], Awaitable[bool]], data: T
+) -> T | None:
+    """Passes value next only when predicate is True, otherwise returns `None`.
+
+    Examples::
+
+            policy = some_when_future(more_than_3)
+
+    Args:
+        predicate (Callable[[T], bool]): to fulfill.
+        data (T): to process.
+
+    Returns:
+        T | None: result.
+    """
+    return data if await predicate(data) else None
+
+
 P = ParamSpec("P")
 
 
