@@ -133,7 +133,7 @@ def encode(encoding: str, data: str) -> bytes:
   return data.encode(encoding)
 
 result = (
-  Pipe("Hello, world!")
+  pipe("Hello, world!")
   << split(" ")
   << cmap(encode("UTF-8"))
   << list
