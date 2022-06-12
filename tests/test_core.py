@@ -2,7 +2,7 @@ import inspect
 
 import pytest
 
-from pymon.core import compose, future, pipe, returns, this, this_future
+from pymon.core import compose, future, pipe, returns, returns_future, this, this_future
 
 
 @pytest.mark.parametrize(
@@ -148,3 +148,14 @@ def test_returns(arg):
     assert r(arg) == arg
     assert r(some="wow") == arg
     assert r(5, 3, 2) == arg
+
+
+@pytest.mark.asyncio
+@pytest.mark.parametrize("arg", [{}, 1, 2, -1, "hello"])
+async def test_returns_future(arg):
+    r = returns_future(arg)
+
+    for fv in [r(), r(arg), r(some="wow"), r(5, 3, 2)]:
+        assert inspect.isawaitable(fv)
+        assert isinstance(fv, future)
+        assert await fv == arg
