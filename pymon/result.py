@@ -89,7 +89,7 @@ def safe(func: Callable[P, V]) -> Callable[P, V | Exception]:
     def _wrapper(*args: P.args, **kwargs: P.kwargs) -> V | Exception:
         try:
             return func(*args, **kwargs)
-        except Exception() as err:
+        except Exception as err:
             return err
 
     return _wrapper
@@ -106,7 +106,7 @@ def safe_future(func: Callable[P, Awaitable[V]]) -> Callable[P, future[V | TErro
     async def _wrapper(*args: P.args, **kwargs: P.kwargs) -> V | TError:
         try:
             return await func(*args, **kwargs)
-        except Exception() as err:
+        except Exception as err:
             return err
 
     return _wrapper
