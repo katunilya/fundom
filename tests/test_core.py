@@ -1,6 +1,8 @@
+import inspect
+
 import pytest
 
-from pymon.core import compose
+from pymon.core import compose, future
 
 
 @pytest.mark.parametrize(
@@ -59,3 +61,15 @@ async def test_compose_sync_async():
         << (lambda t: not t)
     )
     assert await f(3) is False
+
+
+async def async_identity(x):
+    return x
+
+
+@pytest.mark.asyncio
+async def test_future():
+    fv = future(async_identity(3))
+
+    assert inspect.isawaitable(fv)
+    assert await fv == 3
