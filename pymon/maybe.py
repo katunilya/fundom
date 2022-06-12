@@ -90,6 +90,15 @@ def if_none_returns(replacement: V, value: T) -> V | T:
 def if_some_returns(replacement: V, value: T) -> V | T:
     """Replace some `value` when it is not `None`.
 
+    Example::
+
+            result = (
+                pipe({"body": b"hello", "status": 200})
+                << (lambda dct: dct.get("Hello", None))
+                << if_some_returns(True)
+                << if_none_returns(False)
+            )
+
     Args:
         replacement (V): to replace with.
         value (T): to replace.
