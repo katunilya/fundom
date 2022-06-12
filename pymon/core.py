@@ -108,7 +108,21 @@ class pipe(Generic[T]):  # noqa
 
     @staticmethod
     def returns(func: Callable[P, pipe[T]]) -> Callable[P, T]:
-        """Decorator for functions that return `pipe` object for seamless unwrapping."""
+        """Decorator for functions that return `pipe` object for seamless unwrapping.
+
+        Example::
+
+                @pipe.returns
+                def some_function(x: int) -> pipe[bool]:
+                    return (
+                        pipe(x)
+                        << (lambda x: x + 1)
+                        << some_when(lambda x: x > 10)
+                        << if_some_returns(True)
+                        << if_none_returns(False)
+
+                # returned type is bool
+        """
 
         @wraps(func)
         def _wrapper(*args: P.args, **kwargs: P.kwargs) -> T:
