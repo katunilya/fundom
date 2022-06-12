@@ -36,7 +36,17 @@ def if_some(func: Callable[[T], V]):
 
 
 def if_none(func: Callable[[T], V]):
-    """Decorator that executes some function only on `None` input."""
+    """Decorator that executes some function only on `None` input.
+
+    Example::
+
+            result = (
+                pipe({"body": b"hello", "status": 200})
+                << (lambda dct: dct.get("Hello", None))
+                << if_some(bytes_decode("UTF-8"))
+                << if_none(lambda _: "")
+            )
+    """
 
     @wraps(func)
     def _wrapper(t: T) -> V | None:
