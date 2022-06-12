@@ -5,7 +5,7 @@ from dataclasses import dataclass
 from functools import wraps
 from typing import Awaitable, Callable, Generic, ParamSpec, TypeVar
 
-from pymon.core import future, hof1, hof2, this_future
+from pymon.core import future, hof1, hof2
 
 V = TypeVar("V")
 T = TypeVar("T")
@@ -198,25 +198,43 @@ class choose_ok(Generic[P, T]):  # noqa
         return self
 
 
-def choose_ok_future(
-    *funcs: Callable[[T], future[V | TError]]
-) -> Callable[[T], future[V | TError]]:
-    """Combines multiple async functions that might return error into one.
+@dataclass(slots=True, init=False)
+class choose_ok_future(Generic[P, T]):  # noqa
+    """Combines multiple async functions into switch-case like statement.
 
-    Result of the first function to return non-Exception result is returned.
+    The first function to return non-`Exception` result is used. If no function passed
+    than `EmptyChooseOkError` is raised. Uses deepcopy to keep arguments immutable
+    during attempts.
+
+    Examples::
+
+            f = (
+                choose_ok_future()
+                | create_linked_node
+                | create_isolated_node
+            )
     """
-    match funcs:
-        case []:
-            return this_future
-        case _:
 
-            @future.returns
-            async def _choose(value: T) -> V | TError:
-                for func in funcs:
-                    match await func(value):
-                        case Exception():
-                            continue
-                        case success:
-                            return success
+    funcs: list[Callable[P, T | TError]]
 
-            return _choose
+    def __init__(self) -> None:
+        self.funcs = []
+
+    @future.returns
+    async def __call__(self, *args: P.args, **_: P.kwargs) -> T | TError:  # noqa
+        if len(self.funcs) == 0:
+            return EmptyChooseOkError()
+
+        for func in self.funcs:
+            copy_args = copy.deepcopy(args)
+            match await func(*copy_args):
+                case Exception():
+                    continue
+                case ok:
+                    return ok
+
+        return FailedChooseOkError(*args)
+
+    def __or__(self, option: Callable[P, T]) -> choose_ok[P, T]:
+        self.funcs.append(option)
+        return self
