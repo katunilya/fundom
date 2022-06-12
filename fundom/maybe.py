@@ -5,7 +5,7 @@ from dataclasses import dataclass
 from functools import wraps
 from typing import Awaitable, Callable, Generic, ParamSpec, TypeVar
 
-from pymon.core import future, hof1
+from fundom.core import future, hof1
 
 T = TypeVar("T")
 V = TypeVar("V")

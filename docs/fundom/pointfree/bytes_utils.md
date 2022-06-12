@@ -1,8 +1,8 @@
 # Bytes Utils
 
-> Auto-generated documentation for [pymon.pointfree.bytes_utils](https://github.com/katunilya/pymon/blob/main/pymon/pointfree/bytes_utils.py) module.
+> Auto-generated documentation for [fundom.pointfree.bytes_utils](https://github.com/katunilya/pymon/blob/main/fundom/pointfree/bytes_utils.py) module.
 
-- [Pymon](../../README.md#-pymon) / [Modules](../../MODULES.md#pymon-modules) / [Pymon](../index.md#pymon) / [Pointfree](index.md#pointfree) / Bytes Utils
+- [Pymon](../../README.md#-fundom) / [Modules](../../MODULES.md#pymon-modules) / [Fundom](../index.md#fundom) / [Pointfree](index.md#pointfree) / Bytes Utils
     - [center](#center)
     - [count](#count)
     - [decode](#decode)
@@ -18,7 +18,7 @@
 
 ## center
 
-[[find in source code]](https://github.com/katunilya/pymon/blob/main/pymon/pointfree/bytes_utils.py#L7)
+[[find in source code]](https://github.com/katunilya/pymon/blob/main/fundom/pointfree/bytes_utils.py#L7)
 
 ```python
 @hof2
@@ -39,7 +39,7 @@ Point-free version of `bytes.center`.
 
 ## count
 
-[[find in source code]](https://github.com/katunilya/pymon/blob/main/pymon/pointfree/bytes_utils.py#L19)
+[[find in source code]](https://github.com/katunilya/pymon/blob/main/fundom/pointfree/bytes_utils.py#L19)
 
 ```python
 @hof3
@@ -63,7 +63,7 @@ Point-free version of `bytes.count`.
 
 ## decode
 
-[[find in source code]](https://github.com/katunilya/pymon/blob/main/pymon/pointfree/bytes_utils.py#L33)
+[[find in source code]](https://github.com/katunilya/pymon/blob/main/fundom/pointfree/bytes_utils.py#L33)
 
 ```python
 @hof1
@@ -89,7 +89,7 @@ str | Exception: result.
 
 ## endswith
 
-[[find in source code]](https://github.com/katunilya/pymon/blob/main/pymon/pointfree/bytes_utils.py#L48)
+[[find in source code]](https://github.com/katunilya/pymon/blob/main/fundom/pointfree/bytes_utils.py#L48)
 
 ```python
 @hof1
@@ -113,7 +113,7 @@ Point-free version of `bytes.endswith`.
 
 ## find
 
-[[find in source code]](https://github.com/katunilya/pymon/blob/main/pymon/pointfree/bytes_utils.py#L62)
+[[find in source code]](https://github.com/katunilya/pymon/blob/main/fundom/pointfree/bytes_utils.py#L62)
 
 ```python
 def find(sub: bytes, arg: bytes) -> int | None:
@@ -132,7 +132,7 @@ int | None: lowest index in arg where sub is found. `None` if nothing found.
 
 ## index
 
-[[find in source code]](https://github.com/katunilya/pymon/blob/main/pymon/pointfree/bytes_utils.py#L79)
+[[find in source code]](https://github.com/katunilya/pymon/blob/main/fundom/pointfree/bytes_utils.py#L79)
 
 ```python
 @hof1
@@ -158,7 +158,7 @@ Point-free version of `bytes.index`.
 
 ## removeprefix
 
-[[find in source code]](https://github.com/katunilya/pymon/blob/main/pymon/pointfree/bytes_utils.py#L94)
+[[find in source code]](https://github.com/katunilya/pymon/blob/main/fundom/pointfree/bytes_utils.py#L94)
 
 ```python
 @hof1
@@ -182,7 +182,7 @@ Point-free version of `bytes.removeprefix`.
 
 ## removesuffix
 
-[[find in source code]](https://github.com/katunilya/pymon/blob/main/pymon/pointfree/bytes_utils.py#L108)
+[[find in source code]](https://github.com/katunilya/pymon/blob/main/fundom/pointfree/bytes_utils.py#L108)
 
 ```python
 @hof1
@@ -206,7 +206,7 @@ Point-free version of `bytes.removesuffix`.
 
 ## replace
 
-[[find in source code]](https://github.com/katunilya/pymon/blob/main/pymon/pointfree/bytes_utils.py#L122)
+[[find in source code]](https://github.com/katunilya/pymon/blob/main/fundom/pointfree/bytes_utils.py#L122)
 
 ```python
 @hof2
@@ -231,7 +231,7 @@ Point-free version of `bytes.replace`.
 
 ## split
 
-[[find in source code]](https://github.com/katunilya/pymon/blob/main/pymon/pointfree/bytes_utils.py#L137)
+[[find in source code]](https://github.com/katunilya/pymon/blob/main/fundom/pointfree/bytes_utils.py#L137)
 
 ```python
 @hof1
@@ -255,7 +255,7 @@ Point-free version of `bytes.split`.
 
 ## startswith
 
-[[find in source code]](https://github.com/katunilya/pymon/blob/main/pymon/pointfree/bytes_utils.py#L151)
+[[find in source code]](https://github.com/katunilya/pymon/blob/main/fundom/pointfree/bytes_utils.py#L151)
 
 ```python
 @hof1
@@ -279,7 +279,7 @@ Point-free version of `bytes.startswith`.
 
 ## strip
 
-[[find in source code]](https://github.com/katunilya/pymon/blob/main/pymon/pointfree/bytes_utils.py#L165)
+[[find in source code]](https://github.com/katunilya/pymon/blob/main/fundom/pointfree/bytes_utils.py#L165)
 
 ```python
 @hof1

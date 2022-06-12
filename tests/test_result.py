@@ -2,7 +2,7 @@ from dataclasses import dataclass
 
 import pytest
 
-from pymon.result import (
+from fundom.result import (
     EmptyChooseOkError,
     FailedChooseOkError,
     choose_ok,

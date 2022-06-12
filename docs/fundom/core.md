@@ -1,8 +1,8 @@
 # Core
 
-> Auto-generated documentation for [pymon.core](https://github.com/katunilya/pymon/blob/main/pymon/core.py) module.
+> Auto-generated documentation for [fundom.core](https://github.com/katunilya/pymon/blob/main/fundom/core.py) module.
 
-- [Pymon](../README.md#-pymon) / [Modules](../MODULES.md#pymon-modules) / [Pymon](index.md#pymon) / Core
+- [Pymon](../README.md#-fundom) / [Modules](../MODULES.md#pymon-modules) / [Fundom](index.md#fundom) / Core
     - [compose](#compose)
     - [future](#future)
         - [future.returns](#futurereturns)
@@ -23,7 +23,7 @@
 
 ## compose
 
-[[find in source code]](https://github.com/katunilya/pymon/blob/main/pymon/core.py#L268)
+[[find in source code]](https://github.com/katunilya/pymon/blob/main/fundom/core.py#L268)
 
 ```python
 dataclass(slots=True, init=False)
@@ -52,7 +52,7 @@ f: Callable[[int], int] = (
 
 ## future
 
-[[find in source code]](https://github.com/katunilya/pymon/blob/main/pymon/core.py#L25)
+[[find in source code]](https://github.com/katunilya/pymon/blob/main/fundom/core.py#L25)
 
 ```python
 dataclass(slots=True, frozen=True)
@@ -78,7 +78,7 @@ result = await (
 
 ### future.returns
 
-[[find in source code]](https://github.com/katunilya/pymon/blob/main/pymon/core.py#L55)
+[[find in source code]](https://github.com/katunilya/pymon/blob/main/fundom/core.py#L55)
 
 ```python
 @staticmethod
@@ -104,7 +104,7 @@ async def some_async_func(x: int, y: int) -> str:
 
 ## pipe
 
-[[find in source code]](https://github.com/katunilya/pymon/blob/main/pymon/core.py#L80)
+[[find in source code]](https://github.com/katunilya/pymon/blob/main/fundom/core.py#L80)
 
 ```python
 dataclass(slots=True, frozen=True)
@@ -130,7 +130,7 @@ result: int = (
 
 ### pipe().finish
 
-[[find in source code]](https://github.com/katunilya/pymon/blob/main/pymon/core.py#L101)
+[[find in source code]](https://github.com/katunilya/pymon/blob/main/fundom/core.py#L101)
 
 ```python
 def finish() -> T:
@@ -159,7 +159,7 @@ value = result.finish()
 
 ### pipe.returns
 
-[[find in source code]](https://github.com/katunilya/pymon/blob/main/pymon/core.py#L118)
+[[find in source code]](https://github.com/katunilya/pymon/blob/main/fundom/core.py#L118)
 
 ```python
 @staticmethod
@@ -190,7 +190,7 @@ def some_function(x: int) -> pipe[bool]:
 
 ## cfilter
 
-[[find in source code]](https://github.com/katunilya/pymon/blob/main/pymon/core.py#L401)
+[[find in source code]](https://github.com/katunilya/pymon/blob/main/fundom/core.py#L401)
 
 ```python
 @hof1
@@ -218,7 +218,7 @@ predicate (Callable[[A1], bool]): to filter with.
 
 ## cmap
 
-[[find in source code]](https://github.com/katunilya/pymon/blob/main/pymon/core.py#L387)
+[[find in source code]](https://github.com/katunilya/pymon/blob/main/fundom/core.py#L387)
 
 ```python
 @hof1
@@ -244,7 +244,7 @@ mapper (Callable[[A1], A2]): mapper for element of iterable.
 
 ## foldl
 
-[[find in source code]](https://github.com/katunilya/pymon/blob/main/pymon/core.py#L357)
+[[find in source code]](https://github.com/katunilya/pymon/blob/main/fundom/core.py#L357)
 
 ```python
 @hof2
@@ -275,7 +275,7 @@ folder (Callable[[A1, A2], A1]): aggregator.
 
 ## foldr
 
-[[find in source code]](https://github.com/katunilya/pymon/blob/main/pymon/core.py#L372)
+[[find in source code]](https://github.com/katunilya/pymon/blob/main/fundom/core.py#L372)
 
 ```python
 @hof2
@@ -306,7 +306,7 @@ folder (Callable[[A1, A2], A2]): aggregator.
 
 ## hof1
 
-[[find in source code]](https://github.com/katunilya/pymon/blob/main/pymon/core.py#L318)
+[[find in source code]](https://github.com/katunilya/pymon/blob/main/fundom/core.py#L318)
 
 ```python
 def hof1(f: Callable[Concatenate[A1, P], AResult]):
@@ -322,7 +322,7 @@ Separate first argument from other.
 
 ## hof2
 
-[[find in source code]](https://github.com/katunilya/pymon/blob/main/pymon/core.py#L331)
+[[find in source code]](https://github.com/katunilya/pymon/blob/main/fundom/core.py#L331)
 
 ```python
 def hof2(f: Callable[Concatenate[A1, A2, P], AResult]):
@@ -339,7 +339,7 @@ Separate first 2 arguments from other.
 
 ## hof3
 
-[[find in source code]](https://github.com/katunilya/pymon/blob/main/pymon/core.py#L344)
+[[find in source code]](https://github.com/katunilya/pymon/blob/main/fundom/core.py#L344)
 
 ```python
 def hof3(f: Callable[Concatenate[A1, A2, A3, P], AResult]):
@@ -357,7 +357,7 @@ Separate first 3 arguments from other.
 
 ## returns
 
-[[find in source code]](https://github.com/katunilya/pymon/blob/main/pymon/core.py#L167)
+[[find in source code]](https://github.com/katunilya/pymon/blob/main/fundom/core.py#L167)
 
 ```python
 def returns(x: T) -> Callable[P, T]:
@@ -378,7 +378,7 @@ get_none: Callable[..., None] = returns(None)
 
 ## returns_future
 
-[[find in source code]](https://github.com/katunilya/pymon/blob/main/pymon/core.py#L181)
+[[find in source code]](https://github.com/katunilya/pymon/blob/main/fundom/core.py#L181)
 
 ```python
 def returns_future(x: T) -> Callable[P, future[T]]:
@@ -399,7 +399,7 @@ get_none_future: Callable[..., future[None]] = returns_future(None)
 
 ## this
 
-[[find in source code]](https://github.com/katunilya/pymon/blob/main/pymon/core.py#L146)
+[[find in source code]](https://github.com/katunilya/pymon/blob/main/fundom/core.py#L146)
 
 ```python
 def this(args: T) -> T:
@@ -419,7 +419,7 @@ this(3)  # 3
 
 ## this_future
 
-[[find in source code]](https://github.com/katunilya/pymon/blob/main/pymon/core.py#L156)
+[[find in source code]](https://github.com/katunilya/pymon/blob/main/fundom/core.py#L156)
 
 ```python
 @future.returns

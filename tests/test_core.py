@@ -2,7 +2,15 @@ import inspect
 
 import pytest
 
-from pymon.core import compose, future, pipe, returns, returns_future, this, this_future
+from fundom.core import (
+    compose,
+    future,
+    pipe,
+    returns,
+    returns_future,
+    this,
+    this_future,
+)
 
 
 @pytest.mark.parametrize(
