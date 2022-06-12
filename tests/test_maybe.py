@@ -125,19 +125,17 @@ async def test_choose_some_future_returns_none_on_empty():
     assert await c(1) is None
 
 
-# TODO rename
-async def less_then_3(x: int) -> int | None:
+async def less_than_3(x: int) -> int | None:
     return x if x < 3 else None
 
 
-# TODO rename
-async def more_then_10(x: int) -> int | None:
+async def more_than_10(x: int) -> int | None:
     return x if x > 10 else None
 
 
 @pytest.mark.asyncio
 async def test_choose_some_future_returns_none_on_failed():
-    c = choose_some_future() | less_then_3 | more_then_10
+    c = choose_some_future() | less_than_3 | more_than_10
     assert await c(6) is None
 
 
