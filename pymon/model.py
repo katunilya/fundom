@@ -11,3 +11,13 @@ class Entity(Protocol, Generic[TId]):
     """
 
     uid: TId
+
+
+TAuthor = TypeVar("TAuthor")
+
+
+class Signed(Protocol, Generic[TAuthor]):
+    """Type that has information about its author."""
+
+    created_by: TAuthor
+    updated_by: TAuthor
