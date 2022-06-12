@@ -13,7 +13,17 @@ TError = TypeVar("TError", bound=Exception)
 
 
 def if_ok(func: Callable[[T], V]):
-    """Decorator that protects function from being executed on `Exception` value."""
+    """Decorator that protects function from being executed on `Exception` value.
+
+    Example::
+
+            result = (
+                pipe({"body": b"hello", "status": 200})
+                << safe(lambda dct: dct["Hello"])
+                << if_some(bytes.decode("UTF-8"))
+                << if_error(lambda err: str(err))
+            )
+    """
 
     @wraps(func)
     def _wrapper(t: T) -> V:
