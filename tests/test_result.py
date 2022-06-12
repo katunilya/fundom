@@ -13,4 +13,9 @@ from pymon.result import choose_ok
     ],
 )
 def test_choose(value, funcs, result):
-    assert choose_ok(*funcs)(value) == result
+    c = choose_ok()
+
+    for func in funcs:
+        c = c | func
+
+    assert c(value) == result
