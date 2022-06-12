@@ -179,7 +179,12 @@ def returns(x: T) -> Callable[P, T]:
 
 
 def returns_future(x: T) -> Callable[P, future[T]]:
-    """Return awaitable `T` on any input."""
+    """Return awaitable `T` on any input.
+
+    Example::
+
+            get_none_future: Callable[..., future[None]] = returns_future(None)
+    """
 
     @future.returns
     async def _returns_future(*_: P.args, **__: P.kwargs) -> T:
