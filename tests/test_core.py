@@ -106,3 +106,11 @@ def test_pipe_lshift():
 
     assert isinstance(pl, pipe)
     assert pl.value == 6
+
+
+@pytest.mark.asyncio
+async def test_pipe_rshift():
+    pl = pipe(3) >> add_1
+
+    assert isinstance(pl, future)
+    assert await pl == 4
