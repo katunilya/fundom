@@ -99,6 +99,14 @@ def safe_future(func: Callable[P, Awaitable[V]]) -> Callable[P, future[V | TErro
     """Decorator for async function that might raise an exception.
 
     Excepts exception and returns that instead.
+
+    Example::
+
+            @safe_future
+            async def connect_database(conn_str: str) -> Database:
+                return Database(conn_str)
+
+            # type: str -> Database | Exception
     """
 
     @wraps(func)
