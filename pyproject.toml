@@ -3,6 +3,7 @@ name = "pymon"
 version = "0.0.8"
 description = "Common simple python monads for more readable and maintainable pipeline-based code."
 authors = ["Ilya Katun <katun.ilya@gmail.com>"]
+license = "MIT"
 
 [tool.poetry.dependencies]
 python = "^3.10"
