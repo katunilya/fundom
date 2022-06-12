@@ -1,3 +1,4 @@
+from datetime import datetime
 from typing import Generic, Protocol, TypeVar
 
 TId = TypeVar("TId")
@@ -21,3 +22,10 @@ class Signed(Protocol, Generic[TAuthor]):
 
     created_by: TAuthor
     updated_by: TAuthor
+
+
+class Auditable(Signed[TAuthor], Protocol):
+    """Type that has time information about it changes."""
+
+    created_at: datetime
+    updated_at: datetime
