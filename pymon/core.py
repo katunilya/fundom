@@ -155,7 +155,12 @@ def this(args: T) -> T:
 
 @future.returns
 async def this_future(args: T) -> T:
-    """Asynchronous identity function."""
+    """Asynchronous identity function.
+
+    Example::
+
+            this_future(3)  # future(3)
+    """
     return args
 
 
