@@ -13,6 +13,7 @@ from pymon.result import (
     if_ok_returns,
     ok_when,
     ok_when_future,
+    safe,
 )
 
 
@@ -52,6 +53,17 @@ def test_if_error(arg, result):
 )
 def test_if_ok_returns(replacement, value, result):
     assert if_ok_returns(replacement)(value) == result
+
+
+def test_safe():
+    @safe
+    def test_func(x: int):
+        if x > 10:
+            raise TestError()
+        return x
+
+    assert test_func(5) == 5
+    assert test_func(20) == TestError()
 
 
 @pytest.mark.parametrize(
