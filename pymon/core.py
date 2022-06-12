@@ -165,7 +165,12 @@ async def this_future(args: T) -> T:
 
 
 def returns(x: T) -> Callable[P, T]:
-    """Return `T` on any input."""
+    """Return `T` on any input.
+
+    Example::
+
+            get_none: Callable[..., None] = returns(None)
+    """
 
     def _returns(*_: P.args, **__: P.kwargs) -> T:
         return x
