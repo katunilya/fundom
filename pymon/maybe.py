@@ -3,9 +3,9 @@ from __future__ import annotations
 import copy
 from dataclasses import dataclass
 from functools import wraps
-from typing import Callable, Generic, ParamSpec, TypeVar
+from typing import Awaitable, Callable, Generic, ParamSpec, TypeVar
 
-from pymon.core import hof1
+from pymon.core import future, hof1
 
 T = TypeVar("T")
 V = TypeVar("V")
@@ -124,6 +124,44 @@ class choose_some(Generic[P, T]):  # noqa
         for func in self.funcs:
             copy_args = copy.deepcopy(args)
             if result := func(*copy_args):
+                return result
+
+        return None
+
+    def __or__(self, option: Callable[P, T]) -> choose_some[P, T]:
+        self.funcs.append(option)
+        return self
+
+
+@dataclass(slots=True, init=False)
+class choose_some_future(Generic[P, T]):  # noqa
+    """Combines multiple sync functions into switch-case like statement.
+
+    The first function to return non-`None` result is used. If no function passed than
+    `None` is returned. Uses deepcopy to keep arguments immutable during attempts.
+
+    Examples::
+
+            f = (
+                choose_some_future()
+                | create_linked_node
+                | create_isolated_node
+            )
+    """
+
+    funcs: list[Callable[P, Awaitable[T | None]]]
+
+    def __init__(self) -> None:
+        self.funcs = []
+
+    @future.returns
+    async def __call__(self, *args: P.args, **_: P.kwargs) -> future[T | None]:  # noqa
+        if len(self.funcs) == 0:
+            return None
+
+        for func in self.funcs:
+            copy_args = copy.deepcopy(args)
+            if result := await func(*copy_args):
                 return result
 
         return None
