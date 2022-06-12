@@ -1,4 +1,3 @@
-from dataclasses import dataclass
 from functools import wraps
 from typing import Awaitable, Callable, ParamSpec, TypeVar
 
@@ -133,39 +132,6 @@ def ok_when_future(
         Future[T] | Future[TError]: result.
     """
     return future(__ok_when_future(predicate, create_error, value))
-
-
-@dataclass(slots=True, frozen=True)
-class PolicyViolationError(Exception):
-    """Exception that marks that policy is violated."""
-
-    message: str
-
-
-def check(predicate: Callable[P, bool]) -> T | PolicyViolationError:
-    """Pass value next only if predicate is True, otherwise policy is violated.
-
-    Args:
-        predicate (Predicate[T]): to check.
-
-    Returns:
-        T | PolicyViolationError: result
-    """
-    return ok_when(predicate, PolicyViolationError(message=str(predicate)))
-
-
-def check_future(
-    predicate: Callable[P, Awaitable[bool]]
-) -> future[T] | future[PolicyViolationError]:
-    """Pass value next only if predicate is True, otherwise policy is violated.
-
-    Args:
-        predicate (Callable[P, Future[bool]]): to check.
-
-    Returns:
-        Future[T] | Future[PolicyViolationError]: result.
-    """
-    return ok_when_future(predicate, PolicyViolationError(message=str(predicate)))
 
 
 def choose_ok(*funcs: Callable[[T], V | TError]) -> Callable[[T], V | TError]:
