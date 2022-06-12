@@ -20,7 +20,7 @@ def if_ok(func: Callable[[T], V]):
             result = (
                 pipe({"body": b"hello", "status": 200})
                 << safe(lambda dct: dct["Hello"])
-                << if_some(bytes.decode("UTF-8"))
+                << if_ok(bytes.decode("UTF-8"))
                 << if_error(lambda err: str(err))
             )
     """
@@ -44,7 +44,7 @@ def if_error(func: Callable[[T], V]):
             result = (
                 pipe({"body": b"hello", "status": 200})
                 << safe(lambda dct: dct["Hello"])
-                << if_some(bytes.decode("UTF-8"))
+                << if_ok(bytes.decode("UTF-8"))
                 << if_error(lambda err: str(err))
             )
     """
