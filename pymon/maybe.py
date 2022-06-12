@@ -63,6 +63,15 @@ def if_none(func: Callable[[T], V]):
 def if_none_returns(replacement: V, value: T) -> V | T:
     """Replace `value` with `replacement` if one is `None`.
 
+    Example::
+
+            result = (
+                pipe({"body": b"hello", "status": 200})
+                << (lambda dct: dct.get("Hello", None))
+                << if_some(bytes_decode("UTF-8"))
+                << if_none_returns("")
+            )
+
     Args:
         replacement (V): to replace with.
         value (T): to replace.
