@@ -1,6 +1,11 @@
 import pytest
 
-from pymon.maybe import choose_some, choose_some_future, if_some_returns
+from pymon.maybe import (
+    choose_some,
+    choose_some_future,
+    if_some_returns,
+    some_when_future,
+)
 
 
 @pytest.mark.parametrize(
@@ -86,10 +91,12 @@ async def test_choose_some_future_returns_none_on_empty():
     assert await c(1) is None
 
 
+# TODO rename
 async def less_then_3(x: int) -> int | None:
     return x if x < 3 else None
 
 
+# TODO rename
 async def more_then_10(x: int) -> int | None:
     return x if x > 10 else None
 
@@ -98,3 +105,14 @@ async def more_then_10(x: int) -> int | None:
 async def test_choose_some_future_returns_none_on_failed():
     c = choose_some_future() | less_then_3 | more_then_10
     assert await c(6) is None
+
+
+async def more_than_15(x: int) -> bool:
+    return x > 15
+
+
+@pytest.mark.asyncio
+async def test_some_when_future():
+    p = some_when_future(more_than_15)
+    assert await p(10) is None
+    assert await p(16) == 16
