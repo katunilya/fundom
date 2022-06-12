@@ -4,6 +4,7 @@ from pymon.maybe import (
     choose_some,
     choose_some_future,
     if_none,
+    if_none_returns,
     if_some,
     if_some_returns,
 )
@@ -40,6 +41,17 @@ def test_if_none(arg, result):
 )
 def test_if_some_returns(replacement, value, result):
     assert if_some_returns(replacement)(value) == result
+
+
+@pytest.mark.parametrize(
+    "replacement, value, result",
+    [
+        (True, 1, 1),
+        (True, None, True),
+    ],
+)
+def test_if_none_returns(replacement, value, result):
+    assert if_none_returns(replacement)(value) == result
 
 
 @pytest.mark.parametrize(
