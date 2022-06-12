@@ -8,6 +8,7 @@ Full list of [Pymon](README.md#-pymon) project modules.
 - [Pymon](pymon/index.md#pymon)
     - [Core](pymon/core.md#core)
     - [Maybe](pymon/maybe.md#maybe)
+    - [Model](pymon/model.md#model)
     - [Pointfree](pymon/pointfree/index.md#pointfree)
         - [Bytes Utils](pymon/pointfree/bytes_utils.md#bytes-utils)
         - [Dict Utils](pymon/pointfree/dict_utils.md#dict-utils)

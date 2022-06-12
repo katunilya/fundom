@@ -3,53 +3,47 @@
 > Auto-generated documentation for [pymon.core](https://github.com/katunilya/pymon/blob/main/pymon/core.py) module.
 
 - [Pymon](../README.md#-pymon) / [Modules](../MODULES.md#pymon-modules) / [Pymon](index.md#pymon) / Core
-    - [Func](#func)
-    - [FutureFunc](#futurefunc)
+    - [compose](#compose)
     - [future](#future)
+        - [future.returns](#futurereturns)
     - [pipe](#pipe)
         - [pipe().finish](#pipefinish)
+        - [pipe.returns](#pipereturns)
     - [cfilter](#cfilter)
     - [cmap](#cmap)
     - [foldl](#foldl)
     - [foldr](#foldr)
-    - [func](#func)
-    - [future_func](#future_func)
     - [hof1](#hof1)
     - [hof2](#hof2)
     - [hof3](#hof3)
-    - [pipeline](#pipeline)
     - [returns](#returns)
-    - [returns_async](#returns_async)
     - [returns_future](#returns_future)
     - [this](#this)
-    - [this_async](#this_async)
+    - [this_future](#this_future)
 
-## Func
+## compose
 
-[[find in source code]](https://github.com/katunilya/pymon/blob/main/pymon/core.py#L163)
+[[find in source code]](https://github.com/katunilya/pymon/blob/main/pymon/core.py#L268)
 
 ```python
-dataclass(slots=True, frozen=True)
-class Func(Generic[P, V]):
+dataclass(slots=True, init=False)
+class compose(Generic[P, V]):
+    def __init__() -> None:
 ```
 
 Function composition abstraction.
 
-#### See also
+If no function is passed to composition than `Exception` would be raised on call.
 
-- [P](#p)
-- [V](#v)
-
-## FutureFunc
-
-[[find in source code]](https://github.com/katunilya/pymon/blob/main/pymon/core.py#L141)
+Example
 
 ```python
-dataclass(slots=True, frozen=True)
-class FutureFunc(Generic[P, V]):
+f: Callable[[int], int] = (
+    compose()
+    << (lambda x: x + 1)
+    << (lambda x: x ** 2)
+)
 ```
-
-Abstraction over async function.
 
 #### See also
 
@@ -58,7 +52,7 @@ Abstraction over async function.
 
 ## future
 
-[[find in source code]](https://github.com/katunilya/pymon/blob/main/pymon/core.py#L23)
+[[find in source code]](https://github.com/katunilya/pymon/blob/main/pymon/core.py#L25)
 
 ```python
 dataclass(slots=True, frozen=True)
@@ -82,9 +76,35 @@ result = await (
 
 - [T](#t)
 
+### future.returns
+
+[[find in source code]](https://github.com/katunilya/pymon/blob/main/pymon/core.py#L55)
+
+```python
+@staticmethod
+def returns(func: Callable[P, Coroutine[Any, Any, T]]):
+```
+
+Wraps returned value of async function to [future](#future).
+
+Return value of function is wrapped into [future](#future).
+
+Example
+
+```python
+@future.returns
+async def some_async_func(x: int, y: int) -> str:
+    ...
+```
+
+#### See also
+
+- [P](#p)
+- [T](#t)
+
 ## pipe
 
-[[find in source code]](https://github.com/katunilya/pymon/blob/main/pymon/core.py#L69)
+[[find in source code]](https://github.com/katunilya/pymon/blob/main/pymon/core.py#L80)
 
 ```python
 dataclass(slots=True, frozen=True)
@@ -110,13 +130,24 @@ result: int = (
 
 ### pipe().finish
 
-[[find in source code]](https://github.com/katunilya/pymon/blob/main/pymon/core.py#L90)
+[[find in source code]](https://github.com/katunilya/pymon/blob/main/pymon/core.py#L101)
 
 ```python
 def finish() -> T:
 ```
 
 Finish [pipe](#pipe) by unpacking internal value.
+
+#### Examples
+
+```python
+result = (
+    pipe(3)
+    << (lambda x: x + 1)
+    << (lambda x: x**2)
+)
+value = result.finish()
+```
 
 #### Returns
 
@@ -126,9 +157,40 @@ Finish [pipe](#pipe) by unpacking internal value.
 
 - [T](#t)
 
+### pipe.returns
+
+[[find in source code]](https://github.com/katunilya/pymon/blob/main/pymon/core.py#L118)
+
+```python
+@staticmethod
+def returns(func: Callable[P, pipe[T]]) -> Callable[P, T]:
+```
+
+Decorator for functions that return [pipe](#pipe) object for seamless unwrapping.
+
+Example
+
+```python
+@pipe.returns
+def some_function(x: int) -> pipe[bool]:
+    return (
+        pipe(x)
+        << (lambda x: x + 1)
+        << some_when(lambda x: x > 10)
+        << if_some_returns(True)
+        << if_none_returns(False)
+
+# returned type is bool
+```
+
+#### See also
+
+- [P](#p)
+- [T](#t)
+
 ## cfilter
 
-[[find in source code]](https://github.com/katunilya/pymon/blob/main/pymon/core.py#L285)
+[[find in source code]](https://github.com/katunilya/pymon/blob/main/pymon/core.py#L401)
 
 ```python
 @hof1
@@ -156,7 +218,7 @@ predicate (Callable[[A1], bool]): to filter with.
 
 ## cmap
 
-[[find in source code]](https://github.com/katunilya/pymon/blob/main/pymon/core.py#L271)
+[[find in source code]](https://github.com/katunilya/pymon/blob/main/pymon/core.py#L387)
 
 ```python
 @hof1
@@ -182,7 +244,7 @@ mapper (Callable[[A1], A2]): mapper for element of iterable.
 
 ## foldl
 
-[[find in source code]](https://github.com/katunilya/pymon/blob/main/pymon/core.py#L241)
+[[find in source code]](https://github.com/katunilya/pymon/blob/main/pymon/core.py#L357)
 
 ```python
 @hof2
@@ -213,7 +275,7 @@ folder (Callable[[A1, A2], A1]): aggregator.
 
 ## foldr
 
-[[find in source code]](https://github.com/katunilya/pymon/blob/main/pymon/core.py#L256)
+[[find in source code]](https://github.com/katunilya/pymon/blob/main/pymon/core.py#L372)
 
 ```python
 @hof2
@@ -242,39 +304,9 @@ folder (Callable[[A1, A2], A2]): aggregator.
 - [A2](#a2)
 - [hof2](#hof2)
 
-## func
-
-[[find in source code]](https://github.com/katunilya/pymon/blob/main/pymon/core.py#L184)
-
-```python
-def func(func: Callable[P, V]) -> Func[P, V]:
-```
-
-Decorator for making functions composable.
-
-#### See also
-
-- [P](#p)
-- [V](#v)
-
-## future_func
-
-[[find in source code]](https://github.com/katunilya/pymon/blob/main/pymon/core.py#L189)
-
-```python
-def future_func(func: Callable[P, Awaitable[V]]) -> FutureFunc[P, V]:
-```
-
-Decorator for making async functions composable.
-
-#### See also
-
-- [P](#p)
-- [V](#v)
-
 ## hof1
 
-[[find in source code]](https://github.com/katunilya/pymon/blob/main/pymon/core.py#L202)
+[[find in source code]](https://github.com/katunilya/pymon/blob/main/pymon/core.py#L318)
 
 ```python
 def hof1(f: Callable[Concatenate[A1, P], AResult]):
@@ -290,7 +322,7 @@ Separate first argument from other.
 
 ## hof2
 
-[[find in source code]](https://github.com/katunilya/pymon/blob/main/pymon/core.py#L215)
+[[find in source code]](https://github.com/katunilya/pymon/blob/main/pymon/core.py#L331)
 
 ```python
 def hof2(f: Callable[Concatenate[A1, A2, P], AResult]):
@@ -307,7 +339,7 @@ Separate first 2 arguments from other.
 
 ## hof3
 
-[[find in source code]](https://github.com/katunilya/pymon/blob/main/pymon/core.py#L228)
+[[find in source code]](https://github.com/katunilya/pymon/blob/main/pymon/core.py#L344)
 
 ```python
 def hof3(f: Callable[Concatenate[A1, A2, A3, P], AResult]):
@@ -323,24 +355,9 @@ Separate first 3 arguments from other.
 - [AResult](#aresult)
 - [P](#p)
 
-## pipeline
-
-[[find in source code]](https://github.com/katunilya/pymon/blob/main/pymon/core.py#L99)
-
-```python
-def pipeline(func: Callable[P, pipe[T]]) -> Callable[P, T]:
-```
-
-Decorator for functions that return `Pipe` object for seamless unwrapping.
-
-#### See also
-
-- [P](#p)
-- [T](#t)
-
 ## returns
 
-[[find in source code]](https://github.com/katunilya/pymon/blob/main/pymon/core.py#L122)
+[[find in source code]](https://github.com/katunilya/pymon/blob/main/pymon/core.py#L167)
 
 ```python
 def returns(x: T) -> Callable[P, T]:
@@ -348,20 +365,11 @@ def returns(x: T) -> Callable[P, T]:
 
 Return `T` on any input.
 
-#### See also
-
-- [P](#p)
-- [T](#t)
-
-## returns_async
-
-[[find in source code]](https://github.com/katunilya/pymon/blob/main/pymon/core.py#L131)
+Example
 
 ```python
-def returns_async(x: T) -> Callable[P, future[T]]:
+get_none: Callable[..., None] = returns(None)
 ```
-
-Return awaitable `T` on any input.
 
 #### See also
 
@@ -370,13 +378,19 @@ Return awaitable `T` on any input.
 
 ## returns_future
 
-[[find in source code]](https://github.com/katunilya/pymon/blob/main/pymon/core.py#L54)
+[[find in source code]](https://github.com/katunilya/pymon/blob/main/pymon/core.py#L181)
 
 ```python
-def returns_future(func: Callable[P, T]):
+def returns_future(x: T) -> Callable[P, future[T]]:
 ```
 
-Wraps returned value of async function to [future](#future).
+Return awaitable `T` on any input.
+
+Example
+
+```python
+get_none_future: Callable[..., future[None]] = returns_future(None)
+```
 
 #### See also
 
@@ -385,27 +399,40 @@ Wraps returned value of async function to [future](#future).
 
 ## this
 
-[[find in source code]](https://github.com/katunilya/pymon/blob/main/pymon/core.py#L112)
+[[find in source code]](https://github.com/katunilya/pymon/blob/main/pymon/core.py#L146)
 
 ```python
-def this(x: T) -> T:
+def this(args: T) -> T:
 ```
 
 Synchronous identity function.
+
+Example
+
+```python
+this(3)  # 3
+```
 
 #### See also
 
 - [T](#t)
 
-## this_async
+## this_future
 
-[[find in source code]](https://github.com/katunilya/pymon/blob/main/pymon/core.py#L117)
+[[find in source code]](https://github.com/katunilya/pymon/blob/main/pymon/core.py#L156)
 
 ```python
-async def this_async(x: T) -> T:
+@future.returns
+async def this_future(args: T) -> T:
 ```
 
 Asynchronous identity function.
+
+Example
+
+```python
+this_future(3)  # future(3)
+```
 
 #### See also
 
