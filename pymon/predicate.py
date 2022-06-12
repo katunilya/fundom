@@ -42,7 +42,19 @@ class _each_future(Generic[P]):  # noqa
 
 @dataclass(slots=True, init=False)
 class each(Generic[P]):  # noqa
-    """Mathematical conjunction of predicates."""
+    """Mathematical conjunction of predicates.
+
+    If no predicate passed returns True.
+
+    Example::
+
+            # returns True if number is between 3 and 10
+            p: Callable[[int], bool] = (
+                each()
+                << (lambda x: x > 3)
+                << (lambda x: x < 10)
+            )
+    """
 
     predicates: list[Callable[P, bool]]
 
@@ -100,7 +112,19 @@ class _one_future(Generic[P]):  # noqa
 
 @dataclass(slots=True, init=False)
 class one(Generic[P]):  # noqa
-    """Mathematical disjunction of predicates."""
+    """Mathematical disjunction of predicates.
+
+    If no predicate passed returns False.
+
+    Example::
+
+            # returns True for any number that is less than 3 or more than 10
+            p: Callable[[int], bool] = (
+                one()
+                << (lambda x < 3)
+                << (lambda x > 10)
+            )
+    """
 
     predicates: list[Callable[P, bool]]
 
