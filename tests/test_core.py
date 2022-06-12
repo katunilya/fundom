@@ -114,3 +114,8 @@ async def test_pipe_rshift():
 
     assert isinstance(pl, future)
     assert await pl == 4
+
+
+def test_pipe_finish():
+    pl = pipe(3) << (lambda x: x + 3)
+    assert pl.finish() == 6
