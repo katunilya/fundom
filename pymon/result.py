@@ -95,14 +95,14 @@ def safe_future(func: Callable[P, Awaitable[V]]) -> Callable[P, future[V | TErro
 
 
 @hof2
-def check(
+def ok_when(
     predicate: Callable[[T], bool], create_error: Callable[[T], TError], value: T
 ) -> T | TError:
     """Pass value only if predicate is True, otherwise return error.
 
     Examples::
 
-            policy = check(lambda x: x > 10, lambda _: Exception("More than 10"))
+            policy = ok_when(lambda x: x > 10, lambda _: Exception("More than 10"))
 
     Args:
         predicate (Callable[[T], bool]): to fulfill.
@@ -115,7 +115,7 @@ def check(
     return value if predicate(value) else create_error(value)
 
 
-async def __check_future(
+async def __ok_when_future(
     predicate: Callable[[T], Awaitable[bool]],
     create_error: Callable[[T], TError],
     value: T,
@@ -124,7 +124,7 @@ async def __check_future(
 
 
 @hof2
-def check_future(
+def ok_when_future(
     predicate: Callable[[T], Awaitable[bool]],
     create_error: Callable[[T], TError],
     value: T,
@@ -133,7 +133,7 @@ def check_future(
 
     Examples::
 
-            policy = check_future(more_than_10, lambda _: Exception("More than 10"))
+            policy = ok_when_future(more_than_10, lambda _: Exception("More than 10"))
 
     Args:
         predicate (Callable[[T], bool]): to fulfill.
@@ -143,7 +143,7 @@ def check_future(
     Returns:
         future[T] | future[TError]: result.
     """
-    return future(__check_future(predicate, create_error, value))
+    return future(__ok_when_future(predicate, create_error, value))
 
 
 class EmptyChooseOkError(Exception):
