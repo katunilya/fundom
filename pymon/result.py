@@ -92,45 +92,47 @@ def safe_future(func: Callable[P, Awaitable[V]]) -> Callable[P, future[V | TErro
 
 
 @hof2
-def ok_when(predicate: Callable[[T], bool], error: TError, value: T) -> T | TError:
+def ok_when(
+    predicate: Callable[[T], bool], create_error: Callable[[T], TError], value: T
+) -> T | TError:
     """Pass value only if predicate is True, otherwise return error.
 
     Args:
         predicate (Callable[[T], bool]): to fulfill.
-        error (TError): to replace with.
+        create_error (Callable[[T], TError]): factory function for error.
         value (T): to process.
 
     Returns:
         T | TError: result.
     """
-    match predicate(value):
-        case True:
-            return value
-        case False:
-            return error
+    return value if predicate(value) else create_error(value)
 
 
 async def __ok_when_future(
-    predicate: Callable[[T], Awaitable[bool]], error: TError, value: T
+    predicate: Callable[[T], Awaitable[bool]],
+    create_error: Callable[[T], TError],
+    value: T,
 ) -> future[T] | future[TError]:
-    return value if await predicate(value) else error
+    return value if await predicate(value) else create_error(value)
 
 
 @hof2
 def ok_when_future(
-    predicate: Callable[[T], Awaitable[bool]], error: TError, value: T
+    predicate: Callable[[T], Awaitable[bool]],
+    create_error: Callable[[T], TError],
+    value: T,
 ) -> future[T] | future[TError]:
     """Pass value only if async predicate is True, otherwise return error.
 
     Args:
         predicate (Callable[[T], bool]): to fulfill.
-        error (TError): to replace with.
+        create_error (Callable[[T], TError]): factory function for error.
         value (T): to process.
 
     Returns:
         Future[T] | Future[TError]: result.
     """
-    return future(__ok_when_future(predicate, error, value))
+    return future(__ok_when_future(predicate, create_error, value))
 
 
 @dataclass(slots=True, frozen=True)
