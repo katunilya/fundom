@@ -79,6 +79,10 @@ def if_some_returns(replacement: V, value: T) -> V | T:
 def some_when(predicate: Callable[[T], bool], data: T) -> T | None:
     """Passes value next only when predicate is True, otherwise returns `None`.
 
+    Examples::
+
+            policy = some_when(lambda x: x > 3)
+
     Args:
         predicate (Callable[[T], bool]): to fulfill.
         data (T): to process.
